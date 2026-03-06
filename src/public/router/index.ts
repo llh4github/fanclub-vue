@@ -1,5 +1,5 @@
-import type { RouteRecordRaw } from 'vue-router';
-import FanclubShowcase from '../components/FanclubShowcase.vue';
+import type { RouteRecordRaw } from 'vue-router'
+import FanclubShowcase from '../components/FanclubShowcase.vue'
 
 const publicRoutes: RouteRecordRaw[] = [
   {
@@ -7,9 +7,9 @@ const publicRoutes: RouteRecordRaw[] = [
     name: 'home',
     component: FanclubShowcase,
     meta: {
-      title: 'fanclub-vup'
-    }
-  }
-];
+      title: 'fanclub-vup',
+    },
+  },
+]
 
-export default publicRoutes;
+export default publicRoutes

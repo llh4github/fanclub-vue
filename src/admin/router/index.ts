@@ -1,5 +1,5 @@
-import type { RouteRecordRaw } from 'vue-router';
-import AdminIndex from '../AdminIndex.vue';
+import type { RouteRecordRaw } from 'vue-router'
+import AdminIndex from '../AdminIndex.vue'
 
 const adminRoutes: RouteRecordRaw[] = [
   {
@@ -7,9 +7,9 @@ const adminRoutes: RouteRecordRaw[] = [
     name: 'admin-home',
     component: AdminIndex,
     meta: {
-      title: '后台管理'
-    }
-  }
-];
+      title: '后台管理',
+    },
+  },
+]
 
-export default adminRoutes;
+export default adminRoutes

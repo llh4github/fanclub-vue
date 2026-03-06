@@ -5,7 +5,7 @@
         <router-link to="/" class="hover:text-primary transition-colors">首页</router-link>
         <router-link to="/admin" class="hover:text-primary transition-colors">后台</router-link>
         <button @click="toggleDarkMode" class="hover:text-primary transition-colors">
-          {{ isDarkMode ? "🌞" : "🌙" }}
+          {{ isDarkMode ? '🌞' : '🌙' }}
         </button>
       </div>
     </nav>
@@ -86,50 +86,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted } from 'vue'
 
-const anchorName = ref("fanclub-vup");
-const daysSinceDebut = ref(599);
-const daysUntilBirthday = ref(360);
-const daysUntilDebutAnniversary = ref(132);
-const isDarkMode = ref(false);
+const anchorName = ref('fanclub-vup')
+const daysSinceDebut = ref(599)
+const daysUntilBirthday = ref(360)
+const daysUntilDebutAnniversary = ref(132)
+const isDarkMode = ref(false)
 
 // 初始化夜间模式状态
 onMounted(() => {
   // 从localStorage读取状态
-  const savedDarkMode = localStorage.getItem("darkMode");
+  const savedDarkMode = localStorage.getItem('darkMode')
   if (savedDarkMode) {
-    isDarkMode.value = JSON.parse(savedDarkMode);
+    isDarkMode.value = JSON.parse(savedDarkMode)
   } else {
     // 检查系统偏好
-    isDarkMode.value = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    isDarkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches
   }
 
   // 应用夜间模式
   if (isDarkMode.value) {
-    document.documentElement.classList.add("dark");
+    document.documentElement.classList.add('dark')
   } else {
-    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.remove('dark')
   }
 
   // Add actual countdown logic here
-  console.log(`${anchorName.value} showcase page loaded`);
-});
+  console.log(`${anchorName.value} showcase page loaded`)
+})
 
 // 切换夜间模式
 const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value;
+  isDarkMode.value = !isDarkMode.value
 
   // 应用夜间模式
   if (isDarkMode.value) {
-    document.documentElement.classList.add("dark");
+    document.documentElement.classList.add('dark')
   } else {
-    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.remove('dark')
   }
 
   // 保存状态到localStorage
-  localStorage.setItem("darkMode", JSON.stringify(isDarkMode.value));
-};
+  localStorage.setItem('darkMode', JSON.stringify(isDarkMode.value))
+}
 </script>
 
 <style scoped>
