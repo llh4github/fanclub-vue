@@ -85,6 +85,168 @@
   </div>
 </template>
 
+<style>
+/* Ensure UnoCSS generates all necessary classes */
+.min-h-screen {
+}
+.flex {
+}
+.flex-col {
+}
+.bg-pink-50 {
+}
+.dark\:bg-gray-900 {
+}
+.p-4 {
+}
+.sm\:p-6 {
+}
+.md\:p-8 {
+}
+.w-full {
+}
+.mb-8 {
+}
+.justify-end {
+}
+.items-center {
+}
+.space-x-4 {
+}
+.text-sm {
+}
+.text-gray-500 {
+}
+.dark\:text-gray-400 {
+}
+.hover\:text-primary {
+}
+.transition-colors {
+}
+.flex-grow {
+}
+.items-center {
+}
+.justify-center {
+}
+.text-4xl {
+}
+.sm\:text-5xl {
+}
+.font-bold {
+}
+.text-primary {
+}
+.text-center {
+}
+.max-w-3xl {
+}
+.gap-12 {
+}
+.bg-white {
+}
+.dark\:bg-gray-800 {
+}
+.rounded-2xl {
+}
+.p-6 {
+}
+.sm\:p-8 {
+}
+.shadow-md {
+}
+.border {
+}
+.border-pink-100 {
+}
+.dark\:border-gray-700 {
+}
+.text-xl {
+}
+.sm\:text-2xl {
+}
+.font-semibold {
+}
+.text-gray-800 {
+}
+.dark\:text-gray-200 {
+}
+.mb-6 {
+}
+.grid {
+}
+.grid-cols-1 {
+}
+.md\:grid-cols-3 {
+}
+.gap-4 {
+}
+.bg-pink-50 {
+}
+.dark\:bg-gray-700 {
+}
+.rounded-lg {
+}
+.border {
+}
+.border-pink-100 {
+}
+.dark\:border-gray-600 {
+}
+.text-gray-600 {
+}
+.dark\:text-gray-300 {
+}
+.mb-2 {
+}
+.text-3xl {
+}
+.sm\:text-4xl {
+}
+.mb-1 {
+}
+.flex-wrap {
+}
+.gap-4 {
+}
+.sm\:gap-6 {
+}
+.px-6 {
+}
+.py-3 {
+}
+.bg-primary {
+}
+.text-white {
+}
+.rounded-full {
+}
+.font-medium {
+}
+.cursor-pointer {
+}
+.transition-all {
+}
+.duration-300 {
+}
+.hover\:bg-primary\/90 {
+}
+.hover\:-translate-y-1 {
+}
+.shadow-md {
+}
+.mt-8 {
+}
+.text-gray-500 {
+}
+.dark\:text-gray-400 {
+}
+.text-sm {
+}
+.text-center {
+}
+</style>
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
@@ -133,5 +295,10 @@ const toggleDarkMode = () => {
 </script>
 
 <style scoped>
-/* 自定义样式已通过Tailwind CSS实现 */
+/* 自定义样式已通过UnoCSS实现 */
+</style>
+
+<style>
+/* UnoCSS directives to ensure all classes are generated */
+@unocss all;
 </style>

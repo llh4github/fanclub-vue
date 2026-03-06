@@ -1,17 +1,12 @@
-import { defineConfig } from 'unocss'
-import presetUno from '@unocss/preset-uno'
-import presetAttributify from '@unocss/preset-attributify'
-import presetIcons from '@unocss/preset-icons'
+import { defineConfig } from "unocss";
+import presetUno from "@unocss/preset-uno";
 
 export default defineConfig({
-  presets: [
-    presetUno(),
-    presetAttributify(),
-    presetIcons(),
-  ],
+  presets: [presetUno()],
   theme: {
     colors: {
-      primary: '#DF7623',
+      primary: "#DF7623",
     },
   },
-})
+  darkMode: "class",
+});
