@@ -144,63 +144,63 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import dayjs from "dayjs";
-import type { FanclubConfig } from "@/types/fanclub";
-import avatarA from "@/assets/avatar/avatar_a.webp";
-import avatarKu from "@/assets/avatar/avatar_ku.webp";
-import avatarXiao from "@/assets/avatar/avatar_xiao.webp";
+import { ref, onMounted } from 'vue'
+import dayjs from 'dayjs'
+import type { FanclubConfig } from '@/types/fanclub'
+import avatarA from '@/assets/avatar/avatar_a.webp'
+import avatarKu from '@/assets/avatar/avatar_ku.webp'
+import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
 
 const config = ref<FanclubConfig>({
-  anchorName: "莉蔻Liko",
-  debutDate: new Date("2026-01-14"),
-  birthday: new Date("2025-08-03"),
-});
-const daysSinceDebut = ref(0);
-const daysUntilBirthday = ref(0);
-const daysUntilDebutAnniversary = ref(0);
-const randomAvatar = ref<string>(avatarA as string);
+  anchorName: '莉蔻Liko',
+  debutDate: new Date('2026-01-14'),
+  birthday: new Date('2025-08-03'),
+})
+const daysSinceDebut = ref(0)
+const daysUntilBirthday = ref(0)
+const daysUntilDebutAnniversary = ref(0)
+const randomAvatar = ref<string>(avatarA as string)
 
 // 更新倒计时
 const updateCountdowns = () => {
-  const today = dayjs();
-  const debutDate = dayjs(config.value.debutDate);
+  const today = dayjs()
+  const debutDate = dayjs(config.value.debutDate)
 
   // 计算下一个生日
-  const birthday = dayjs(config.value.birthday);
-  const birthdayThisYear = dayjs().year(today.year()).month(birthday.month()).date(birthday.date());
-  let birthdayDate = birthdayThisYear;
+  const birthday = dayjs(config.value.birthday)
+  const birthdayThisYear = dayjs().year(today.year()).month(birthday.month()).date(birthday.date())
+  let birthdayDate = birthdayThisYear
   if (today.isAfter(birthdayThisYear)) {
-    birthdayDate = birthdayThisYear.add(1, "year");
+    birthdayDate = birthdayThisYear.add(1, 'year')
   }
 
   // 计算下一个出道纪念日
-  const debut = dayjs(config.value.debutDate);
+  const debut = dayjs(config.value.debutDate)
   const debutAnniversaryThisYear = dayjs()
     .year(today.year())
     .month(debut.month())
-    .date(debut.date());
-  let debutAnniversaryDate = debutAnniversaryThisYear;
+    .date(debut.date())
+  let debutAnniversaryDate = debutAnniversaryThisYear
   if (today.isAfter(debutAnniversaryThisYear)) {
-    debutAnniversaryDate = debutAnniversaryThisYear.add(1, "year");
+    debutAnniversaryDate = debutAnniversaryThisYear.add(1, 'year')
   }
 
-  daysSinceDebut.value = today.diff(debutDate, "day");
-  daysUntilBirthday.value = birthdayDate.diff(today, "day");
-  daysUntilDebutAnniversary.value = debutAnniversaryDate.diff(today, "day");
-};
+  daysSinceDebut.value = today.diff(debutDate, 'day')
+  daysUntilBirthday.value = birthdayDate.diff(today, 'day')
+  daysUntilDebutAnniversary.value = debutAnniversaryDate.diff(today, 'day')
+}
 
 // 初始化
 onMounted(() => {
   // 随机选择头像
-  const avatars = [avatarA, avatarKu, avatarXiao];
-  randomAvatar.value = avatars[Math.floor(Math.random() * avatars.length)] as string;
+  const avatars = [avatarA, avatarKu, avatarXiao]
+  randomAvatar.value = avatars[Math.floor(Math.random() * avatars.length)] as string
 
   // 初始计算倒计时
-  updateCountdowns();
+  updateCountdowns()
 
-  console.log(`${config.value.anchorName} showcase page loaded`);
-});
+  console.log(`${config.value.anchorName} showcase page loaded`)
+})
 </script>
 
 <style scoped>
