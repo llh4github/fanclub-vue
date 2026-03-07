@@ -4,14 +4,20 @@
       <div class="flex justify-end items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
         <router-link to="/" class="hover:text-primary transition-colors">首页</router-link>
         <router-link to="/admin" class="hover:text-primary transition-colors">后台</router-link>
-        <button @click="toggleDarkMode" class="hover:text-primary transition-colors">
+        <button @click="toggleDarkMode" class="!bg-transparent !border-none p-0 text-gray-500 dark:text-gray-400 hover:text-primary transition-colors">
           {{ isDarkMode ? '🌞' : '🌙' }}
         </button>
       </div>
     </nav>
     <div class="flex flex-col flex-grow items-center justify-center">
-      <header class="mb-12">
-        <h1 class="text-4xl sm:text-5xl font-bold text-primary text-center">{{ anchorName }}</h1>
+      <header class="mb-12 flex flex-col items-center">
+        <div class="relative w-36 h-36 mb-4">
+          <div class="absolute inset-0 rounded-full bg-gradient-to-r from-[#DF7623] via-amber-400 to-[#DF7623] animate-spin-slow opacity-70"></div>
+          <div class="absolute inset-1 rounded-full bg-white dark:bg-gray-900 overflow-hidden">
+            <img :src="randomAvatar" alt="Avatar" class="w-full h-full object-cover" />
+          </div>
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-bold text-primary text-center">{{ config.anchorName }}</h1>
       </header>
 
       <main class="w-full max-w-3xl flex flex-col gap-12">
@@ -45,7 +51,7 @@
             <div
               class="flex flex-col items-center p-4 bg-pink-50 dark:bg-gray-700 rounded-lg border border-pink-100 dark:border-gray-600"
             >
-              <div class="text-sm text-gray-600 dark:text-gray-300 mb-2">距离出道日</div>
+            <div class="text-sm text-gray-600 dark:text-gray-300 mb-2">距离出道纪念日</div>
               <div class="text-3xl sm:text-4xl font-bold text-primary mb-1">
                 {{ daysUntilDebutAnniversary }}
               </div>
@@ -87,12 +93,48 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import dayjs from 'dayjs'
+import type { FanclubConfig } from '@/types/fanclub'
+import avatarA from '@/assets/avatar/avatar_a.webp'
+import avatarKu from '@/assets/avatar/avatar_ku.webp'
+import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
 
-const anchorName = ref('fanclub-vup')
-const daysSinceDebut = ref(599)
-const daysUntilBirthday = ref(360)
-const daysUntilDebutAnniversary = ref(132)
+const config = ref<FanclubConfig>({
+  anchorName: '莉蔻Liko',
+  debutDate: new Date('2026-01-14'),
+  birthday: new Date('2025-08-03')
+})
+const daysSinceDebut = ref(0)
+const daysUntilBirthday = ref(0)
+const daysUntilDebutAnniversary = ref(0)
 const isDarkMode = ref(false)
+const randomAvatar = ref<string>(avatarA as string)
+
+// 更新倒计时
+const updateCountdowns = () => {
+  const today = dayjs()
+  const debutDate = dayjs(config.value.debutDate)
+  
+  // 计算下一个生日
+  const birthday = dayjs(config.value.birthday)
+  const birthdayThisYear = dayjs().year(today.year()).month(birthday.month()).date(birthday.date())
+  let birthdayDate = birthdayThisYear
+  if (today.isAfter(birthdayThisYear)) {
+    birthdayDate = birthdayThisYear.add(1, 'year')
+  }
+  
+  // 计算下一个出道纪念日
+  const debut = dayjs(config.value.debutDate)
+  const debutAnniversaryThisYear = dayjs().year(today.year()).month(debut.month()).date(debut.date())
+  let debutAnniversaryDate = debutAnniversaryThisYear
+  if (today.isAfter(debutAnniversaryThisYear)) {
+    debutAnniversaryDate = debutAnniversaryThisYear.add(1, 'year')
+  }
+  
+  daysSinceDebut.value = today.diff(debutDate, 'day')
+  daysUntilBirthday.value = birthdayDate.diff(today, 'day')
+  daysUntilDebutAnniversary.value = debutAnniversaryDate.diff(today, 'day')
+}
 
 // 初始化夜间模式状态
 onMounted(() => {
@@ -112,8 +154,14 @@ onMounted(() => {
     document.documentElement.classList.remove('dark')
   }
 
-  // Add actual countdown logic here
-  console.log(`${anchorName.value} showcase page loaded`)
+  // 随机选择头像
+  const avatars = [avatarA, avatarKu, avatarXiao]
+  randomAvatar.value = avatars[Math.floor(Math.random() * avatars.length)] as string
+  
+  // 初始计算倒计时
+  updateCountdowns()
+  
+  console.log(`${config.value.anchorName} showcase page loaded`)
 })
 
 // 切换夜间模式
@@ -133,7 +181,23 @@ const toggleDarkMode = () => {
 </script>
 
 <style scoped>
-/* 自定义样式已通过UnoCSS实现 */
+button {
+  background: transparent !important;
+  border: none !important;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
 </style>
 
 <style></style>
