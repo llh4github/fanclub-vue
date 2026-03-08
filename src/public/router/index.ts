@@ -1,11 +1,11 @@
 import type { RouteRecordRaw } from 'vue-router'
-import FanclubShowcase from '../components/FanclubShowcase.vue'
+import IndexPage from '../pages/index.vue'
 
 const publicRoutes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    component: FanclubShowcase,
+    component: IndexPage,
     meta: {
       title: 'fanclub-vup',
     },
