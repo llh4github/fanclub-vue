@@ -1,11 +1,10 @@
 <template>
   <footer class="border-t border-border bg-card/50 backdrop-blur-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      
       <div
         class="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground"
       >
-      <p>© {{ currentYear }} LLH. All rights reserved. 网站为粉丝自建。</p>
+        <p>© {{ currentYear }} LLH. All rights reserved. 网站为粉丝自建。</p>
         <p class="flex items-center gap-2">
           Made with <Heart class="w-4 h-4 text-[#DF7623] fill-current" /> for all fans
         </p>

@@ -2,8 +2,8 @@
   <div class="min-h-screen bg-background text-foreground relative overflow-hidden">
     <!-- 子弹掉落背景元素 -->
     <div class="bullets-container absolute inset-0 z-0">
-      <div 
-        v-for="bullet in bullets" 
+      <div
+        v-for="bullet in bullets"
         :key="bullet.id"
         class="bullet"
         :class="`bullet-${bullet.type}`"
@@ -12,14 +12,13 @@
         <component :is="bullet.component" />
       </div>
     </div>
-    
+
     <Navigation />
     <main class="relative z-10">
       <Hero />
       <About />
       <Timeline />
       <Playlist />
-    
     </main>
     <Footer />
   </div>
@@ -32,8 +31,6 @@ import Hero from '../components/Hero.vue'
 import About from '../components/About.vue'
 import Timeline from '../components/Timeline.vue'
 import Playlist from '../components/Playlist.vue'
-import Projects from '../components/Projects.vue'
-import Contact from '../components/Contact.vue'
 import Footer from '../components/Footer.vue'
 
 // 导入子弹图标
@@ -59,8 +56,12 @@ let bulletInterval: number | undefined
 const createBullet = () => {
   // 随机选择子弹类型
   const types = ['bullets', 'bullet-bill', 'target', 'carrot']
-const randomType = types[Math.floor(Math.random() * types.length)] as 'bullets' | 'bullet-bill' | 'target' | 'carrot'
-  
+  const randomType = types[Math.floor(Math.random() * types.length)] as
+    | 'bullets'
+    | 'bullet-bill'
+    | 'target'
+    | 'carrot'
+
   // 根据类型选择组件
   let component: any
   switch (randomType) {
@@ -79,11 +80,11 @@ const randomType = types[Math.floor(Math.random() * types.length)] as 'bullets' 
     default:
       component = IconBullets
   }
-  
+
   // 随机位置和大小
   const left = Math.random() * 100
   const size = 20 + Math.random() * 20
-  
+
   // 创建子弹
   const bullet: Bullet = {
     id: bulletId++,
@@ -94,14 +95,14 @@ const randomType = types[Math.floor(Math.random() * types.length)] as 'bullets' 
       top: '-50px',
       width: `${size}px`,
       height: `${size}px`,
-    }
+    },
   }
-  
+
   bullets.value.push(bullet)
-  
+
   // 3秒后移除子弹
   setTimeout(() => {
-    bullets.value = bullets.value.filter(b => b.id !== bullet.id)
+    bullets.value = bullets.value.filter((b) => b.id !== bullet.id)
   }, 3000)
 }
 
@@ -116,7 +117,7 @@ const startBullets = () => {
       const delay = 7000 + Math.random() * 10000
       bulletInterval = window.setTimeout(createBulletWithRandomDelay, delay)
     }
-    
+
     createBulletWithRandomDelay()
   }, 7000)
 }
@@ -161,7 +162,7 @@ h4 {
 /* 子弹样式 */
 .bullet {
   position: absolute;
-  color: #DF7623;
+  color: #df7623;
   opacity: 0.6;
   animation: bullet-fall 3s linear forwards;
   filter: drop-shadow(0 0 5px rgba(223, 118, 35, 0.5));

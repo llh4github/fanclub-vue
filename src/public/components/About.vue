@@ -21,9 +21,9 @@
       <div class="flex items-center gap-6 lg:gap-8">
         <!-- 左侧全身照 -->
         <div class="hidden md:block flex-shrink-0 w-64 lg:w-80">
-          <img 
-            src="@/assets/fullbody/full-body-1.avif" 
-            alt="莉蔻全身照" 
+          <img
+            src="@/assets/fullbody/full-body-1.avif"
+            alt="莉蔻全身照"
             class="w-full h-full object-cover clip-corner border border-border"
           />
         </div>
@@ -32,40 +32,41 @@
         <div class="flex-1 relative">
           <div class="relative overflow-hidden bg-card border border-border p-6 clip-corner">
             <!-- 轮播容器 -->
-            <div 
+            <div
               class="carousel-container relative aspect-video overflow-hidden clip-corner-sm mb-6"
               ref="carouselContainer"
             >
-              <div 
+              <div
                 class="carousel-track flex transition-transform duration-500 ease-in-out h-full"
                 :style="{ transform: `translateX(-${currentSlide * 100}%)` }"
               >
                 <!-- 轮播项 -->
-                <div 
-                  v-for="(video, index) in videos" 
+                <div
+                  v-for="(video, index) in videos"
                   :key="index"
                   class="carousel-item flex-shrink-0 w-full h-full"
                   ref="el => el && videoRefs.value.push(el)"
                 >
-                  <iframe 
+                  <iframe
                     ref="el => el && videoIframes.value.push(el)"
-                    :src="video.src" 
-                    scrolling="no" 
-                    border="0" 
-                    frameborder="no" 
-                    framespacing="0" 
+                    :src="video.src"
+                    scrolling="no"
+                    border="0"
+                    frameborder="no"
+                    framespacing="0"
                     allowfullscreen="true"
                     allow="autoplay"
                     class="w-full h-full"
-                  > </iframe>
+                  >
+                  </iframe>
                 </div>
               </div>
             </div>
 
             <!-- 轮播导航 -->
             <div class="flex justify-center gap-2 mb-4">
-              <button 
-                v-for="(video, index) in videos" 
+              <button
+                v-for="(video, index) in videos"
                 :key="index"
                 class="w-3 h-3 rounded-full transition-all"
                 :class="currentSlide === index ? 'bg-[#DF7623] w-8' : 'bg-border'"
@@ -75,26 +76,50 @@
 
             <!-- 轮播控制按钮 -->
             <div class="flex justify-between items-center">
-              <button 
+              <button
                 class="w-10 h-10 flex items-center justify-center border border-[#DF7623] clip-corner hover:bg-[#DF7623]/10 transition-colors"
                 @click="prevSlide"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left" style="color: #DF7623;">
-                  <path d="m15 18-6-6 6-6"/>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-chevron-left"
+                  style="color: #df7623"
+                >
+                  <path d="m15 18-6-6 6-6" />
                 </svg>
               </button>
-              
+
               <div class="text-center">
                 <h3 class="text-lg font-bold">{{ videos[currentSlide].title }}</h3>
                 <p class="text-sm text-muted-foreground">{{ videos[currentSlide].description }}</p>
               </div>
-              
-              <button 
+
+              <button
                 class="w-10 h-10 flex items-center justify-center border border-[#DF7623] clip-corner hover:bg-[#DF7623]/10 transition-colors"
                 @click="nextSlide"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right" style="color: #DF7623;">
-                  <path d="m9 18 6-6-6-6"/>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-chevron-right"
+                  style="color: #df7623"
+                >
+                  <path d="m9 18 6-6-6-6" />
                 </svg>
               </button>
             </div>
@@ -103,9 +128,9 @@
 
         <!-- 右侧全身照 -->
         <div class="hidden md:block flex-shrink-0 w-64 lg:w-80">
-          <img 
-            src="@/assets/fullbody/full-body-2.avif" 
-            alt="莉蔻全身照" 
+          <img
+            src="@/assets/fullbody/full-body-2.avif"
+            alt="莉蔻全身照"
             class="w-full h-full object-cover clip-corner border border-border"
           />
         </div>
@@ -130,23 +155,23 @@ const videos = [
   {
     src: '//player.bilibili.com/player.html?bvid=BV1iyZwBVESt&page=1&muted=1',
     title: '训练视频 1',
-    description: '莉蔻的日常训练记录'
+    description: '莉蔻的日常训练记录',
   },
   {
     src: '//player.bilibili.com/player.html?bvid=BV1S5f6B3E64&page=1&muted=1',
     title: '训练视频 2',
-    description: '舞台表演练习'
+    description: '舞台表演练习',
   },
   {
     src: '//player.bilibili.com/player.html?bvid=BV1cdfnBkEvf&page=1&muted=1',
     title: '训练视频 3',
-    description: 'vocal 练习'
+    description: 'vocal 练习',
   },
   {
     src: '//player.bilibili.com/player.html?bvid=BV1iwNwztEjZ&page=1&muted=1',
     title: '训练视频 4',
-    description: '舞蹈练习'
-  }
+    description: '舞蹈练习',
+  },
 ]
 
 // 轮播方法
@@ -178,9 +203,12 @@ const prevSlide = () => {
 const playCurrentVideo = () => {
   if (videoIframes.value[currentSlide.value]) {
     const iframe = videoIframes.value[currentSlide.value]
-    iframe.contentWindow?.postMessage(JSON.stringify({
-      cmd: 'play'
-    }), '*')
+    iframe.contentWindow?.postMessage(
+      JSON.stringify({
+        cmd: 'play',
+      }),
+      '*',
+    )
   }
 }
 
@@ -188,21 +216,27 @@ const playCurrentVideo = () => {
 const stopCurrentVideo = () => {
   if (videoIframes.value[currentSlide.value]) {
     const iframe = videoIframes.value[currentSlide.value]
-    iframe.contentWindow?.postMessage(JSON.stringify({
-      cmd: 'pause'
-    }), '*')
+    iframe.contentWindow?.postMessage(
+      JSON.stringify({
+        cmd: 'pause',
+      }),
+      '*',
+    )
   }
 }
 
 // 检测视频是否进入视口
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      // 播放当前视频
-      playCurrentVideo()
-    }
-  })
-}, { threshold: 0.5 })
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        // 播放当前视频
+        playCurrentVideo()
+      }
+    })
+  },
+  { threshold: 0.5 },
+)
 
 onMounted(() => {
   // 观察轮播容器
