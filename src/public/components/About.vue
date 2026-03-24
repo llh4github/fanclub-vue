@@ -98,8 +98,8 @@
               </button>
 
               <div class="text-center">
-                <h3 class="text-lg font-bold">{{ videos[currentSlide].title }}</h3>
-                <p class="text-sm text-muted-foreground">{{ videos[currentSlide].description }}</p>
+                <h3 class="text-lg font-bold">{{ videos[currentSlide]?.title || '' }}</h3>
+                <p class="text-sm text-muted-foreground">{{ videos[currentSlide]?.description || '' }}</p>
               </div>
 
               <button
@@ -201,8 +201,8 @@ const prevSlide = () => {
 
 // 播放当前视频
 const playCurrentVideo = () => {
-  if (videoIframes.value[currentSlide.value]) {
-    const iframe = videoIframes.value[currentSlide.value]
+  const iframe = videoIframes.value[currentSlide.value]
+  if (iframe) {
     iframe.contentWindow?.postMessage(
       JSON.stringify({
         cmd: 'play',
@@ -214,8 +214,8 @@ const playCurrentVideo = () => {
 
 // 停止当前视频
 const stopCurrentVideo = () => {
-  if (videoIframes.value[currentSlide.value]) {
-    const iframe = videoIframes.value[currentSlide.value]
+  const iframe = videoIframes.value[currentSlide.value]
+  if (iframe) {
     iframe.contentWindow?.postMessage(
       JSON.stringify({
         cmd: 'pause',
