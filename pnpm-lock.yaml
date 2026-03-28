@@ -32,6 +32,9 @@ importers:
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.29(typescript@5.9.3))
+      troisjs:
+        specifier: ^0.3.4
+        version: 0.3.4
       unocss:
         specifier: 66.6.5
         version: 66.6.5(vite@7.3.1(@types/node@24.12.0)(jiti@2.6.1)(lightningcss@1.31.1))
@@ -2153,6 +2156,9 @@ packages:
 
   treemate@0.3.11:
     resolution: {integrity: sha512-M8RGFoKtZ8dF+iwJfAJTOH/SM4KluKOKRJpjCMhI8bG3qB74zrFoArKZ62ll0Fr3mqkMJiQOmWYkdYgDeITYQg==}
+
+  troisjs@0.3.4:
+    resolution: {integrity: sha512-aonG2lw+QyTjytJpvYIaGv2AiIKzm+eSYT4ByG64uVh+jCLAWxnblS6bCewIckvCMqs2j3z351Q/IFIPWYViCQ==}
 
   ts-api-utils@2.4.0:
     resolution: {integrity: sha512-3TaVTaAv2gTiMB35i3FiGJaRfwb3Pyn/j3m/bfAvGe8FB7CF6u+LMYqYlDh7reQf7UNvoTvdfAqHGmPGOSsPmA==}
@@ -4286,6 +4292,8 @@ snapshots:
   totalist@3.0.1: {}
 
   treemate@0.3.11: {}
+
+  troisjs@0.3.4: {}
 
   ts-api-utils@2.4.0(typescript@5.9.3):
     dependencies:
