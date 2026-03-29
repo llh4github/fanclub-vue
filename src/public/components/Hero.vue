@@ -66,7 +66,7 @@
         :class="{ 'animate-fade-in-delay-600': true }"
       >
         <button
-          @click="scrollToSection('works')"
+          @click="openLivePage()"
           :class="{
             'px-8 py-4 text-white relative overflow-hidden group clip-corner transition-all': true,
             'bg-[#DF7623] hover:bg-[#DF7623]/90': liveStatus.status === 'LIVING',
@@ -216,6 +216,10 @@ const scrollToSection = (id: string) => {
 
 const openBilibiliPage = () => {
   window.open('https://space.bilibili.com/1536601294', '_blank', 'noopener,noreferrer')
+}
+
+const openLivePage = () => {
+  window.open('https://live.bilibili.com/1713548468', '_blank', 'noopener,noreferrer')
 }
 
 const randomAvatar = ref<string>(avatarA as string)
