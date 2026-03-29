@@ -67,10 +67,14 @@
       >
         <button
           @click="scrollToSection('works')"
-          class="px-8 py-4 bg-[#DF7623] hover:bg-[#DF7623]/90 text-white relative overflow-hidden group clip-corner transition-all"
+          :class="{
+            'px-8 py-4 text-white relative overflow-hidden group clip-corner transition-all': true,
+            'bg-[#DF7623] hover:bg-[#DF7623]/90': liveStatus.status === 'LIVING',
+            'bg-gray-600 hover:bg-gray-500': liveStatus.status !== 'LIVING'
+          }"
         >
           <span class="relative z-10 flex items-center gap-2">
-            <span class="inline-block text-white animate-pulse">
+            <span v-if="liveStatus.status === 'LIVING'" class="inline-block text-white animate-pulse">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="0" fill="currentColor">
                   <animate
@@ -137,7 +141,13 @@
                 </circle>
               </svg>
             </span>
-            直播中
+            <template v-if="liveStatus.status === 'LIVING'">
+              直播中
+              <span v-if="liveDuration > 0" class="text-sm opacity-90">({{ formatDuration(liveDuration) }})</span>
+            </template>
+            <template v-else>
+              未直播
+            </template>
           </span>
           <div
             class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"
@@ -211,9 +221,28 @@ const openBilibiliPage = () => {
 const randomAvatar = ref<string>(avatarA as string)
 const daysSinceDebut = ref<number>(0)
 const followerNum = ref<number>(0)
+const liveStatus = ref<{ status: string; liveTime?: string }>({ status: 'UNKNOWN' })
+const liveDuration = ref<number>(0)
 
 const calculateDaysSinceDebut = () => {
  return dayjs(new Date()).diff(dayjs(LIKO_INFO.debutDate), 'day')
+}
+
+const updateLiveDuration = () => {
+  if (liveStatus.value.status === 'LIVING' && liveStatus.value.liveTime) {
+    const liveStartTime = dayjs(liveStatus.value.liveTime)
+    const now = dayjs()
+    liveDuration.value = now.diff(liveStartTime, 'second')
+  } else {
+    liveDuration.value = 0
+  }
+}
+
+const formatDuration = (seconds: number): string => {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secs = seconds % 60
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
 onMounted(async () => {
@@ -236,6 +265,22 @@ onMounted(async () => {
     console.error('获取粉丝数失败:', error)
     followerNum.value = 7681 // 失败时使用默认值
   }
+
+  // 获取直播状态
+  try {
+    const response = await anchorService.getLiveStatus(LIKO_INFO.roomId)
+    if (response.data) {
+      liveStatus.value = {
+        status: response.data.liveStatus,
+        liveTime: response.data.liveTime
+      }
+    }
+  } catch (error) {
+    console.error('获取直播状态失败:', error)
+  }
+
+  // 每秒更新直播时长
+  setInterval(updateLiveDuration, 1000)
 
   // 3秒后显示气泡对话框
   setTimeout(() => {
