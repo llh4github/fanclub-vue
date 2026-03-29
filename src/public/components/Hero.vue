@@ -145,7 +145,7 @@
         </button>
 
         <button
-          @click="scrollToSection('fanzone')"
+          @click="openBilibiliPage()"
           class="px-8 py-4 border-2 border-[#DF7623] text-[#DF7623] hover:bg-[#DF7623]/10 clip-corner transition-all"
         >
           B站主页
@@ -199,6 +199,10 @@ const scrollToSection = (id: string) => {
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' })
   }
+}
+
+const openBilibiliPage = () => {
+  window.open('https://space.bilibili.com/1536601294', '_blank', 'noopener,noreferrer')
 }
 
 const randomAvatar = ref<string>(avatarA as string)
