@@ -12,7 +12,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
 import Navigation from '../components/Navigation.vue'
 import Hero from '../components/Hero.vue'
 import About from '../components/About.vue'
