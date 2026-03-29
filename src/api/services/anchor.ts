@@ -2,6 +2,30 @@ import { apiClient } from '../client';
 import type { JsonWrapper } from '../types';
 
 /**
+ * 直播状态枚举
+ */
+export enum LiveStatus {
+  /** 直播中 */
+  LIVING = "LIVING",
+  /** 未直播 */
+  NOT_LIVING = "NOT_LIVING",
+  /** 超时 */
+  OVER_TIME = "OVER_TIME",
+  /** 未知 */
+  UNKNOWN = "UNKNOWN"
+}
+
+/**
+ * 直播状态响应数据
+ */
+export interface AnchorLiveRecordLiveStatus {
+  /** 直播开始时间 */
+  liveTime?: string;
+  /** 直播状态 */
+  liveStatus: LiveStatus;
+}
+
+/**
  * 查询指定日期的粉丝数量请求参数
  */
 export interface AnchorFollowerDateNumQuerySpec {
@@ -31,8 +55,8 @@ export const anchorService = {
    * @param roomId 直播间ID
    * @returns 直播状态
    */
-  async getLiveStatus(roomId: number): Promise<JsonWrapper<string>> {
-    return apiClient.get<string>('/anchor/live-record/live-status', { roomId });
+  async getLiveStatus(roomId: number): Promise<JsonWrapper<AnchorLiveRecordLiveStatus>> {
+    return apiClient.get<AnchorLiveRecordLiveStatus>('/anchor/live-record/live-status', { roomId });
   },
 
 
