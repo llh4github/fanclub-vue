@@ -160,7 +160,7 @@
           <DollarSign class="w-5 h-5 text-[#DF7623] fill-current" />
           <span class="text-sm text-muted-foreground">
             身价：
-            <n-number-animation :from="0" :to="7681" :duration="3000" />
+            <n-number-animation :from="0" :to="followerNum" :duration="3000" />
             蔻萝特
           </span>
         </div>
@@ -188,6 +188,7 @@ import { ref, onMounted } from 'vue'
 import { DollarSign, ArrowDown, Users, Calendar } from 'lucide-vue-next'
 import { NNumberAnimation } from 'naive-ui'
 import { LIKO_INFO } from '@/common/constants/anchor'
+import { anchorService } from '@/api'
 import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
@@ -209,18 +210,32 @@ const openBilibiliPage = () => {
 
 const randomAvatar = ref<string>(avatarA as string)
 const daysSinceDebut = ref<number>(0)
+const followerNum = ref<number>(0)
 
 const calculateDaysSinceDebut = () => {
  return dayjs(new Date()).diff(dayjs(LIKO_INFO.debutDate), 'day')
 }
 
-onMounted(() => {
+onMounted(async () => {
   // 随机选择头像
   const avatars = [avatarA, avatarKu, avatarXiao]
   randomAvatar.value = avatars[Math.floor(Math.random() * avatars.length)] as string
 
   // 计算出道天数
   daysSinceDebut.value = calculateDaysSinceDebut()
+
+  // 获取粉丝数
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    const response = await anchorService.queryFollowerNum({
+      biliId: LIKO_INFO.uid,
+      cntDate: today
+    })
+    followerNum.value = response.data || 0
+  } catch (error) {
+    console.error('获取粉丝数失败:', error)
+    followerNum.value = 7681 // 失败时使用默认值
+  }
 
   // 3秒后显示气泡对话框
   setTimeout(() => {
