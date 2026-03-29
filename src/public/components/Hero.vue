@@ -187,9 +187,11 @@
 import { ref, onMounted } from 'vue'
 import { DollarSign, ArrowDown, Users, Calendar } from 'lucide-vue-next'
 import { NNumberAnimation } from 'naive-ui'
+import { LIKO_INFO } from '@/common/constants/anchor'
 import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
+import dayjs from 'dayjs'
 
 // 控制气泡对话框的显示和隐藏
 const showBubble = ref(false)
@@ -209,11 +211,7 @@ const randomAvatar = ref<string>(avatarA as string)
 const daysSinceDebut = ref<number>(0)
 
 const calculateDaysSinceDebut = () => {
-  const debutDate = new Date('2026-01-14')
-  const today = new Date()
-  const timeDiff = today.getTime() - debutDate.getTime()
-  const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24))
-  return daysDiff
+ return dayjs(new Date()).diff(dayjs(LIKO_INFO.debutDate), 'day')
 }
 
 onMounted(() => {
