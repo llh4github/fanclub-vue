@@ -9,7 +9,12 @@
           <p>备案/许可证编号：蜀ICP备2026012083号</p>
           <div class="flex items-center gap-2">
             <img src="@/assets/备案图标.png" alt="备案图标" class="w-5 h-5" />
-            <a href="https://beian.mps.gov.cn/#/query/webSearch?code=51132102000350" rel="noreferrer" target="_blank" class="hover:text-[#DF7623] transition-colors">
+            <a
+              href="https://beian.mps.gov.cn/#/query/webSearch?code=51132102000350"
+              rel="noreferrer"
+              target="_blank"
+              class="hover:text-[#DF7623] transition-colors"
+            >
               川公网安备51132102000350号
             </a>
           </div>

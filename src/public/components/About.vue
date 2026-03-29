@@ -99,7 +99,9 @@
 
               <div class="text-center">
                 <h3 class="text-lg font-bold">{{ videos[currentSlide]?.title || '' }}</h3>
-                <p class="text-sm text-muted-foreground">{{ videos[currentSlide]?.description || '' }}</p>
+                <p class="text-sm text-muted-foreground">
+                  {{ videos[currentSlide]?.description || '' }}
+                </p>
               </div>
 
               <button

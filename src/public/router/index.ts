@@ -7,7 +7,7 @@ const publicRoutes: RouteRecordRaw[] = [
     name: 'home',
     component: IndexPage,
     meta: {
-      title: 'fanclub-vup',
+      title: '莉蔻的兔子窝',
     },
   },
 ]
