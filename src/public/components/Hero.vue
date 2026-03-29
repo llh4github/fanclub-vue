@@ -43,21 +43,6 @@
         :class="{ 'animate-fade-in-delay-200': true }"
       >
         <div class="relative">
-          <!-- 弹孔图标 -->
-          <svg
-            class="absolute -top-4 -left-4 w-12 h-12 text-gray-500 opacity-0 transform scale-0 rotate-45"
-            :class="{ 'animate-bullet-hole-entry': showBulletHole }"
-            xmlns="http://www.w3.org/2000/svg"
-            width="512"
-            height="512"
-            viewBox="0 0 512 512"
-          >
-            <path
-              fill="currentColor"
-              d="M105.4 26.28C122.1 96.08 82.98 121 27 132.6c70.72 24.3 36.69 48.4 21.99 72.6c66.01-5.1 87.51 25.8 87.41 74.3c36.5-20.1 51.6-62.3 147.1-21.6c-23.4-43.1-31.9-75.3 20.3-118.5c-39.7-14.2-77-30.2-58.1-81.17c-56.3 37.85-98.9 5.52-140.3-31.95m66.9 67.89a62.23 62.23 0 0 1 62.2 62.23a62.23 62.23 0 0 1-62.2 62.2a62.23 62.23 0 0 1-62.2-62.2a62.23 62.23 0 0 1 62.2-62.23M318.9 218.2c17.3 81.3-25 98-89 91.2c30.9 31.9 50.2 68 16.1 123.1c45.3-11.2 88.5-13.6 113.9 49.8c22.5-46.1 64.8-52.4 116.7-38.7c-17.9-27.7-38-55.4 16.9-82.8c-37-25.5-74.3-50.7-49.4-124.5c-45.3 51-86.7 40.1-125.2-18.1m47.4 76.7a62.23 62.23 0 0 1 62.2 62.2a62.23 62.23 0 0 1-62.2 62.2a62.23 62.23 0 0 1-62.2-62.2a62.23 62.23 0 0 1 62.2-62.2"
-            />
-          </svg>
-
           <span class="text-foreground">莉蔻</span>
           <span class="text-[#DF7623] ml-2 glow-text">Liko</span>
         </div>
@@ -206,8 +191,6 @@ import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
 
-// 控制弹孔图标的入场动画
-const showBulletHole = ref(false)
 // 控制气泡对话框的显示和隐藏
 const showBubble = ref(false)
 
@@ -236,11 +219,6 @@ onMounted(() => {
 
   // 计算出道天数
   daysSinceDebut.value = calculateDaysSinceDebut()
-
-  // 5秒后触发弹孔图标的入场动画
-  setTimeout(() => {
-    showBulletHole.value = true
-  }, 5000)
 
   // 3秒后显示气泡对话框
   setTimeout(() => {
@@ -332,34 +310,6 @@ onMounted(() => {
   to {
     transform: rotate(360deg);
   }
-}
-
-/* 弹孔图标入场动画 */
-@keyframes bullet-hole-entry {
-  0% {
-    opacity: 0;
-    transform: scale(0) rotate(45deg);
-  }
-  30% {
-    opacity: 1;
-    transform: scale(2) rotate(0deg);
-    filter: drop-shadow(0 0 20px #6b7280);
-  }
-  50% {
-    transform: scale(1.5) rotate(-15deg);
-  }
-  70% {
-    transform: scale(1.2) rotate(10deg);
-  }
-  100% {
-    opacity: 0.7;
-    transform: scale(1) rotate(0deg);
-    filter: drop-shadow(0 0 10px #6b7280);
-  }
-}
-
-.animate-bullet-hole-entry {
-  animation: bullet-hole-entry 1.5s ease-out forwards;
 }
 
 /* 气泡对话框过渡动画 */
