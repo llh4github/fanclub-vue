@@ -8,6 +8,7 @@
       <div
         class="absolute bottom-20 right-10 w-64 h-64 bg-[#DF7623]/5 blur-[100px] rounded-full"
       ></div>
+      <ThreeScrollingText />
     </div>
 
     <div class="max-w-5xl mx-auto text-center relative z-10">
@@ -24,18 +25,6 @@
         >
           <img :src="randomAvatar" alt="莉蔻" class="w-full h-full object-cover" />
         </div>
-        <!-- 气泡对话框 -->
-        <transition name="bubble">
-          <div
-            v-show="showBubble"
-            class="absolute -top-12 -right-12 bg-white border-2 border-white px-4 py-2 clip-corner"
-          >
-            <span class="text-[#DF7623] font-bold">蒄爆VR</span>
-            <div
-              class="absolute bottom-0 right-4 w-0 h-0 border-l-8px border-r-8px border-t-8px border-l-transparent border-r-transparent border-t-white"
-            ></div>
-          </div>
-        </transition>
       </div>
 
       <h1
@@ -203,9 +192,9 @@ import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
 import dayjs from 'dayjs'
+import ThreeScrollingText from './ThreeScrollingText.vue'
 
-// 控制气泡对话框的显示和隐藏
-const showBubble = ref(false)
+
 
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id)
@@ -286,15 +275,7 @@ onMounted(async () => {
   // 每秒更新直播时长
   setInterval(updateLiveDuration, 1000)
 
-  // 3秒后显示气泡对话框
-  setTimeout(() => {
-    showBubble.value = true
-  }, 3000)
 
-  // 6秒后隐藏气泡对话框
-  setTimeout(() => {
-    showBubble.value = false
-  }, 6000)
 })
 </script>
 
@@ -378,15 +359,5 @@ onMounted(async () => {
   }
 }
 
-/* 气泡对话框过渡动画 */
-.bubble-enter-active,
-.bubble-leave-active {
-  transition: all 0.5s ease;
-}
 
-.bubble-enter-from,
-.bubble-leave-to {
-  opacity: 0;
-  transform: scale(0) translateY(20px);
-}
 </style>
