@@ -164,11 +164,14 @@ function createDanmaku() {
   const color = colors[Math.floor(Math.random() * colors.length)];
 
   // 字体大小
-  const contentSize = 2 + Math.random() * 8;
+  const contentSize = 10 + Math.random() * 8;
 
-  // 限制垂直范围，避免遮挡主要内容
-  const yPos = (Math.random() - 0.5) * 12;
-  const speed = 0.05 + Math.random() * 0.05;
+  // 随机选择从左侧或右侧出现
+  const isLeft = Math.random() > 0.5;
+  // 初始位置：从屏幕下方出现，左右两侧有一定随机性
+  const startX = isLeft ? -25 + Math.random() * 5 : 20 + Math.random() * 5;
+  const startY = -15 + Math.random() * 2; // 屏幕下方，有一定随机性
+  const speed = 0.06 + Math.random() * 0.07;
 
   // 创建3D文字
   const canvas = document.createElement("canvas");
@@ -213,15 +216,17 @@ function createDanmaku() {
 
   const mesh = new THREE.Mesh(geometry, material);
 
-  // 设置初始位置（右侧屏幕外）
-  const startX = 30 + Math.random() * 5;
+  // 设置初始位置（从屏幕下方）
   mesh.position.x = startX;
-  mesh.position.y = yPos;
+  mesh.position.y = startY;
   mesh.position.z = Math.random() * 100 - 50; // 随机深度
 
+  // 初始缩放较小，模拟气泡从底部升起的效果
+  mesh.scale.set(0.5 + Math.random() * 0.3, 0.5 + Math.random() * 0.3, 1);
+
   // 添加随机旋转
-  mesh.rotation.y = Math.random() * 0.2 - 0.1;
-  mesh.rotation.z = Math.random() * 0.1 - 0.05;
+  mesh.rotation.y = Math.random() * 0.4 - 0.2;
+  mesh.rotation.z = Math.random() * 0.2 - 0.1;
 
   // 添加到场景
   scene.add(mesh);
@@ -244,24 +249,51 @@ function animate() {
   // 更新所有弹幕位置
   for (let i = danmakus.length - 1; i >= 0; i--) {
     const d = danmakus[i];
-    d.mesh.position.x -= d.speed;
+    // 向上移动
+    d.mesh.position.y += d.speed;
+    // 同时向中间移动一点
+    if (d.mesh.position.x > 0) {
+      d.mesh.position.x -= d.speed * 0.3;
+    } else {
+      d.mesh.position.x += d.speed * 0.3;
+    }
 
-    // 如果弹幕完全滚出左侧屏幕，移除它
-    if (d.mesh.position.x < -30) {
-      scene.remove(d.mesh);
-      if (d.mesh.geometry) d.mesh.geometry.dispose();
-      if (d.mesh.material) {
-        if (Array.isArray(d.mesh.material)) {
-          d.mesh.material.forEach((m) => {
-            if (m.map) m.map.dispose();
-            m.dispose();
-          });
-        } else {
-          if (d.mesh.material.map) d.mesh.material.map.dispose();
-          d.mesh.material.dispose();
-        }
+    // 气泡效果：逐渐增大
+    const scaleFactor = 1 + (d.mesh.position.y + 15) * 0.02;
+    d.mesh.scale.set(scaleFactor, scaleFactor, 1);
+
+    // 轻微旋转，模拟气泡上升的自然晃动
+    d.mesh.rotation.z += (Math.random() - 0.5) * 0.02;
+    d.mesh.rotation.y += (Math.random() - 0.5) * 0.01;
+
+    // 气泡上升过程中轻微左右摇摆
+    d.mesh.position.x += Math.sin(Date.now() * 0.001 + i) * 0.01;
+
+    // 如果弹幕上升到屏幕三分之二高度，实现破裂效果
+    if (d.mesh.position.y > 10) { // 屏幕高度的三分之二左右
+      // 破裂动画：缩放并淡出
+      d.mesh.scale.set(d.mesh.scale.x * 1.2, d.mesh.scale.y * 1.2, 1);
+      if (d.mesh.material && !Array.isArray(d.mesh.material)) {
+        d.mesh.material.opacity *= 0.7;
       }
-      danmakus.splice(i, 1);
+      
+      // 检查是否完全透明，然后移除
+      if (d.mesh.material && !Array.isArray(d.mesh.material) && d.mesh.material.opacity < 0.1) {
+        scene.remove(d.mesh);
+        if (d.mesh.geometry) d.mesh.geometry.dispose();
+        if (d.mesh.material) {
+          if (Array.isArray(d.mesh.material)) {
+            d.mesh.material.forEach((m) => {
+              if (m.map) m.map.dispose();
+              m.dispose();
+            });
+          } else {
+            if (d.mesh.material.map) d.mesh.material.map.dispose();
+            d.mesh.material.dispose();
+          }
+        }
+        danmakus.splice(i, 1);
+      }
     }
   }
 
