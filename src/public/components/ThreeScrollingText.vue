@@ -14,6 +14,8 @@ let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let renderer: THREE.WebGLRenderer;
 let animationId: number;
+let ws: WebSocket | null = null;
+let reconnectInterval: number | null = null;
 
 interface Danmaku {
   mesh: THREE.Mesh;
@@ -23,39 +25,6 @@ interface Danmaku {
 }
 
 let danmakus: Danmaku[] = [];
-
-// 发送者名称列表
-const senderNames = [
-  "小兔子",
-  "蔻萝特",
-  "莉蔻粉丝",
-  "兔子窝成员",
-  "可爱的观众",
-  "支持莉蔻",
-  "弹幕达人",
-  "超级粉丝",
-  "莉蔻的小迷妹",
-  "兔子窝守护者",
-];
-
-// 弹幕内容列表
-const danmakuTexts = [
-  "莉蔻好可爱！",
-  "兔子窝赛高！",
-  "莉蔻最棒！",
-  "支持莉蔻！",
-  "莉蔻加油！",
-  "兔子窝万岁！",
-  "莉蔻可爱到爆！",
-  "永远支持莉蔻！",
-  "莉蔻是最棒的！",
-  "兔子窝越来越火！",
-  "蒄爆VR！",
-  "莉蔻冲鸭！",
-  "兔子窝永远的神！",
-  "莉蔻yyds！",
-  "支持莉蔻每一天！",
-];
 
 // 使用更亮的颜色
 const colors = [
@@ -70,6 +39,47 @@ const colors = [
   0x2ed573, // 亮绿
   0x1dd1a1, // 青蓝
 ];
+
+// 连接WebSocket
+function connectWebSocket() {
+  // 从环境变量中获取WebSocket服务器地址
+  const wsUrl = import.meta.env.VITE_WS_URL || "wss://your-websocket-server.com/danmaku";
+
+  ws = new WebSocket(wsUrl);
+
+  ws.onopen = () => {
+    console.log("WebSocket connected");
+    if (reconnectInterval) {
+      clearInterval(reconnectInterval);
+      reconnectInterval = null;
+    }
+  };
+
+  ws.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === "danmaku" && data.content) {
+        createDanmakuFromWS(data.content);
+      }
+    } catch (error) {
+      console.error("Error parsing WebSocket message:", error);
+    }
+  };
+
+  ws.onerror = (error) => {
+    console.error("WebSocket error:", error);
+  };
+
+  ws.onclose = () => {
+    console.log("WebSocket disconnected");
+    // 尝试重连
+    if (!reconnectInterval) {
+      reconnectInterval = window.setInterval(() => {
+        connectWebSocket();
+      }, 5000);
+    }
+  };
+}
 
 onMounted(() => {
   if (!containerRef.value) return;
@@ -91,20 +101,11 @@ onMounted(() => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   containerRef.value.appendChild(renderer.domElement);
 
-  // 初始创建一些弹幕
-  for (let i = 0; i < 6; i++) {
-    setTimeout(() => createDanmaku(), i * 1000);
-  }
+  // 连接WebSocket
+  connectWebSocket();
 
   // 开始动画循环
   animate();
-
-  // 定时创建新弹幕
-  const interval = setInterval(() => {
-    if (danmakus.length < 12) {
-      createDanmaku();
-    }
-  }, 1500);
 
   // 响应窗口大小变化
   const onResize = () => {
@@ -117,9 +118,26 @@ onMounted(() => {
   };
   window.addEventListener("resize", onResize);
 
+  // 测试模式：当WebSocket未连接时，定期创建测试弹幕
+  const testInterval = setInterval(() => {
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      if (danmakus.length < 12) {
+        createDanmaku();
+      }
+    }
+  }, 2000);
+
   // 保存清理函数
   const cleanup = () => {
-    clearInterval(interval);
+    if (ws) {
+      ws.close();
+      ws = null;
+    }
+    if (reconnectInterval) {
+      clearInterval(reconnectInterval);
+      reconnectInterval = null;
+    }
+    clearInterval(testInterval);
     window.removeEventListener("resize", onResize);
   };
 
@@ -156,11 +174,11 @@ onMounted(() => {
   });
 });
 
-function createDanmaku() {
+// 从WebSocket创建弹幕
+function createDanmakuFromWS(text: string) {
   if (!scene) return;
 
-  // 随机选择弹幕内容
-  const text = danmakuTexts[Math.floor(Math.random() * danmakuTexts.length)];
+  // 随机选择颜色
   const color = colors[Math.floor(Math.random() * colors.length)];
 
   // 字体大小
@@ -243,6 +261,20 @@ function createDanmaku() {
   });
 }
 
+// 本地测试用的弹幕创建函数
+function createDanmaku() {
+  // 测试用的弹幕内容
+  const testTexts = [
+    "测试弹幕1",
+    "测试弹幕2",
+    "测试弹幕3",
+    "WebSocket连接测试",
+    "气泡效果测试"
+  ];
+  const text = testTexts[Math.floor(Math.random() * testTexts.length)];
+  createDanmakuFromWS(text);
+}
+
 function animate() {
   animationId = requestAnimationFrame(animate);
 
@@ -276,7 +308,7 @@ function animate() {
       if (d.mesh.material && !Array.isArray(d.mesh.material)) {
         d.mesh.material.opacity *= 0.7;
       }
-      
+
       // 检查是否完全透明，然后移除
       if (d.mesh.material && !Array.isArray(d.mesh.material) && d.mesh.material.opacity < 0.1) {
         scene.remove(d.mesh);
