@@ -1,18 +1,18 @@
-import { apiClient } from '../client';
-import type { JsonWrapper } from '../types';
+import { apiClient } from '../client'
+import type { JsonWrapper } from '../types'
 
 /**
  * 直播状态枚举
  */
 export enum LiveStatus {
   /** 直播中 */
-  LIVING = "LIVING",
+  LIVING = 'LIVING',
   /** 未直播 */
-  NOT_LIVING = "NOT_LIVING",
+  NOT_LIVING = 'NOT_LIVING',
   /** 超时 */
-  OVER_TIME = "OVER_TIME",
+  OVER_TIME = 'OVER_TIME',
   /** 未知 */
-  UNKNOWN = "UNKNOWN"
+  UNKNOWN = 'UNKNOWN',
 }
 
 /**
@@ -20,9 +20,9 @@ export enum LiveStatus {
  */
 export interface AnchorLiveRecordLiveStatus {
   /** 直播开始时间 */
-  liveTime?: string;
+  liveTime?: string
   /** 直播状态 */
-  liveStatus: LiveStatus;
+  liveStatus: LiveStatus
 }
 
 /**
@@ -30,9 +30,9 @@ export interface AnchorLiveRecordLiveStatus {
  */
 export interface AnchorFollowerDateNumQuerySpec {
   /** B站UID */
-  biliId: number;
+  biliId: number
   /** 统计日期，格式：YYYY-MM-DD */
-  cntDate: string;
+  cntDate: string
 }
 
 /**
@@ -44,10 +44,8 @@ export const anchorService = {
    * @param params 查询参数
    * @returns 粉丝数量
    */
-  async queryFollowerNum(
-    params: AnchorFollowerDateNumQuerySpec
-  ): Promise<JsonWrapper<number>> {
-    return apiClient.post<number>('/anchor/follower/num/query', params);
+  async queryFollowerNum(params: AnchorFollowerDateNumQuerySpec): Promise<JsonWrapper<number>> {
+    return apiClient.post<number>('/anchor/follower/num/query', params)
   },
 
   /**
@@ -56,8 +54,6 @@ export const anchorService = {
    * @returns 直播状态
    */
   async getLiveStatus(roomId: number): Promise<JsonWrapper<AnchorLiveRecordLiveStatus>> {
-    return apiClient.get<AnchorLiveRecordLiveStatus>('/anchor/live-record/live-status', { roomId });
+    return apiClient.get<AnchorLiveRecordLiveStatus>('/anchor/live-record/live-status', { roomId })
   },
-
-
-};
+}

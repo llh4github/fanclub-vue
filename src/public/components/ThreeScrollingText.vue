@@ -6,25 +6,25 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
-import * as THREE from "three";
+import { onMounted, onUnmounted, ref } from 'vue'
+import * as THREE from 'three'
 
-const containerRef = ref<HTMLElement | null>(null);
-let scene: THREE.Scene;
-let camera: THREE.PerspectiveCamera;
-let renderer: THREE.WebGLRenderer;
-let animationId: number;
-let ws: WebSocket | null = null;
-let reconnectInterval: number | null = null;
+const containerRef = ref<HTMLElement | null>(null)
+let scene: THREE.Scene
+let camera: THREE.PerspectiveCamera
+let renderer: THREE.WebGLRenderer
+let animationId: number
+let ws: WebSocket | null = null
+let reconnectInterval: number | null = null
 
 interface Danmaku {
-  mesh: THREE.Mesh;
-  speed: number;
-  width: number;
-  startX: number;
+  mesh: THREE.Mesh
+  speed: number
+  width: number
+  startX: number
 }
 
-let danmakus: Danmaku[] = [];
+let danmakus: Danmaku[] = []
 
 // 使用更亮的颜色
 const colors = [
@@ -38,298 +38,295 @@ const colors = [
   0xff6348, // 番茄红
   0x2ed573, // 亮绿
   0x1dd1a1, // 青蓝
-];
+]
 
 // 连接WebSocket
 function connectWebSocket() {
   // 从环境变量中获取WebSocket服务器地址
-  const wsUrl = import.meta.env.VITE_WS_URL || "wss://your-websocket-server.com/danmaku";
+  const wsUrl = import.meta.env.VITE_WS_URL || 'wss://your-websocket-server.com/danmaku'
 
-  ws = new WebSocket(wsUrl);
+  ws = new WebSocket(wsUrl)
 
   ws.onopen = () => {
-    console.log("WebSocket connected");
+    console.log('WebSocket connected')
     if (reconnectInterval) {
-      clearInterval(reconnectInterval);
-      reconnectInterval = null;
+      clearInterval(reconnectInterval)
+      reconnectInterval = null
     }
-  };
+  }
 
   ws.onmessage = (event) => {
     try {
-      const data = JSON.parse(event.data);
-      if (data.type === "danmaku" && data.content) {
-        createDanmakuFromWS(data.content);
+      const data = JSON.parse(event.data)
+      if (data.type === 'danmaku' && data.content) {
+        createDanmakuFromWS(data.content)
       }
     } catch (error) {
-      console.error("Error parsing WebSocket message:", error);
+      console.error('Error parsing WebSocket message:', error)
     }
-  };
+  }
 
   ws.onerror = (error) => {
-    console.error("WebSocket error:", error);
-  };
+    console.error('WebSocket error:', error)
+  }
 
   ws.onclose = () => {
-    console.log("WebSocket disconnected");
+    console.log('WebSocket disconnected')
     // 尝试重连
     if (!reconnectInterval) {
       reconnectInterval = window.setInterval(() => {
-        connectWebSocket();
-      }, 5000);
+        connectWebSocket()
+      }, 5000)
     }
-  };
+  }
 }
 
 onMounted(() => {
-  if (!containerRef.value) return;
+  if (!containerRef.value) return
 
-  const width = containerRef.value.clientWidth;
-  const height = containerRef.value.clientHeight;
+  const width = containerRef.value.clientWidth
+  const height = containerRef.value.clientHeight
 
   // 创建场景
-  scene = new THREE.Scene();
-  scene.background = null; // 透明背景
+  scene = new THREE.Scene()
+  scene.background = null // 透明背景
 
   // 创建相机 - 调整相机位置以获得更好的视角
-  camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
-  camera.position.z = 30;
+  camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000)
+  camera.position.z = 30
 
   // 创建渲染器
-  renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-  renderer.setSize(width, height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  containerRef.value.appendChild(renderer.domElement);
+  renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  containerRef.value.appendChild(renderer.domElement)
 
   // 连接WebSocket
-  connectWebSocket();
+  connectWebSocket()
 
   // 开始动画循环
-  animate();
+  animate()
 
   // 响应窗口大小变化
   const onResize = () => {
-    if (!containerRef.value) return;
-    const newWidth = containerRef.value.clientWidth;
-    const newHeight = containerRef.value.clientHeight;
-    camera.aspect = newWidth / newHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(newWidth, newHeight);
-  };
-  window.addEventListener("resize", onResize);
+    if (!containerRef.value) return
+    const newWidth = containerRef.value.clientWidth
+    const newHeight = containerRef.value.clientHeight
+    camera.aspect = newWidth / newHeight
+    camera.updateProjectionMatrix()
+    renderer.setSize(newWidth, newHeight)
+  }
+  window.addEventListener('resize', onResize)
 
   // 测试模式：当WebSocket未连接时，定期创建测试弹幕
   const testInterval = setInterval(() => {
     if (!ws || ws.readyState !== WebSocket.OPEN) {
       if (danmakus.length < 12) {
-        createDanmaku();
+        createDanmaku()
       }
     }
-  }, 2000);
+  }, 2000)
 
   // 保存清理函数
   const cleanup = () => {
     if (ws) {
-      ws.close();
-      ws = null;
+      ws.close()
+      ws = null
     }
     if (reconnectInterval) {
-      clearInterval(reconnectInterval);
-      reconnectInterval = null;
+      clearInterval(reconnectInterval)
+      reconnectInterval = null
     }
-    clearInterval(testInterval);
-    window.removeEventListener("resize", onResize);
-  };
+    clearInterval(testInterval)
+    window.removeEventListener('resize', onResize)
+  }
 
   // 在unmounted时调用清理
   onUnmounted(() => {
-    cleanup();
-    cancelAnimationFrame(animationId);
+    cleanup()
+    cancelAnimationFrame(animationId)
 
     if (containerRef.value && renderer) {
-      containerRef.value.removeChild(renderer.domElement);
+      containerRef.value.removeChild(renderer.domElement)
     }
 
     // 清理所有弹幕
     danmakus.forEach((d) => {
-      scene.remove(d.mesh);
-      if (d.mesh.geometry) d.mesh.geometry.dispose();
+      scene.remove(d.mesh)
+      if (d.mesh.geometry) d.mesh.geometry.dispose()
       if (d.mesh.material) {
         if (Array.isArray(d.mesh.material)) {
           d.mesh.material.forEach((m) => {
-            if (m.map) m.map.dispose();
-            m.dispose();
-          });
+            if ((m as any).map) (m as any).map.dispose()
+            m.dispose()
+          })
         } else {
-          if (d.mesh.material.map) d.mesh.material.map.dispose();
-          d.mesh.material.dispose();
+          if ((d.mesh.material as any).map) (d.mesh.material as any).map.dispose()
+          d.mesh.material.dispose()
         }
       }
-    });
-    danmakus = [];
+    })
+    danmakus = []
 
     if (renderer) {
-      renderer.dispose();
+      renderer.dispose()
     }
-  });
-});
+  })
+})
 
 // 从WebSocket创建弹幕
-function createDanmakuFromWS(text: string) {
-  if (!scene) return;
+function createDanmakuFromWS(text: string | undefined) {
+  if (!text) return
+  if (!scene) return
 
   // 随机选择颜色
-  const color = colors[Math.floor(Math.random() * colors.length)];
+  const color = colors[Math.floor(Math.random() * colors.length)]
 
   // 字体大小
-  const contentSize = 10 + Math.random() * 8;
+  const contentSize = 10 + Math.random() * 8
 
   // 随机选择从左侧或右侧出现
-  const isLeft = Math.random() > 0.5;
+  const isLeft = Math.random() > 0.5
   // 初始位置：从屏幕下方出现，左右两侧有一定随机性
-  const startX = isLeft ? -25 + Math.random() * 5 : 20 + Math.random() * 5;
-  const startY = -15 + Math.random() * 2; // 屏幕下方，有一定随机性
-  const speed = 0.06 + Math.random() * 0.07;
+  const startX = isLeft ? -25 + Math.random() * 5 : 20 + Math.random() * 5
+  const startY = -15 + Math.random() * 2 // 屏幕下方，有一定随机性
+  const speed = 0.06 + Math.random() * 0.07
 
   // 创建3D文字
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (!context) return;
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext('2d')
+  if (!context) return
 
-  canvas.width = 1024;
-  canvas.height = 256;
+  canvas.width = 1024
+  canvas.height = 256
 
   // 绘制文字到canvas
-  context.fillStyle = "rgba(0, 0, 0, 0)";
-  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = 'rgba(0, 0, 0, 0)'
+  context.fillRect(0, 0, canvas.width, canvas.height)
 
   // 绘制弹幕内容
-  context.font = `bold ${contentSize}px Arial`;
-  context.textAlign = "center";
-  context.textBaseline = "middle";
+  context.font = `bold ${contentSize}px Arial`
+  context.textAlign = 'center'
+  context.textBaseline = 'middle'
 
   // 弹幕内容描边
-  context.lineWidth = 3;
-  context.strokeStyle = "#000000";
-  context.strokeText(text, canvas.width / 2, canvas.height / 2);
+  context.lineWidth = 3
+  context.strokeStyle = '#000000'
+  context.strokeText(text, canvas.width / 2, canvas.height / 2)
 
   // 弹幕内容填充
-  context.fillStyle = `#${color.toString(16).padStart(6, "0")}`;
-  context.fillText(text, canvas.width / 2, canvas.height / 2);
+  context.fillStyle = `#${(color || 0xffffff).toString(16).padStart(6, '0')}`
+  context.fillText(text, canvas.width / 2, canvas.height / 2)
 
   // 创建纹理
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.minFilter = THREE.LinearFilter;
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.minFilter = THREE.LinearFilter
 
   // 创建平面几何体显示文字
-  const geometry = new THREE.PlaneGeometry(canvas.width / 10, canvas.height / 10);
+  const geometry = new THREE.PlaneGeometry(canvas.width / 10, canvas.height / 10)
   // 添加最高80%的随机透明度（0.8-1.0）
-  const opacity = 0.7 + Math.random() * 0.2;
+  const opacity = 0.7 + Math.random() * 0.2
   const material = new THREE.MeshBasicMaterial({
     map: texture,
     transparent: true,
     opacity: opacity,
     side: THREE.DoubleSide,
-  });
+  })
 
-  const mesh = new THREE.Mesh(geometry, material);
+  const mesh = new THREE.Mesh(geometry, material)
 
   // 设置初始位置（从屏幕下方）
-  mesh.position.x = startX;
-  mesh.position.y = startY;
-  mesh.position.z = Math.random() * 100 - 50; // 随机深度
+  mesh.position.x = startX
+  mesh.position.y = startY
+  mesh.position.z = Math.random() * 100 - 50 // 随机深度
 
   // 初始缩放较小，模拟气泡从底部升起的效果
-  mesh.scale.set(0.5 + Math.random() * 0.3, 0.5 + Math.random() * 0.3, 1);
+  mesh.scale.set(0.5 + Math.random() * 0.3, 0.5 + Math.random() * 0.3, 1)
 
   // 添加随机旋转
-  mesh.rotation.y = Math.random() * 0.4 - 0.2;
-  mesh.rotation.z = Math.random() * 0.2 - 0.1;
+  mesh.rotation.y = Math.random() * 0.4 - 0.2
+  mesh.rotation.z = Math.random() * 0.2 - 0.1
 
   // 添加到场景
-  scene.add(mesh);
+  scene.add(mesh)
 
   // 计算弹幕宽度
-  const textWidth = context.measureText(text).width;
-  const planeWidth = textWidth / 10;
+  const textWidth = context.measureText(text).width
+  const planeWidth = textWidth / 10
 
   danmakus.push({
     mesh,
     speed,
     width: planeWidth,
     startX: startX,
-  });
+  })
 }
 
 // 本地测试用的弹幕创建函数
 function createDanmaku() {
   // 测试用的弹幕内容
-  const testTexts = [
-    "测试弹幕1",
-    "测试弹幕2",
-    "测试弹幕3",
-    "WebSocket连接测试",
-    "气泡效果测试"
-  ];
-  const text = testTexts[Math.floor(Math.random() * testTexts.length)];
-  createDanmakuFromWS(text);
+  const testTexts = ['测试弹幕1', '测试弹幕2', '测试弹幕3', 'WebSocket连接测试', '气泡效果测试']
+  const text = testTexts[Math.floor(Math.random() * testTexts.length)]
+  createDanmakuFromWS(text)
 }
 
 function animate() {
-  animationId = requestAnimationFrame(animate);
+  animationId = requestAnimationFrame(animate)
 
   // 更新所有弹幕位置
   for (let i = danmakus.length - 1; i >= 0; i--) {
-    const d = danmakus[i];
+    const d = danmakus[i]
+    if (!d) continue
     // 向上移动
-    d.mesh.position.y += d.speed;
+    d.mesh.position.y += d.speed
     // 同时向中间移动一点
     if (d.mesh.position.x > 0) {
-      d.mesh.position.x -= d.speed * 0.3;
+      d.mesh.position.x -= d.speed * 0.3
     } else {
-      d.mesh.position.x += d.speed * 0.3;
+      d.mesh.position.x += d.speed * 0.3
     }
 
     // 气泡效果：逐渐增大
-    const scaleFactor = 1 + (d.mesh.position.y + 15) * 0.02;
-    d.mesh.scale.set(scaleFactor, scaleFactor, 1);
+    const scaleFactor = 1 + (d.mesh.position.y + 15) * 0.02
+    d.mesh.scale.set(scaleFactor, scaleFactor, 1)
 
     // 轻微旋转，模拟气泡上升的自然晃动
-    d.mesh.rotation.z += (Math.random() - 0.5) * 0.02;
-    d.mesh.rotation.y += (Math.random() - 0.5) * 0.01;
+    d.mesh.rotation.z += (Math.random() - 0.5) * 0.02
+    d.mesh.rotation.y += (Math.random() - 0.5) * 0.01
 
     // 气泡上升过程中轻微左右摇摆
-    d.mesh.position.x += Math.sin(Date.now() * 0.001 + i) * 0.01;
+    d.mesh.position.x += Math.sin(Date.now() * 0.001 + i) * 0.01
 
     // 如果弹幕上升到屏幕三分之二高度，实现破裂效果
-    if (d.mesh.position.y > 10) { // 屏幕高度的三分之二左右
+    if (d.mesh.position.y > 10) {
+      // 屏幕高度的三分之二左右
       // 破裂动画：缩放并淡出
-      d.mesh.scale.set(d.mesh.scale.x * 1.2, d.mesh.scale.y * 1.2, 1);
+      d.mesh.scale.set(d.mesh.scale.x * 1.2, d.mesh.scale.y * 1.2, 1)
       if (d.mesh.material && !Array.isArray(d.mesh.material)) {
-        d.mesh.material.opacity *= 0.7;
+        d.mesh.material.opacity *= 0.7
       }
 
       // 检查是否完全透明，然后移除
       if (d.mesh.material && !Array.isArray(d.mesh.material) && d.mesh.material.opacity < 0.1) {
-        scene.remove(d.mesh);
-        if (d.mesh.geometry) d.mesh.geometry.dispose();
+        scene.remove(d.mesh)
+        if (d.mesh.geometry) d.mesh.geometry.dispose()
         if (d.mesh.material) {
           if (Array.isArray(d.mesh.material)) {
             d.mesh.material.forEach((m) => {
-              if (m.map) m.map.dispose();
-              m.dispose();
-            });
+              if ((m as any).map) (m as any).map.dispose()
+              m.dispose()
+            })
           } else {
-            if (d.mesh.material.map) d.mesh.material.map.dispose();
-            d.mesh.material.dispose();
+            if ((d.mesh.material as any).map) (d.mesh.material as any).map.dispose()
+            d.mesh.material.dispose()
           }
         }
-        danmakus.splice(i, 1);
+        danmakus.splice(i, 1)
       }
     }
   }
 
-  renderer.render(scene, camera);
+  renderer.render(scene, camera)
 }
 </script>
 

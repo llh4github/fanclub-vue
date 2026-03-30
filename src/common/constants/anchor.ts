@@ -14,8 +14,8 @@ export interface AnchorInfo {
 /** 莉蔻Liko 主播信息 */
 export const LIKO_INFO = {
   name: '莉蔻Liko',
-  birthday: new Date(2026, 8-1, 3),
-  debutDate: new Date(2026, 1-1, 14),
+  birthday: new Date(2026, 8 - 1, 3),
+  debutDate: new Date(2026, 1 - 1, 14),
   roomId: 1713548468,
   uid: 1536601294,
 } as AnchorInfo

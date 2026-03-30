@@ -1,19 +1,19 @@
-import type { JsonWrapper, ApiError } from './types';
+import type { JsonWrapper, ApiError } from './types'
 
 /**
  * API 客户端配置
  */
 export interface ApiClientConfig {
-  baseURL: string;
-  timeout?: number;
-  headers?: Record<string, string>;
+  baseURL: string
+  timeout?: number
+  headers?: Record<string, string>
 }
 
 /**
  * API 客户端
  */
 export class ApiClient {
-  private config: ApiClientConfig;
+  private config: ApiClientConfig
 
   constructor(config: ApiClientConfig) {
     this.config = {
@@ -22,18 +22,15 @@ export class ApiClient {
         'Content-Type': 'application/json',
       },
       ...config,
-    };
+    }
   }
 
   /**
    * 发起 HTTP 请求
    */
-  private async request<T>(
-    url: string,
-    options: RequestInit = {}
-  ): Promise<JsonWrapper<T>> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+  private async request<T>(url: string, options: RequestInit = {}): Promise<JsonWrapper<T>> {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), this.config.timeout)
 
     try {
       const response = await fetch(`${this.config.baseURL}${url}`, {
@@ -43,41 +40,41 @@ export class ApiClient {
           ...options.headers,
         },
         signal: controller.signal,
-      });
+      })
 
-      clearTimeout(timeoutId);
+      clearTimeout(timeoutId)
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response.json().catch(() => ({}))
         throw {
           code: errorData.code || String(response.status),
           msg: errorData.msg || response.statusText,
           module: errorData.module,
-        } as ApiError;
+        } as ApiError
       }
 
-      const data = await response.json() as JsonWrapper<T>;
-      
+      const data = (await response.json()) as JsonWrapper<T>
+
       if (data.code !== '200') {
         throw {
           code: data.code,
           msg: data.msg,
           module: data.module,
-        } as ApiError;
+        } as ApiError
       }
 
-      return data;
+      return data
     } catch (error) {
-      clearTimeout(timeoutId);
-      
-      if (error.name === 'AbortError') {
+      clearTimeout(timeoutId)
+
+      if ((error as any).name === 'AbortError') {
         throw {
           code: '408',
           msg: '请求超时',
-        } as ApiError;
+        } as ApiError
       }
 
-      throw error as ApiError;
+      throw error as ApiError
     }
   }
 
@@ -85,13 +82,11 @@ export class ApiClient {
    * GET 请求
    */
   async get<T>(url: string, params?: Record<string, any>): Promise<JsonWrapper<T>> {
-    const queryString = params
-      ? '?' + new URLSearchParams(params).toString()
-      : '';
-    
+    const queryString = params ? '?' + new URLSearchParams(params).toString() : ''
+
     return this.request<T>(url + queryString, {
       method: 'GET',
-    });
+    })
   }
 
   /**
@@ -101,7 +96,7 @@ export class ApiClient {
     return this.request<T>(url, {
       method: 'POST',
       body: JSON.stringify(data),
-    });
+    })
   }
 
   /**
@@ -111,7 +106,7 @@ export class ApiClient {
     return this.request<T>(url, {
       method: 'PUT',
       body: JSON.stringify(data),
-    });
+    })
   }
 
   /**
@@ -120,7 +115,7 @@ export class ApiClient {
   async delete<T>(url: string): Promise<JsonWrapper<T>> {
     return this.request<T>(url, {
       method: 'DELETE',
-    });
+    })
   }
 }
 
@@ -129,4 +124,4 @@ export class ApiClient {
  */
 export const apiClient = new ApiClient({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-});
+})

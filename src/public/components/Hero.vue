@@ -59,11 +59,14 @@
           :class="{
             'px-8 py-4 text-white relative overflow-hidden group clip-corner transition-all': true,
             'bg-[#DF7623] hover:bg-[#DF7623]/90': liveStatus.status === 'LIVING',
-            'bg-gray-600 hover:bg-gray-500': liveStatus.status !== 'LIVING'
+            'bg-gray-600 hover:bg-gray-500': liveStatus.status !== 'LIVING',
           }"
         >
           <span class="relative z-10 flex items-center gap-2">
-            <span v-if="liveStatus.status === 'LIVING'" class="inline-block text-white animate-pulse">
+            <span
+              v-if="liveStatus.status === 'LIVING'"
+              class="inline-block text-white animate-pulse"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="0" fill="currentColor">
                   <animate
@@ -132,11 +135,11 @@
             </span>
             <template v-if="liveStatus.status === 'LIVING'">
               直播中
-              <span v-if="liveDuration > 0" class="text-sm opacity-90">({{ formatDuration(liveDuration) }})</span>
+              <span v-if="liveDuration > 0" class="text-sm opacity-90"
+                >({{ formatDuration(liveDuration) }})</span
+              >
             </template>
-            <template v-else>
-              未直播
-            </template>
+            <template v-else> 未直播 </template>
           </span>
           <div
             class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"
@@ -194,8 +197,6 @@ import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
 import dayjs from 'dayjs'
 import ThreeScrollingText from './ThreeScrollingText.vue'
 
-
-
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id)
   if (element) {
@@ -218,7 +219,7 @@ const liveStatus = ref<{ status: string; liveTime?: string }>({ status: 'UNKNOWN
 const liveDuration = ref<number>(0)
 
 const calculateDaysSinceDebut = () => {
- return dayjs(new Date()).diff(dayjs(LIKO_INFO.debutDate), 'day')
+  return dayjs(new Date()).diff(dayjs(LIKO_INFO.debutDate), 'day')
 }
 
 const updateLiveDuration = () => {
@@ -248,10 +249,10 @@ onMounted(async () => {
 
   // 获取粉丝数
   try {
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date().toISOString().split('T')[0] || ''
     const response = await anchorService.queryFollowerNum({
       biliId: LIKO_INFO.uid,
-      cntDate: today
+      cntDate: today,
     })
     followerNum.value = response.data || 0
   } catch (error) {
@@ -265,7 +266,7 @@ onMounted(async () => {
     if (response.data) {
       liveStatus.value = {
         status: response.data.liveStatus,
-        liveTime: response.data.liveTime
+        liveTime: response.data.liveTime,
       }
     }
   } catch (error) {
@@ -274,8 +275,6 @@ onMounted(async () => {
 
   // 每秒更新直播时长
   setInterval(updateLiveDuration, 1000)
-
-
 })
 </script>
 
@@ -358,6 +357,4 @@ onMounted(async () => {
     transform: rotate(360deg);
   }
 }
-
-
 </style>

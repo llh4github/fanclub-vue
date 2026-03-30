@@ -1,27 +1,27 @@
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client'
 
 /**
  * WebSocket 客户端配置
  */
 export interface WebSocketConfig {
-  url: string;
+  url: string
   options?: {
-    reconnection?: boolean;
-    reconnectionAttempts?: number;
-    reconnectionDelay?: number;
-    timeout?: number;
-  };
+    reconnection?: boolean
+    reconnectionAttempts?: number
+    reconnectionDelay?: number
+    timeout?: number
+  }
 }
 
 /**
  * WebSocket 客户端服务
  */
 export class WebSocketService {
-  private socket: Socket | null = null;
-  private config: WebSocketConfig;
+  private socket: Socket | null = null
+  private config: WebSocketConfig
 
   constructor(config: WebSocketConfig) {
-    this.config = config;
+    this.config = config
   }
 
   /**
@@ -35,11 +35,11 @@ export class WebSocketService {
         reconnectionDelay: 1000,
         timeout: 5000,
         ...this.config.options,
-      });
+      })
 
-      this.setupEventHandlers();
+      this.setupEventHandlers()
     }
-    return this.socket;
+    return this.socket
   }
 
   /**
@@ -47,8 +47,8 @@ export class WebSocketService {
    */
   disconnect(): void {
     if (this.socket) {
-      this.socket.disconnect();
-      this.socket = null;
+      this.socket.disconnect()
+      this.socket = null
     }
   }
 
@@ -57,7 +57,7 @@ export class WebSocketService {
    */
   emit(event: string, data?: any): void {
     if (this.socket) {
-      this.socket.emit(event, data);
+      this.socket.emit(event, data)
     }
   }
 
@@ -66,7 +66,7 @@ export class WebSocketService {
    */
   on(event: string, callback: (data: any) => void): void {
     if (this.socket) {
-      this.socket.on(event, callback);
+      this.socket.on(event, callback)
     }
   }
 
@@ -75,7 +75,7 @@ export class WebSocketService {
    */
   off(event: string, callback?: (data: any) => void): void {
     if (this.socket) {
-      this.socket.off(event, callback);
+      this.socket.off(event, callback)
     }
   }
 
@@ -85,16 +85,16 @@ export class WebSocketService {
   private setupEventHandlers(): void {
     if (this.socket) {
       this.socket.on('connect', () => {
-        console.log('WebSocket 连接成功');
-      });
+        console.log('WebSocket 连接成功')
+      })
 
       this.socket.on('disconnect', () => {
-        console.log('WebSocket 连接断开');
-      });
+        console.log('WebSocket 连接断开')
+      })
 
       this.socket.on('connect_error', (error) => {
-        console.error('WebSocket 连接错误:', error);
-      });
+        console.error('WebSocket 连接错误:', error)
+      })
     }
   }
 
@@ -102,7 +102,7 @@ export class WebSocketService {
    * 获取当前连接状态
    */
   isConnected(): boolean {
-    return this.socket?.connected || false;
+    return this.socket?.connected || false
   }
 }
 
@@ -111,4 +111,4 @@ export class WebSocketService {
  */
 export const webSocketService = new WebSocketService({
   url: import.meta.env.VITE_WS_URL || 'ws://localhost:8080',
-});
+})

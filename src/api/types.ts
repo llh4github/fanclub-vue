@@ -3,20 +3,20 @@
  */
 export interface JsonWrapper<T> {
   /** 响应码 */
-  code: string;
+  code: string
   /** 响应消息 */
-  msg: string;
+  msg: string
   /** 业务模块名，通常在请求异常时有值 */
-  module?: string;
+  module?: string
   /** 响应数据 */
-  data?: T;
+  data?: T
 }
 
 /**
  * API 错误类型
  */
 export interface ApiError {
-  code: string;
-  msg: string;
-  module?: string;
+  code: string
+  msg: string
+  module?: string
 }
