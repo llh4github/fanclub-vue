@@ -30,4 +30,24 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // 分离第三方库
+          vendor: ['vue', 'vue-router', 'pinia'],
+          // 分离大型依赖
+          three: ['three'],
+          // 分离UI库
+          ui: ['naive-ui'],
+          // 分离工具库
+          utils: ['@vueuse/core', 'dayjs'],
+          // 分离网络相关库
+          network: ['socket.io-client'],
+        },
+      },
+    },
+    // 调整chunk大小警告限制
+    chunkSizeWarningLimit: 500,
+  },
 });
