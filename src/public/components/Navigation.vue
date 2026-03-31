@@ -95,9 +95,9 @@ const scrollToSection = (id: string) => {
 
 const navItems = [
   { label: '首页', id: '' },
-  { label: '训练纪录', id: 'about' },
+  // { label: '训练纪录', id: 'about' },
   { label: '历程', id: 'timeline' },
-  { label: '歌单', id: 'playlist' },
+  // { label: '歌单', id: 'playlist' },
 ]
 
 const handleScroll = () => {

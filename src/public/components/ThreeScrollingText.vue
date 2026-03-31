@@ -119,15 +119,6 @@ onMounted(() => {
   }
   window.addEventListener('resize', onResize)
 
-  // 测试模式：当WebSocket未连接时，定期创建测试弹幕
-  const testInterval = setInterval(() => {
-    if (!ws || ws.readyState !== WebSocket.OPEN) {
-      if (danmakus.length < 12) {
-        createDanmaku()
-      }
-    }
-  }, 2000)
-
   // 保存清理函数
   const cleanup = () => {
     if (ws) {
@@ -138,7 +129,6 @@ onMounted(() => {
       clearInterval(reconnectInterval)
       reconnectInterval = null
     }
-    clearInterval(testInterval)
     window.removeEventListener('resize', onResize)
   }
 
@@ -275,16 +265,6 @@ function createDanmakuFromWS(text: string | undefined, level?: number) {
     width: planeWidth,
     startX: startX,
   })
-}
-
-// 本地测试用的弹幕创建函数
-function createDanmaku() {
-  // 测试用的弹幕内容
-  const testTexts = ['测试弹幕1', '测试弹幕2', '测试弹幕3', 'WebSocket连接测试', '气泡效果测试']
-  const text = testTexts[Math.floor(Math.random() * testTexts.length)]
-  // 随机生成level值（0-52）用于测试
-  const testLevel = Math.floor(Math.random() * 53)
-  createDanmakuFromWS(text, testLevel)
 }
 
 function animate() {
