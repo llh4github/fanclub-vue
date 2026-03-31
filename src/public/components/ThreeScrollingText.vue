@@ -8,6 +8,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import * as THREE from 'three'
+import { LIKO_INFO } from '@/common/constants/anchor'
 
 const containerRef = ref<HTMLElement | null>(null)
 let scene: THREE.Scene
@@ -45,7 +46,7 @@ function connectWebSocket() {
   // 从环境变量中获取WebSocket服务器地址
   const wsUrl = import.meta.env.VITE_WS_URL || 'wss://your-websocket-server.com/danmaku'
 
-  ws = new WebSocket(wsUrl)
+  ws = new WebSocket(wsUrl + "/ws/danmu/"+LIKO_INFO.roomId)
 
   ws.onopen = () => {
     console.log('WebSocket connected')
@@ -183,7 +184,7 @@ function createDanmakuFromWS(text: string | undefined) {
   const color = colors[Math.floor(Math.random() * colors.length)]
 
   // 字体大小
-  const contentSize = 10 + Math.random() * 8
+  const contentSize = 6 + Math.random() * 8
 
   // 随机选择从左侧或右侧出现
   const isLeft = Math.random() > 0.5
