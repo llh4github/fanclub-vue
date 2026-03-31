@@ -32,12 +32,11 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
+      external: ['three'],
       output: {
         manualChunks: {
           // 分离第三方库
           vendor: ['vue', 'vue-router', 'pinia'],
-          // 分离大型依赖
-          three: ['three'],
           // 分离UI库
           ui: ['naive-ui'],
           // 分离工具库
@@ -45,6 +44,9 @@ export default defineConfig({
           // 分离网络相关库
           network: ['socket.io-client'],
         },
+        globals: {
+          three: 'THREE'
+        }
       },
     },
     // 调整chunk大小警告限制

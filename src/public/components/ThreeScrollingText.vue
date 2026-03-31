@@ -7,19 +7,20 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import * as THREE from 'three'
+// 声明 THREE 全局变量和类型
+declare const THREE: any
 import { LIKO_INFO } from '@/common/constants/anchor'
 
 const containerRef = ref<HTMLElement | null>(null)
-let scene: THREE.Scene
-let camera: THREE.PerspectiveCamera
-let renderer: THREE.WebGLRenderer
+let scene: any
+let camera: any
+let renderer: any
 let animationId: number
 let ws: WebSocket | null = null
 let reconnectInterval: number | null = null
 
 interface Danmaku {
-  mesh: THREE.Mesh
+  mesh: any
   speed: number
   width: number
   startX: number
@@ -157,12 +158,12 @@ onMounted(() => {
       if (d.mesh.geometry) d.mesh.geometry.dispose()
       if (d.mesh.material) {
         if (Array.isArray(d.mesh.material)) {
-          d.mesh.material.forEach((m) => {
-            if ((m as any).map) (m as any).map.dispose()
+          d.mesh.material.forEach((m: any) => {
+            if (m.map) m.map.dispose()
             m.dispose()
           })
         } else {
-          if ((d.mesh.material as any).map) (d.mesh.material as any).map.dispose()
+          if (d.mesh.material.map) d.mesh.material.map.dispose()
           d.mesh.material.dispose()
         }
       }
@@ -329,14 +330,14 @@ function animate() {
         if (d.mesh.geometry) d.mesh.geometry.dispose()
         if (d.mesh.material) {
           if (Array.isArray(d.mesh.material)) {
-            d.mesh.material.forEach((m) => {
-              if ((m as any).map) (m as any).map.dispose()
-              m.dispose()
-            })
-          } else {
-            if ((d.mesh.material as any).map) (d.mesh.material as any).map.dispose()
-            d.mesh.material.dispose()
-          }
+          d.mesh.material.forEach((m: any) => {
+            if (m.map) m.map.dispose()
+            m.dispose()
+          })
+        } else {
+          if (d.mesh.material.map) d.mesh.material.map.dispose()
+          d.mesh.material.dispose()
+        }
         }
         danmakus.splice(i, 1)
       }
