@@ -59,8 +59,8 @@ function connectWebSocket() {
   ws.onmessage = (event) => {
     try {
       const data = JSON.parse(event.data)
-      if (data.type === 'danmaku' && data.content) {
-        createDanmakuFromWS(data.content)
+      if (data.content) {
+        createDanmakuFromWS(data.content, data.level)
       }
     } catch (error) {
       console.error('Error parsing WebSocket message:', error)
@@ -176,15 +176,29 @@ onMounted(() => {
 })
 
 // 从WebSocket创建弹幕
-function createDanmakuFromWS(text: string | undefined) {
+function createDanmakuFromWS(text: string | undefined, level?: number) {
   if (!text) return
   if (!scene) return
 
   // 随机选择颜色
   const color = colors[Math.floor(Math.random() * colors.length)]
 
-  // 字体大小
-  const contentSize = 6 + Math.random() * 8
+  // 计算字体大小增量（非线性映射）
+  const calculateFontIncrement = (level: number): number => {
+    // 确保level在0-52范围内
+    const clampedLevel = Math.max(0, Math.min(52, level))
+    // 使用指数函数实现非线性映射，大部分数据位于18-32
+    // 映射公式：fontIncrement = 10 * (1 - Math.exp(-0.08 * (clampedLevel - 25))) / (1 + Math.exp(-0.08 * (clampedLevel - 25)))
+    const normalizedLevel = (clampedLevel - 25) / 10
+    const fontIncrement = 10 * (1 - Math.exp(-normalizedLevel)) / (1 + Math.exp(-normalizedLevel))
+    return Math.max(0, Math.min(10, fontIncrement))
+  }
+
+  // 基础字体大小
+  const baseSize = 6 + Math.random() * 8
+  // 根据level计算字体大小
+  const fontIncrement = level ? calculateFontIncrement(level) : 0
+  const contentSize = baseSize + fontIncrement
 
   // 随机选择从左侧或右侧出现
   const isLeft = Math.random() > 0.5
@@ -268,7 +282,9 @@ function createDanmaku() {
   // 测试用的弹幕内容
   const testTexts = ['测试弹幕1', '测试弹幕2', '测试弹幕3', 'WebSocket连接测试', '气泡效果测试']
   const text = testTexts[Math.floor(Math.random() * testTexts.length)]
-  createDanmakuFromWS(text)
+  // 随机生成level值（0-52）用于测试
+  const testLevel = Math.floor(Math.random() * 53)
+  createDanmakuFromWS(text, testLevel)
 }
 
 function animate() {
