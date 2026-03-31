@@ -7,8 +7,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-// 声明 THREE 全局变量和类型
-declare const THREE: any
+import * as THREE from 'three'
 import { LIKO_INFO } from '@/common/constants/anchor'
 
 const containerRef = ref<HTMLElement | null>(null)
@@ -47,7 +46,7 @@ function connectWebSocket() {
   // 从环境变量中获取WebSocket服务器地址
   const wsUrl = import.meta.env.VITE_WS_URL || 'wss://your-websocket-server.com/danmaku'
 
-  ws = new WebSocket(wsUrl + "/ws/danmu/"+LIKO_INFO.roomId)
+ ws = new WebSocket(wsUrl + "/ws/danmu?uid="+LIKO_INFO.uid)
 
   ws.onopen = () => {
     console.log('WebSocket connected')

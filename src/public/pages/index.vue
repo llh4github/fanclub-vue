@@ -3,7 +3,7 @@
     <Navigation />
     <main class="relative z-10">
       <Hero />
-      <About />
+      <!-- <About /> -->
       <Timeline />
       <Playlist />
     </main>
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import Navigation from '../components/Navigation.vue'
 import Hero from '../components/Hero.vue'
-import About from '../components/About.vue'
+// import About from '../components/About.vue'
 import Timeline from '../components/Timeline.vue'
 import Playlist from '../components/Playlist.vue'
 import Footer from '../components/Footer.vue'
