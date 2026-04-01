@@ -40,6 +40,16 @@ export interface AnchorFollowerDateNumQuerySpec {
 }
 
 /**
+ * 日期-粉丝数对
+ */
+export interface AnchorFollowerDateNum {
+  /** 统计日期 */
+  cntDate: string
+  /** 粉丝数 */
+  followerNum: number
+}
+
+/**
  * 主播 API 服务
  */
 export const anchorService = {
@@ -50,6 +60,17 @@ export const anchorService = {
    */
   async queryFollowerNum(params: AnchorFollowerDateNumQuerySpec): Promise<JsonWrapper<number>> {
     return apiClient.post<number>('/anchor/follower/num/query', params)
+  },
+
+  /**
+   * 查询粉丝数历史
+   * @param params 查询参数
+   * @returns 粉丝数历史列表
+   */
+  async queryFollowerHistory(
+    params: AnchorFollowerDateNumQuerySpec,
+  ): Promise<JsonWrapper<AnchorFollowerDateNum[]>> {
+    return apiClient.post<AnchorFollowerDateNum[]>('/anchor/follower/num/query-history', params)
   },
 
   /**

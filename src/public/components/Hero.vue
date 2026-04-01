@@ -4,9 +4,7 @@
       <div
         class="absolute inset-0 bg-gradient-radial from-[#DF7623]/10 via-transparent to-transparent"
       ></div>
-      <div
-        class="absolute top-20 left-10 w-64 h-64 bg-[#00f5ff]/5 blur-[100px] rounded-full"
-      ></div>
+      <div class="absolute top-20 left-10 w-64 h-64 bg-[#00f5ff]/5 blur-[100px] rounded-full"></div>
       <div
         class="absolute bottom-20 right-10 w-64 h-64 bg-[#DF7623]/5 blur-[100px] rounded-full"
       ></div>
@@ -148,10 +146,11 @@
           ></div>
         </button>
         <!-- 未直播时显示直播信息 -->
-        <div v-if="liveStatus.status !== 'LIVING' && liveStatus.liveTime" class="text-xs text-muted-foreground mt-2 text-center">
-          <div v-if="liveStatus.liveTime">
-            上次直播：{{ formatLiveTime(liveStatus.liveTime) }}
-          </div>
+        <div
+          v-if="liveStatus.status !== 'LIVING' && liveStatus.liveTime"
+          class="text-xs text-muted-foreground mt-2 text-center"
+        >
+          <div v-if="liveStatus.liveTime">上次直播：{{ formatLiveTime(liveStatus.liveTime) }}</div>
           <div v-if="liveStatus.liveDuration">
             直播时长：{{ formatLiveDuration(liveStatus.liveDuration) }}
           </div>
@@ -169,12 +168,27 @@
         :class="{ 'animate-fade-in-delay-800': true }"
       >
         <div class="flex items-center gap-2">
-          <DollarSign class="w-5 h-5 text-[#DF7623] fill-current" />
-          <span class="text-sm text-muted-foreground">
-            身价：
-            <n-number-animation :from="0" :to="followerNum" :duration="3000" />
-            蔻萝特
-          </span>
+          <div
+            class="follwer-num-info flex items-center gap-1 relative group cursor-pointer"
+            @mouseenter="handleFollowerInfoHover(true)"
+            @mouseleave="handleFollowerInfoHover(false)"
+          >
+            <DollarSign class="w-5 h-5 text-[#DF7623] fill-current" />
+            <span class="text-sm text-muted-foreground">
+              身价：
+              <n-number-animation :from="0" :to="followerNum" :duration="3000" />
+              蔻萝特
+            </span>
+            <!-- 悬停时显示的图表 -->
+            <div
+              v-if="showFollowerChart"
+              class="absolute top-full left-0 mt-2 w-80 h-60 bg-card border border-border rounded-lg shadow-lg p-4 z-50"
+              @mouseenter="handleFollowerInfoHover(true)"
+              @mouseleave="handleFollowerInfoHover(false)"
+            >
+              <v-chart class="w-full h-full" :option="followerChartOption" />
+            </div>
+          </div>
         </div>
         <div class="w-px h-4 bg-border"></div>
         <div class="flex items-center gap-2">
@@ -196,16 +210,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { DollarSign, ArrowDown, Users, Calendar } from 'lucide-vue-next'
 import { NNumberAnimation } from 'naive-ui'
 import { LIKO_INFO } from '@/common/constants/anchor'
-import { anchorService } from '@/api'
+import { anchorService, type AnchorFollowerDateNum } from '@/api'
 import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
 import dayjs from 'dayjs'
 import ThreeScrollingText from './ThreeScrollingText.vue'
+import VChart from 'vue-echarts'
+import { use } from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+import { LineChart } from 'echarts/charts'
+import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
+
+// 注册 ECharts 组件
+use([CanvasRenderer, LineChart, GridComponent, TooltipComponent, LegendComponent])
 
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id)
@@ -225,8 +247,126 @@ const openLivePage = () => {
 const randomAvatar = ref<string>(avatarA as string)
 const daysSinceDebut = ref<number>(0)
 const followerNum = ref<number>(0)
-const liveStatus = ref<{ status: string; liveTime?: string; endLiveTime?: string; liveDuration?: number }>({ status: 'UNKNOWN' })
+const liveStatus = ref<{
+  status: string
+  liveTime?: string
+  endLiveTime?: string
+  liveDuration?: number
+}>({ status: 'UNKNOWN' })
 const liveDuration = ref<number>(0)
+
+// 粉丝数历史相关
+const showFollowerChart = ref<boolean>(false)
+const followerHistory = ref<AnchorFollowerDateNum[]>([])
+const isLoadingFollowerHistory = ref<boolean>(false)
+
+// 图表配置
+const followerChartOption = computed(() => {
+  return {
+    tooltip: {
+      trigger: 'axis',
+      formatter: function (params: any) {
+        return `${params[0].name}<br/>粉丝数: ${params[0].value.toLocaleString()}`
+      },
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true,
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: followerHistory.value.map((item) => item.cntDate),
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        formatter: '{value}',
+      },
+    },
+    series: [
+      {
+        name: '粉丝数',
+        type: 'line',
+        smooth: true,
+        data: followerHistory.value.map((item) => item.followerNum),
+        lineStyle: {
+          color: '#DF7623',
+        },
+        itemStyle: {
+          color: '#DF7623',
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              {
+                offset: 0,
+                color: 'rgba(223, 118, 35, 0.3)',
+              },
+              {
+                offset: 1,
+                color: 'rgba(223, 118, 35, 0.1)',
+              },
+            ],
+          },
+        },
+      },
+    ],
+  }
+})
+
+// 加载粉丝数历史数据
+const loadFollowerHistory = async () => {
+  if (isLoadingFollowerHistory.value) return
+
+  try {
+    // 检查本地缓存
+    const cachedData = localStorage.getItem('followerHistory')
+    const cacheTimestamp = localStorage.getItem('followerHistoryTimestamp')
+    const today = dayjs().startOf('day').valueOf()
+
+    // 如果缓存存在且未过期（到当天0时）
+    if (cachedData && cacheTimestamp && parseInt(cacheTimestamp) >= today) {
+      followerHistory.value = JSON.parse(cachedData)
+      return
+    }
+
+    isLoadingFollowerHistory.value = true
+
+    // 调用接口获取数据
+    const response = await anchorService.queryFollowerHistory({
+      biliId: LIKO_INFO.uid,
+      cntDate: dayjs().format('YYYY-MM-DD'),
+    })
+
+    if (response.data) {
+      followerHistory.value = response.data
+
+      // 缓存数据到本地，设置过期时间为当天0时
+      localStorage.setItem('followerHistory', JSON.stringify(response.data))
+      localStorage.setItem('followerHistoryTimestamp', today.toString())
+    }
+  } catch (error) {
+    console.error('获取粉丝数历史失败:', error)
+  } finally {
+    isLoadingFollowerHistory.value = false
+  }
+}
+
+// 处理鼠标悬停事件
+const handleFollowerInfoHover = async (show: boolean) => {
+  showFollowerChart.value = show
+  if (show && followerHistory.value.length === 0) {
+    await loadFollowerHistory()
+  }
+}
 
 const calculateDaysSinceDebut = () => {
   return dayjs(new Date()).diff(dayjs(LIKO_INFO.debutDate), 'day')

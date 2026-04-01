@@ -42,8 +42,8 @@ export default defineConfig({
           ui: ['naive-ui'],
           // 分离工具库
           utils: ['@vueuse/core', 'dayjs'],
-          // 分离网络相关库
-          network: ['socket.io-client'],
+          // 分离图表库
+          charts: ['echarts', 'vue-echarts'],
         },
       },
     },

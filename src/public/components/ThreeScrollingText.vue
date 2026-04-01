@@ -52,7 +52,7 @@ function connectWebSocket() {
   // 从环境变量中获取WebSocket服务器地址
   const wsUrl = import.meta.env.VITE_WS_URL || 'wss://your-websocket-server.com/danmaku'
 
- ws = new WebSocket(wsUrl + "/ws/danmu?uid="+LIKO_INFO.uid)
+  ws = new WebSocket(wsUrl + '/ws/danmu?uid=' + LIKO_INFO.uid)
 
   ws.onopen = () => {
     console.log('WebSocket connected')
@@ -112,25 +112,28 @@ onMounted(() => {
   animate()
 
   // 监听直播状态变化
-  watch(() => props.isLive, (newValue) => {
-    isLive.value = newValue || false
-    if (isLive.value) {
-      // 直播开始，连接WebSocket
-      if (!ws || ws.readyState !== WebSocket.OPEN) {
-        connectWebSocket()
+  watch(
+    () => props.isLive,
+    (newValue) => {
+      isLive.value = newValue || false
+      if (isLive.value) {
+        // 直播开始，连接WebSocket
+        if (!ws || ws.readyState !== WebSocket.OPEN) {
+          connectWebSocket()
+        }
+      } else {
+        // 直播结束，断开WebSocket
+        if (ws) {
+          ws.close()
+          ws = null
+        }
+        if (reconnectInterval) {
+          clearInterval(reconnectInterval)
+          reconnectInterval = null
+        }
       }
-    } else {
-      // 直播结束，断开WebSocket
-      if (ws) {
-        ws.close()
-        ws = null
-      }
-      if (reconnectInterval) {
-        clearInterval(reconnectInterval)
-        reconnectInterval = null
-      }
-    }
-  })
+    },
+  )
 
   // 初始连接WebSocket（如果已经在直播）
   if (isLive.value) {
@@ -209,7 +212,7 @@ function createDanmakuFromWS(text: string | undefined, level?: number) {
     // 使用指数函数实现非线性映射，大部分数据位于18-32
     // 映射公式：fontIncrement = 10 * (1 - Math.exp(-0.08 * (clampedLevel - 25))) / (1 + Math.exp(-0.08 * (clampedLevel - 25)))
     const normalizedLevel = (clampedLevel - 25) / 10
-    const fontIncrement = 10 * (1 - Math.exp(-normalizedLevel)) / (1 + Math.exp(-normalizedLevel))
+    const fontIncrement = (10 * (1 - Math.exp(-normalizedLevel))) / (1 + Math.exp(-normalizedLevel))
     return Math.max(0, Math.min(10, fontIncrement))
   }
 
@@ -339,14 +342,14 @@ function animate() {
         if (d.mesh.geometry) d.mesh.geometry.dispose()
         if (d.mesh.material) {
           if (Array.isArray(d.mesh.material)) {
-          d.mesh.material.forEach((m: any) => {
-            if (m.map) m.map.dispose()
-            m.dispose()
-          })
-        } else {
-          if (d.mesh.material.map) d.mesh.material.map.dispose()
-          d.mesh.material.dispose()
-        }
+            d.mesh.material.forEach((m: any) => {
+              if (m.map) m.map.dispose()
+              m.dispose()
+            })
+          } else {
+            if (d.mesh.material.map) d.mesh.material.map.dispose()
+            d.mesh.material.dispose()
+          }
         }
         danmakus.splice(i, 1)
       }
