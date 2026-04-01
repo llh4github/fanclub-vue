@@ -7,10 +7,10 @@ import type { JsonWrapper } from '../types'
 export enum LiveStatus {
   /** 直播中 */
   LIVING = 'LIVING',
-  /** 未直播 */
-  NOT_LIVING = 'NOT_LIVING',
-  /** 超时 */
-  OVER_TIME = 'OVER_TIME',
+  /** 直播结束 */
+  END_LIVING = 'END_LIVING',
+  /** 超时结束 */
+  OVER_TIME_END = 'OVER_TIME_END',
   /** 未知 */
   UNKNOWN = 'UNKNOWN',
 }
@@ -23,6 +23,10 @@ export interface AnchorLiveRecordLiveStatus {
   liveTime?: string
   /** 直播状态 */
   liveStatus: LiveStatus
+  /** 直播结束时间 */
+  endLiveTime?: string
+  /** 直播时长(秒) */
+  liveDuration?: number
 }
 
 /**

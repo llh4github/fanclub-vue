@@ -147,7 +147,15 @@
             class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"
           ></div>
         </button>
-
+        <!-- 未直播时显示直播信息 -->
+        <div v-if="liveStatus.status !== 'LIVING' && liveStatus.liveTime" class="text-xs text-muted-foreground mt-2 text-center">
+          <div v-if="liveStatus.liveTime">
+            上次直播：{{ formatLiveTime(liveStatus.liveTime) }}
+          </div>
+          <div v-if="liveStatus.liveDuration">
+            直播时长：{{ formatLiveDuration(liveStatus.liveDuration) }}
+          </div>
+        </div>
         <button
           @click="openBilibiliPage()"
           class="px-8 py-4 border-2 border-[#DF7623] text-[#DF7623] hover:bg-[#DF7623]/10 clip-corner transition-all"
@@ -217,7 +225,7 @@ const openLivePage = () => {
 const randomAvatar = ref<string>(avatarA as string)
 const daysSinceDebut = ref<number>(0)
 const followerNum = ref<number>(0)
-const liveStatus = ref<{ status: string; liveTime?: string }>({ status: 'UNKNOWN' })
+const liveStatus = ref<{ status: string; liveTime?: string; endLiveTime?: string; liveDuration?: number }>({ status: 'UNKNOWN' })
 const liveDuration = ref<number>(0)
 
 const calculateDaysSinceDebut = () => {
@@ -239,6 +247,17 @@ const formatDuration = (seconds: number): string => {
   const minutes = Math.floor((seconds % 3600) / 60)
   const secs = seconds % 60
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
+
+// 格式化直播时间
+const formatLiveTime = (time: string): string => {
+  return dayjs(time).format('YYYY-MM-DD HH:mm')
+}
+
+// 格式化直播时长（转换为小时数）
+const formatLiveDuration = (seconds: number): string => {
+  const hours = (seconds / 3600).toFixed(1)
+  return `${hours} 小时`
 }
 
 onMounted(async () => {
@@ -269,6 +288,8 @@ onMounted(async () => {
       liveStatus.value = {
         status: response.data.liveStatus,
         liveTime: response.data.liveTime,
+        endLiveTime: response.data.endLiveTime,
+        liveDuration: response.data.liveDuration,
       }
     }
   } catch (error) {
