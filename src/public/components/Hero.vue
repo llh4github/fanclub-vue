@@ -379,7 +379,7 @@ const followerChartOption = computed(() => {
     },
     yAxis: {
       type: 'value',
-      min: 6000,
+      min: 7000,
       axisLabel: {
         formatter: '{value}',
       },
