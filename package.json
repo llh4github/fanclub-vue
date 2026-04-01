@@ -20,6 +20,7 @@
     "@unocss/preset-uno": "66.6.5",
     "@vueuse/core": "^14.2.1",
     "dayjs": "^1.11.19",
+    "echarts": "^6.0.0",
     "lucide-vue-next": "^0.577.0",
     "motion-v": "^2.0.0",
     "pinia": "^3.0.4",
@@ -27,6 +28,7 @@
     "three": "^0.177.0",
     "unocss": "66.6.5",
     "vue": "^3.5.29",
+    "vue-echarts": "^8.0.1",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
