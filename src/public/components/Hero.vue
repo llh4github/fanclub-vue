@@ -270,8 +270,8 @@
             @mouseenter="handleFollowerInfoHover(true)"
             @mouseleave="handleFollowerInfoHover(false)"
           >
-            <DollarSign class="w-5 h-5 text-[#DF7623] fill-current" />
-            <span class="text-sm text-muted-foreground">
+            <span class="text-sm text-muted-foreground flex items-center gap-1">
+              <DollarSign class="w-5 h-5 text-[#DF7623] fill-current" />
               身价：
               <n-number-animation :from="0" :to="followerNum" :duration="3000" />
               蔻萝特
@@ -289,10 +289,10 @@
         </div>
         <div class="w-px h-4 bg-border"></div>
         <div class="flex items-center gap-2">
-          <Calendar class="w-5 h-5 text-[#00f5ff]" />
-          <span class="text-sm text-muted-foreground"
-            >已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天</span
-          >
+          <span class="text-sm text-muted-foreground flex items-center gap-2">
+            <Calendar class="w-5 h-5 text-[#00f5ff]" />
+            已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天
+          </span>
         </div>
       </div>
     </div>
