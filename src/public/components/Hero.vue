@@ -4,11 +4,13 @@
       <div
         class="absolute inset-0 bg-gradient-radial from-[#DF7623]/10 via-transparent to-transparent"
       ></div>
-      <div class="absolute top-20 left-10 w-64 h-64 bg-[#00f5ff]/5 blur-[100px] rounded-full"></div>
+      <div
+        class="absolute top-20 left-10 w-64 h-64 bg-[#00f5ff]/5 blur-[100px] rounded-full"
+      ></div>
       <div
         class="absolute bottom-20 right-10 w-64 h-64 bg-[#DF7623]/5 blur-[100px] rounded-full"
       ></div>
-      <ThreeScrollingText />
+      <ThreeScrollingText :isLive="liveStatus.status === 'LIVING'" />
     </div>
 
     <div class="max-w-5xl mx-auto text-center relative z-10">

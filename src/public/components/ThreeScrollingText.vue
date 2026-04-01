@@ -6,9 +6,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch, defineProps } from 'vue'
 import * as THREE from 'three'
 import { LIKO_INFO } from '@/common/constants/anchor'
+
+const props = defineProps<{
+  isLive?: boolean
+}>()
+
+const isLive = ref(props.isLive || false)
 
 const containerRef = ref<HTMLElement | null>(null)
 let scene: any
@@ -102,11 +108,34 @@ onMounted(() => {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   containerRef.value.appendChild(renderer.domElement)
 
-  // 连接WebSocket
-  connectWebSocket()
-
   // 开始动画循环
   animate()
+
+  // 监听直播状态变化
+  watch(() => props.isLive, (newValue) => {
+    isLive.value = newValue || false
+    if (isLive.value) {
+      // 直播开始，连接WebSocket
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        connectWebSocket()
+      }
+    } else {
+      // 直播结束，断开WebSocket
+      if (ws) {
+        ws.close()
+        ws = null
+      }
+      if (reconnectInterval) {
+        clearInterval(reconnectInterval)
+        reconnectInterval = null
+      }
+    }
+  })
+
+  // 初始连接WebSocket（如果已经在直播）
+  if (isLive.value) {
+    connectWebSocket()
+  }
 
   // 响应窗口大小变化
   const onResize = () => {
@@ -243,7 +272,8 @@ function createDanmakuFromWS(text: string | undefined, level?: number) {
   // 设置初始位置（从屏幕下方）
   mesh.position.x = startX
   mesh.position.y = startY
-  mesh.position.z = Math.random() * 100 - 50 // 随机深度
+  // 限制深度范围，确保弹幕不会太靠近摄像机
+  mesh.position.z = Math.random() * 40 - 40 // 随机深度，范围：-40 到 0
 
   // 初始缩放较小，模拟气泡从底部升起的效果
   mesh.scale.set(0.5 + Math.random() * 0.3, 0.5 + Math.random() * 0.3, 1)
