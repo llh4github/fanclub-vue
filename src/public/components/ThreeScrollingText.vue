@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch, defineProps } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import * as THREE from 'three'
 import { LIKO_INFO } from '@/common/constants/anchor'
 
