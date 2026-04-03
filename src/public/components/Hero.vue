@@ -73,7 +73,12 @@
                   v-if="liveStatus.status === 'LIVING'"
                   class="inline-block text-white animate-pulse"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
                     <circle cx="12" cy="12" r="0" fill="currentColor">
                       <animate
                         id="SVGHRb9bJhy"
@@ -153,7 +158,9 @@
             </button>
           </template>
           <div class="text-xs">
-            <div v-if="liveStatus.liveTime">上次直播：{{ formatLiveTime(liveStatus.liveTime) }}</div>
+            <div v-if="liveStatus.liveTime">
+              上次直播：{{ formatLiveTime(liveStatus.liveTime) }}
+            </div>
             <div v-if="liveStatus.liveDuration">
               直播时长：{{ formatLiveDuration(liveStatus.liveDuration) }}
             </div>
@@ -270,8 +277,12 @@
             @mouseenter="handleFollowerInfoHover(true)"
             @mouseleave="handleFollowerInfoHover(false)"
           >
-            <span class="text-sm text-muted-foreground flex items-center gap-1 group-hover:text-[#DF7623] transition-colors cursor-pointer">
-              <DollarSign class="w-5 h-5 text-[#DF7623] fill-current group-hover:scale-110 transition-transform" />
+            <span
+              class="text-sm text-muted-foreground flex items-center gap-1 group-hover:text-[#DF7623] transition-colors cursor-pointer"
+            >
+              <DollarSign
+                class="w-5 h-5 text-[#DF7623] fill-current group-hover:scale-110 transition-transform"
+              />
               身价：
               <n-number-animation :from="0" :to="followerNum" :duration="3000" />
               蔻萝特
@@ -289,7 +300,9 @@
         </div>
         <div class="w-px h-4 bg-border"></div>
         <div class="flex items-center gap-2 group">
-          <span class="text-sm text-muted-foreground flex items-center gap-2 group-hover:text-[#00f5ff] transition-colors cursor-pointer">
+          <span
+            class="text-sm text-muted-foreground flex items-center gap-2 group-hover:text-[#00f5ff] transition-colors cursor-pointer"
+          >
             <Calendar class="w-5 h-5 text-[#00f5ff] group-hover:scale-110 transition-transform" />
             已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天
           </span>
