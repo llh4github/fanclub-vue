@@ -272,31 +272,28 @@
         :class="{ 'animate-fade-in-delay-800': true }"
       >
         <div class="flex items-center gap-2">
-          <div
-            class="follwer-num-info flex items-center gap-1 relative group cursor-pointer"
-            @mouseenter="handleFollowerInfoHover(true)"
-            @mouseleave="handleFollowerInfoHover(false)"
-          >
-            <span
-              class="text-sm text-muted-foreground flex items-center gap-1 group-hover:text-[#DF7623] transition-colors cursor-pointer"
-            >
-              <DollarSign
-                class="w-5 h-5 text-[#DF7623] fill-current group-hover:scale-110 transition-transform"
-              />
-              身价：
-              <n-number-animation :from="0" :to="followerNum" :duration="3000" />
-              蔻萝特
-            </span>
-            <!-- 悬停时显示的图表 -->
-            <div
-              v-if="showFollowerChart"
-              class="absolute top-full left-0 mt-2 w-80 h-60 bg-card border border-border rounded-lg shadow-lg p-4 z-50"
-              @mouseenter="handleFollowerInfoHover(true)"
-              @mouseleave="handleFollowerInfoHover(false)"
-            >
-              <v-chart class="w-full h-full" :option="followerChartOption" />
+          <n-popover trigger="click" placement="bottom-start" :width="320">
+            <template #trigger>
+              <div
+                class="follwer-num-info flex items-center gap-1 relative group cursor-pointer"
+              >
+                <span
+                  class="text-sm text-muted-foreground flex items-center gap-1 group-hover:text-[#DF7623] transition-colors cursor-pointer"
+                >
+                  <DollarSign
+                    class="w-5 h-5 text-[#DF7623] fill-current group-hover:scale-110 transition-transform"
+                  />
+                  身价：
+                  <n-number-animation :from="0" :to="followerNum" :duration="3000" />
+                  蔻萝特
+                </span>
+              </div>
+            </template>
+            <!-- 弹出的图表 -->
+            <div class="p-4">
+              <v-chart class="w-full h-60" :option="followerChartOption" />
             </div>
-          </div>
+          </n-popover>
         </div>
         <div class="w-px h-4 bg-border"></div>
         <div class="flex items-center gap-2 group">
@@ -322,7 +319,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { DollarSign, ArrowDown, Users, Calendar } from 'lucide-vue-next'
-import { NNumberAnimation, NTooltip } from 'naive-ui'
+import { NNumberAnimation, NTooltip, NPopover } from 'naive-ui'
 import { LIKO_INFO } from '@/common/constants/anchor'
 import { anchorService, type AnchorFollowerDateNum } from '@/api'
 import avatarA from '@/assets/avatar/avatar_a.webp'
@@ -366,7 +363,6 @@ const liveStatus = ref<{
 const liveDuration = ref<number>(0)
 
 // 粉丝数历史相关
-const showFollowerChart = ref<boolean>(false)
 const followerHistory = ref<AnchorFollowerDateNum[]>([])
 const isLoadingFollowerHistory = ref<boolean>(false)
 
@@ -471,13 +467,12 @@ const loadFollowerHistory = async () => {
   }
 }
 
-// 处理鼠标悬停事件
-const handleFollowerInfoHover = async (show: boolean) => {
-  showFollowerChart.value = show
-  if (show && followerHistory.value.length === 0) {
-    await loadFollowerHistory()
-  }
-}
+// 组件挂载时加载粉丝数历史数据
+onMounted(async () => {
+  await loadFollowerHistory()
+})
+
+
 
 const calculateDaysSinceDebut = () => {
   return dayjs(new Date()).diff(dayjs(LIKO_INFO.debutDate), 'day')

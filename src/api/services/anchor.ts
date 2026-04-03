@@ -50,6 +50,16 @@ export interface AnchorFollowerDateNum {
 }
 
 /**
+ * 主播每日直播时长统计
+ */
+export interface AnchorLiveDurationDateDuration {
+  /** 统计日期 */
+  statDate: string
+  /** 直播时长(秒) */
+  liveDuration: number
+}
+
+/**
  * 主播 API 服务
  */
 export const anchorService = {
@@ -80,5 +90,18 @@ export const anchorService = {
    */
   async getLiveStatus(roomId: number): Promise<JsonWrapper<AnchorLiveRecordLiveStatus>> {
     return apiClient.get<AnchorLiveRecordLiveStatus>('/anchor/live-record/live-status', { roomId })
+  },
+
+  /**
+   * 查询直播时长历史
+   * @param roomId 直播间ID
+   * @param date 截止日期，格式：YYYY-MM-DD
+   * @returns 直播时长历史列表
+   */
+  async queryLiveDurationHistory(
+    roomId: number,
+    date: string
+  ): Promise<JsonWrapper<AnchorLiveDurationDateDuration[]>> {
+    return apiClient.get<AnchorLiveDurationDateDuration[]>('/anchor/live-duration/query-history', { roomId, date })
   },
 }
