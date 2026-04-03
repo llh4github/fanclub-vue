@@ -100,8 +100,11 @@ export const anchorService = {
    */
   async queryLiveDurationHistory(
     roomId: number,
-    date: string
+    date: string,
   ): Promise<JsonWrapper<AnchorLiveDurationDateDuration[]>> {
-    return apiClient.get<AnchorLiveDurationDateDuration[]>('/anchor/live-duration/query-history', { roomId, date })
+    return apiClient.get<AnchorLiveDurationDateDuration[]>('/anchor/live-duration/query-history', {
+      roomId,
+      date,
+    })
   },
 }

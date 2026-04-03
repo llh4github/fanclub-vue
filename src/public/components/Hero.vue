@@ -272,11 +272,14 @@
         :class="{ 'animate-fade-in-delay-800': true }"
       >
         <div class="flex items-center gap-2">
-          <n-popover trigger="click" placement="bottom-start" :width="320">
+          <n-popover
+            trigger="click"
+            placement="bottom-start"
+            :width="320"
+            :content-style="{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }"
+          >
             <template #trigger>
-              <div
-                class="follwer-num-info flex items-center gap-1 relative group cursor-pointer"
-              >
+              <div class="follwer-num-info flex items-center gap-1 relative group cursor-pointer">
                 <span
                   class="text-sm text-muted-foreground flex items-center gap-1 group-hover:text-[#DF7623] transition-colors cursor-pointer"
                 >
@@ -290,7 +293,7 @@
               </div>
             </template>
             <!-- 弹出的图表 -->
-            <div class="p-4">
+            <div class="p-4 bg-card border border-border">
               <v-chart class="w-full h-60" :option="followerChartOption" />
             </div>
           </n-popover>
@@ -471,8 +474,6 @@ const loadFollowerHistory = async () => {
 onMounted(async () => {
   await loadFollowerHistory()
 })
-
-
 
 const calculateDaysSinceDebut = () => {
   return dayjs(new Date()).diff(dayjs(LIKO_INFO.debutDate), 'day')
