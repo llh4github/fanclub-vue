@@ -37,12 +37,17 @@
         </div>
       </h1>
 
-      <p
-        class="text-lg sm:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto"
+      <div
+        class="text-lg sm:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto flex items-center gap-2"
         :class="{ 'animate-fade-in-delay-400': true }"
       >
-        &#123; 16岁的侏儒兔，是见习杀手 &#125;
-      </p>
+        <div class="text-2xl sm:text-3xl font-bold">{</div>
+        <div class="flex flex-col">
+          <div>16岁的侏儒兔，是见习杀手</div>
+          <div>”16岁的侏儒兔，是见习杀手“</div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold">}</div>
+      </div>
       <div
         class="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-card border border-[#DF7623]/30 clip-corner"
         :class="{ 'animate-fade-in': true }"
@@ -327,12 +332,17 @@
                   }))
                 "
                 :active-colors="['#2ed573', '#10ac84', '#009432']"
-                :tooltip="true"
                 :size="'medium'"
                 :show-month-labels="true"
+                :show-week-labels="true"
                 :show-color-indicator="true"
-                :week-labels="['日', '一', '二', '三', '四', '五', '六']"
-              />
+                :tooltip="{ placement: 'bottom', delay: 50 }"
+              >
+                <template #tooltip="{ timestamp, value }">
+                  <div>{{ dayjs(timestamp).format('YYYY-MM-DD') }}</div>
+                  <div>直播 {{ value?.toFixed(1) ?? 0 }} 小时</div>
+                </template>
+              </n-heatmap>
             </div>
           </n-popover>
         </div>
