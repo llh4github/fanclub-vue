@@ -300,22 +300,31 @@
         </div>
         <div class="w-px h-4 bg-border"></div>
         <div class="flex items-center gap-2 group">
-          <n-popover trigger="click" placement="bottom-start" :width="320" :content-style="{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }">
+          <n-popover
+            trigger="click"
+            placement="bottom-start"
+            :width="320"
+            :content-style="{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }"
+          >
             <template #trigger>
               <span
                 class="text-sm text-muted-foreground flex items-center gap-2 group-hover:text-[#00f5ff] transition-colors cursor-pointer"
               >
-                <Calendar class="w-5 h-5 text-[#00f5ff] group-hover:scale-110 transition-transform" />
+                <Calendar
+                  class="w-5 h-5 text-[#00f5ff] group-hover:scale-110 transition-transform"
+                />
                 已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天
               </span>
             </template>
             <!-- 弹出的热力图 -->
             <div class="p-4">
               <n-heatmap
-                :data="liveDurationHistory.map(item => ({
-                  timestamp: dayjs(item.statDate).valueOf(),
-                  value: item.liveDuration
-                }))"
+                :data="
+                  liveDurationHistory.map((item) => ({
+                    timestamp: dayjs(item.statDate).valueOf(),
+                    value: item.liveDuration,
+                  }))
+                "
                 :active-colors="['#2ed573', '#10ac84', '#009432']"
                 :tooltip="true"
                 :size="'medium'"
@@ -340,7 +349,11 @@ import { ref, onMounted, computed } from 'vue'
 import { DollarSign, ArrowDown, Users, Calendar } from 'lucide-vue-next'
 import { NNumberAnimation, NTooltip, NPopover, NHeatmap } from 'naive-ui'
 import { LIKO_INFO } from '@/common/constants/anchor'
-import { anchorService, type AnchorFollowerDateNum, type AnchorLiveDurationDateDuration } from '@/api'
+import {
+  anchorService,
+  type AnchorFollowerDateNum,
+  type AnchorLiveDurationDateDuration,
+} from '@/api'
 import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
@@ -361,7 +374,7 @@ use([
   TooltipComponent,
   LegendComponent,
   LabelLayout,
-  UniversalTransition
+  UniversalTransition,
 ])
 
 const scrollToSection = (id: string) => {
@@ -553,7 +566,7 @@ const loadLiveDurationHistory = async () => {
     // 调用接口获取数据
     const response = await anchorService.queryLiveDurationHistory(
       LIKO_INFO.roomId,
-      dayjs().format('YYYY-MM-DD')
+      dayjs().format('YYYY-MM-DD'),
     )
 
     if (response.data) {
