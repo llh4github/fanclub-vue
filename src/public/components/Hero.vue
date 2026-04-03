@@ -44,7 +44,7 @@
         <div class="text-2xl sm:text-3xl font-bold">{</div>
         <div class="flex flex-col">
           <div>16岁的侏儒兔，是见习杀手</div>
-          <div>”16岁的侏儒兔，是见习杀手“</div>
+          <div>"{{ dynamicText }}"</div>
         </div>
         <div class="text-2xl sm:text-3xl font-bold">}</div>
       </div>
@@ -359,7 +359,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { DollarSign, ArrowDown, Users, Calendar } from 'lucide-vue-next'
 import { NNumberAnimation, NTooltip, NPopover, NHeatmap } from 'naive-ui'
 import { LIKO_INFO } from '@/common/constants/anchor'
@@ -371,6 +371,7 @@ import {
 import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
+import likoText from '@/assets/texts/liko.txt?raw'
 import dayjs from 'dayjs'
 import ThreeScrollingText from './ThreeScrollingText.vue'
 import VChart from 'vue-echarts'
@@ -416,6 +417,42 @@ const liveStatus = ref<{
   liveDuration?: number
 }>({ status: 'UNKNOWN' })
 const liveDuration = ref<number>(0)
+
+// 动态文本相关
+const dynamicText = ref<string>('')
+let textInterval: ReturnType<typeof setInterval> | null = null
+
+// Fisher-Yates 洗牌算法
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = shuffled[i]!
+    shuffled[i] = shuffled[j]!
+    shuffled[j] = temp
+  }
+  return shuffled
+}
+
+// 初始化动态文本轮换
+const initDynamicText = () => {
+  const lines = likoText.split('\n').filter((line) => line.trim() !== '')
+  if (lines.length === 0) {
+    dynamicText.value = ''
+    return
+  }
+  const shuffledLines = shuffleArray(lines)
+  let currentIndex = 0
+
+  // 设置初始文本
+  dynamicText.value = shuffledLines[currentIndex]!
+
+  // 每6秒轮换文本
+  textInterval = setInterval(() => {
+    currentIndex = (currentIndex + 1) % shuffledLines.length
+    dynamicText.value = shuffledLines[currentIndex]!
+  }, 30 * 1000)
+}
 
 // 粉丝数历史相关
 const followerHistory = ref<AnchorFollowerDateNum[]>([])
@@ -673,6 +710,16 @@ onMounted(async () => {
 
   // 每秒更新直播时长
   setInterval(updateLiveDuration, 1000)
+
+  // 初始化动态文本
+  initDynamicText()
+})
+
+// 组件卸载时清理定时器
+onUnmounted(() => {
+  if (textInterval) {
+    clearInterval(textInterval)
+  }
 })
 </script>
 
