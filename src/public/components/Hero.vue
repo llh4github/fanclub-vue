@@ -300,12 +300,28 @@
         </div>
         <div class="w-px h-4 bg-border"></div>
         <div class="flex items-center gap-2 group">
-          <span
-            class="text-sm text-muted-foreground flex items-center gap-2 group-hover:text-[#00f5ff] transition-colors cursor-pointer"
-          >
-            <Calendar class="w-5 h-5 text-[#00f5ff] group-hover:scale-110 transition-transform" />
-            已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天
-          </span>
+          <n-popover trigger="click" placement="bottom-start" :width="320" :content-style="{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }">
+            <template #trigger>
+              <span
+                class="text-sm text-muted-foreground flex items-center gap-2 group-hover:text-[#00f5ff] transition-colors cursor-pointer"
+              >
+                <Calendar class="w-5 h-5 text-[#00f5ff] group-hover:scale-110 transition-transform" />
+                已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天
+              </span>
+            </template>
+            <!-- 弹出的热力图 -->
+            <div class="p-4">
+              <n-heatmap
+                :data="liveDurationHistory.map(item => ({
+                  timestamp: dayjs(item.statDate).valueOf(),
+                  value: item.liveDuration
+                }))"
+                :active-colors="['#2ed573', '#10ac84', '#009432']"
+                :tooltip="true"
+                :size="'medium'"
+              />
+            </div>
+          </n-popover>
         </div>
       </div>
     </div>
@@ -322,9 +338,9 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { DollarSign, ArrowDown, Users, Calendar } from 'lucide-vue-next'
-import { NNumberAnimation, NTooltip, NPopover } from 'naive-ui'
+import { NNumberAnimation, NTooltip, NPopover, NHeatmap } from 'naive-ui'
 import { LIKO_INFO } from '@/common/constants/anchor'
-import { anchorService, type AnchorFollowerDateNum } from '@/api'
+import { anchorService, type AnchorFollowerDateNum, type AnchorLiveDurationDateDuration } from '@/api'
 import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
@@ -377,6 +393,10 @@ const liveDuration = ref<number>(0)
 // 粉丝数历史相关
 const followerHistory = ref<AnchorFollowerDateNum[]>([])
 const isLoadingFollowerHistory = ref<boolean>(false)
+
+// 直播时长历史相关
+const liveDurationHistory = ref<AnchorLiveDurationDateDuration[]>([])
+const isLoadingLiveDurationHistory = ref<boolean>(false)
 
 // 图表配置
 const followerChartOption = computed(() => {
@@ -512,9 +532,48 @@ const loadFollowerHistory = async () => {
   }
 }
 
-// 组件挂载时加载粉丝数历史数据
+// 加载直播时长历史数据
+const loadLiveDurationHistory = async () => {
+  if (isLoadingLiveDurationHistory.value) return
+
+  try {
+    // 检查本地缓存
+    const cachedData = localStorage.getItem('liveDurationHistory')
+    const cacheTimestamp = localStorage.getItem('liveDurationHistoryTimestamp')
+    const today = dayjs().startOf('day').valueOf()
+
+    // 如果缓存存在且未过期（到当天0时）
+    if (cachedData && cacheTimestamp && parseInt(cacheTimestamp) >= today) {
+      liveDurationHistory.value = JSON.parse(cachedData)
+      return
+    }
+
+    isLoadingLiveDurationHistory.value = true
+
+    // 调用接口获取数据
+    const response = await anchorService.queryLiveDurationHistory(
+      LIKO_INFO.roomId,
+      dayjs().format('YYYY-MM-DD')
+    )
+
+    if (response.data) {
+      liveDurationHistory.value = response.data
+
+      // 缓存数据到本地，设置过期时间为当天0时
+      localStorage.setItem('liveDurationHistory', JSON.stringify(response.data))
+      localStorage.setItem('liveDurationHistoryTimestamp', today.toString())
+    }
+  } catch (error) {
+    console.error('获取直播时长历史失败:', error)
+  } finally {
+    isLoadingLiveDurationHistory.value = false
+  }
+}
+
+// 组件挂载时加载数据
 onMounted(async () => {
   await loadFollowerHistory()
+  await loadLiveDurationHistory()
 })
 
 const calculateDaysSinceDebut = () => {
