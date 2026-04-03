@@ -335,9 +335,18 @@ import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
+import { LabelLayout, UniversalTransition } from 'echarts/features'
 
 // 注册 ECharts 组件
-use([CanvasRenderer, LineChart, GridComponent, TooltipComponent, LegendComponent])
+use([
+  CanvasRenderer,
+  LineChart,
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  LabelLayout,
+  UniversalTransition
+])
 
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id)
@@ -372,8 +381,17 @@ const isLoadingFollowerHistory = ref<boolean>(false)
 // 图表配置
 const followerChartOption = computed(() => {
   return {
+    backgroundColor: 'transparent',
+    textStyle: {
+      color: '#e5e5e5',
+    },
     tooltip: {
       trigger: 'axis',
+      backgroundColor: 'rgba(10, 10, 15, 0.8)',
+      borderColor: '#333',
+      textStyle: {
+        color: '#e5e5e5',
+      },
       formatter: function (params: any) {
         return `${params[0].name}<br/>粉丝数: ${params[0].value.toLocaleString()}`
       },
@@ -388,12 +406,36 @@ const followerChartOption = computed(() => {
       type: 'category',
       boundaryGap: false,
       data: followerHistory.value.map((item) => item.cntDate),
+      axisLine: {
+        lineStyle: {
+          color: '#555',
+        },
+      },
+      axisLabel: {
+        color: '#999',
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#333',
+        },
+      },
     },
     yAxis: {
       type: 'value',
       min: 7000,
+      axisLine: {
+        lineStyle: {
+          color: '#555',
+        },
+      },
       axisLabel: {
         formatter: '{value}',
+        color: '#999',
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#333',
+        },
       },
     },
     series: [
