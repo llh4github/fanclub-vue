@@ -317,17 +317,21 @@
               </span>
             </template>
             <!-- 弹出的热力图 -->
-            <div class="p-4">
+            <div class="p-4 bg-card border border-border">
               <n-heatmap
+                :color-theme="'red'"
                 :data="
                   liveDurationHistory.map((item) => ({
                     timestamp: dayjs(item.statDate).valueOf(),
-                    value: item.liveDuration,
+                    value: parseFloat((item.liveDuration / 3600).toFixed(1)), // 转化为小时数并保留一位小数
                   }))
                 "
                 :active-colors="['#2ed573', '#10ac84', '#009432']"
                 :tooltip="true"
                 :size="'medium'"
+                :show-month-labels="true"
+                :show-color-indicator="true"
+                :week-labels="['日', '一', '二', '三', '四', '五', '六']"
               />
             </div>
           </n-popover>
