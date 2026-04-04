@@ -23,68 +23,6 @@
                 所有数据来源于公开渠道，仅供粉丝交流使用。
               </p>
             </div>
-
-            <!-- 技术栈 -->
-            <div class="bg-card border border-border p-6 rounded-lg">
-              <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Code class="w-5 h-5 text-[#DF7623]" />
-                技术栈
-              </h3>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div class="text-center p-3 bg-background rounded">
-                  <div class="text-[#00f5ff] font-semibold">Vue 3</div>
-                  <div class="text-xs text-muted-foreground">前端框架</div>
-                </div>
-                <div class="text-center p-3 bg-background rounded">
-                  <div class="text-[#00f5ff] font-semibold">Vite</div>
-                  <div class="text-xs text-muted-foreground">构建工具</div>
-                </div>
-                <div class="text-center p-3 bg-background rounded">
-                  <div class="text-[#00f5ff] font-semibold">Naive UI</div>
-                  <div class="text-xs text-muted-foreground">组件库</div>
-                </div>
-                <div class="text-center p-3 bg-background rounded">
-                  <div class="text-[#00f5ff] font-semibold">UnoCSS</div>
-                  <div class="text-xs text-muted-foreground">CSS 框架</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 数据来源 -->
-            <div class="bg-card border border-border p-6 rounded-lg">
-              <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Database class="w-5 h-5 text-[#DF7623]" />
-                数据来源
-              </h3>
-              <ul class="space-y-2 text-muted-foreground">
-                <li class="flex items-center gap-2">
-                  <span class="w-2 h-2 bg-[#DF7623] rounded-full"></span>
-                  粉丝数据：Bilibili API
-                </li>
-                <li class="flex items-center gap-2">
-                  <span class="w-2 h-2 bg-[#DF7623] rounded-full"></span>
-                  直播时长：Bilibili 直播间数据
-                </li>
-                <li class="flex items-center gap-2">
-                  <span class="w-2 h-2 bg-[#DF7623] rounded-full"></span>
-                  语录收集：粉丝投稿整理
-                </li>
-              </ul>
-            </div>
-
-            <!-- 免责声明 -->
-            <div class="bg-card border border-border p-6 rounded-lg">
-              <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Shield class="w-5 h-5 text-[#DF7623]" />
-                免责声明
-              </h3>
-              <p class="text-muted-foreground leading-relaxed text-sm">
-                本站为粉丝自发建设的非官方网站，与莉蔻本人及所属社团无任何关联。
-                所有内容仅供娱乐交流，如有侵权或不当之处，请联系删除。
-                本站不对数据的实时性和准确性做出任何保证。
-              </p>
-            </div>
-
             <!-- 开源信息 -->
             <div class="bg-card border border-border p-6 rounded-lg">
               <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -92,7 +30,7 @@
                 开源信息
               </h3>
               <p class="text-muted-foreground mb-4">
-                本项目采用 Apache License 开源协议，欢迎 Star 和贡献代码。
+                本网站前后端代码采用 Apache License 开源协议，欢迎 Star 和贡献代码。
               </p>
               <div class="space-y-3">
                 <a
@@ -132,27 +70,42 @@
               </div>
             </div>
 
-            <!-- 联系方式 -->
+            <!-- 数据来源 -->
             <div class="bg-card border border-border p-6 rounded-lg">
               <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                <Mail class="w-5 h-5 text-[#DF7623]" />
-                联系我们
+                <Database class="w-5 h-5 text-[#DF7623]" />
+                数据来源
               </h3>
-              <p class="text-muted-foreground">
-                如有建议或问题，欢迎通过以下方式联系：
-              </p>
-              <div class="mt-4 flex gap-4">
-                <a
-                  href="https://space.bilibili.com/1536601294"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-4 py-2 bg-[#DF7623]/10 border border-[#DF7623]/30 rounded hover:bg-[#DF7623]/20 transition-colors"
-                >
-                  <ExternalLink class="w-4 h-4 text-[#DF7623]" />
-                  <span class="text-sm">莉蔻 B站空间</span>
-                </a>
-              </div>
+              <ul class="space-y-2 text-muted-foreground">
+                <li class="flex items-center gap-2">
+                  <span class="w-2 h-2 bg-[#DF7623] rounded-full"></span>
+                  粉丝数据：Bilibili API
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-2 h-2 bg-[#DF7623] rounded-full"></span>
+                  直播时长：Bilibili 直播间数据
+                </li>
+                <li class="flex items-center gap-2">
+                  <span class="w-2 h-2 bg-[#DF7623] rounded-full"></span>
+                  语录收集：粉丝投稿整理
+                </li>
+              </ul>
             </div>
+
+            <!-- 免责声明 -->
+            <div class="bg-card border border-border p-6 rounded-lg">
+              <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                <Shield class="w-5 h-5 text-[#DF7623]" />
+                免责声明
+              </h3>
+              <p class="text-muted-foreground leading-relaxed text-sm">
+                本站为粉丝自发建设的非官方网站，与莉蔻本人及所属社团无任何关联。
+                所有内容仅供娱乐交流，如有侵权或不当之处，请联系删除。
+                本站不对数据的实时性和准确性做出任何保证。
+              </p>
+            </div>
+
+
           </div>
         </div>
       </section>
