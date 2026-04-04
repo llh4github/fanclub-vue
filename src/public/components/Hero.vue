@@ -490,18 +490,15 @@ const parseCsv = (csv: string): LikoQuote[] => {
   const lines = cleanCsv.split('\n').filter((line) => line.trim() !== '')
 
   if (lines.length === 0) {
-    console.log('CSV 文件为空')
     return []
   }
 
   const headers = lines[0]?.split(',').map((header) => header.trim()) || []
-  console.log('CSV 表头:', headers)
 
   const contentIndex = headers.indexOf('content')
   const bvIndex = headers.indexOf('bv')
 
   if (contentIndex === -1 || bvIndex === -1) {
-    console.log('CSV 缺少必要字段')
     return []
   }
 
@@ -516,7 +513,6 @@ const parseCsv = (csv: string): LikoQuote[] => {
     })
     .filter((quote) => quote.content && quote.bv)
 
-  console.log('解析出的引用数量:', quotes.length)
   return quotes
 }
 
@@ -533,36 +529,25 @@ const handleQuoteClick = () => {
 
 // 初始化动态文本轮换
 const initDynamicText = () => {
-  console.log('开始初始化动态文本')
-  console.log('CSV 内容长度:', likoCsv.length)
-  console.log('CSV 内容前100字符:', likoCsv.substring(0, 100))
-
   quotes.value = parseCsv(likoCsv)
-  console.log('解析后 quotes 长度:', quotes.value.length)
-  console.log('quotes 内容:', quotes.value)
 
   if (quotes.value.length === 0) {
-    console.log('没有解析到引用数据')
     dynamicText.value = '加载中...'
     return
   }
 
   const shuffledQuotes = shuffleArray(quotes.value)
-  console.log('打乱后的 quotes:', shuffledQuotes)
-
   let currentIndex = 0
 
   // 设置初始文本
   currentQuote.value = shuffledQuotes[currentIndex]!
   dynamicText.value = currentQuote.value.content
-  console.log('初始文本:', dynamicText.value)
 
   // 每6秒轮换文本
   textInterval = setInterval(() => {
     currentIndex = (currentIndex + 1) % shuffledQuotes.length
     currentQuote.value = shuffledQuotes[currentIndex]!
     dynamicText.value = currentQuote.value.content
-    console.log('切换文本:', dynamicText.value)
   }, 30 * 1000)
 }
 
