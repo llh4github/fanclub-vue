@@ -46,7 +46,11 @@
           <div>16岁的侏儒兔，是见习杀手</div>
           <div class="h-7 sm:h-8 overflow-hidden">
             <transition name="flip-up" mode="out-in">
-              <div :key="dynamicText" class="transition-all duration-500">
+              <div
+                :key="dynamicText"
+                class="transition-all duration-500 cursor-pointer hover:text-[#00f5ff]"
+                @click="handleQuoteClick"
+              >
                 “{{ dynamicText.trim() }}”
               </div>
             </transition>
@@ -392,7 +396,7 @@ import {
 import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
-import likoText from '@/assets/texts/liko.txt?raw'
+import likoCsv from '@/assets/texts/liko.csv?raw'
 import dayjs from 'dayjs'
 import ThreeScrollingText from './ThreeScrollingText.vue'
 import VChart from 'vue-echarts'
@@ -440,7 +444,14 @@ const liveStatus = ref<{
 const liveDuration = ref<number>(0)
 
 // 动态文本相关
+interface LikoQuote {
+  content: string
+  bv: string
+}
+
 const dynamicText = ref<string>('')
+const currentQuote = ref<LikoQuote | null>(null)
+const quotes = ref<LikoQuote[]>([])
 let textInterval: ReturnType<typeof setInterval> | null = null
 
 // Fisher-Yates 洗牌算法
@@ -455,23 +466,79 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return shuffled
 }
 
+// 解析 CSV 数据
+const parseCsv = (csv: string): LikoQuote[] => {
+  // 移除 BOM 头
+  const cleanCsv = csv.replace(/^\ufeff/, '')
+  const lines = cleanCsv.split('\n').filter(line => line.trim() !== '')
+  
+  if (lines.length === 0) {
+    console.log('CSV 文件为空')
+    return []
+  }
+  
+  const headers = lines[0]?.split(',').map(header => header.trim()) || []
+  console.log('CSV 表头:', headers)
+  
+  const contentIndex = headers.indexOf('content')
+  const bvIndex = headers.indexOf('bv')
+  
+  if (contentIndex === -1 || bvIndex === -1) {
+    console.log('CSV 缺少必要字段')
+    return []
+  }
+  
+  const quotes = lines.slice(1).map(line => {
+    const values = line.split(',')
+    return {
+      content: values[contentIndex]?.trim() || '',
+      bv: values[bvIndex]?.trim() || ''
+    }
+  }).filter(quote => quote.content && quote.bv)
+  
+  console.log('解析出的引用数量:', quotes.length)
+  return quotes
+}
+
+// 处理点击跳转
+const handleQuoteClick = () => {
+  if (currentQuote.value?.bv) {
+    window.open(`https://www.bilibili.com/video/${currentQuote.value.bv}`, '_blank', 'noopener,noreferrer')
+  }
+}
+
 // 初始化动态文本轮换
 const initDynamicText = () => {
-  const lines = likoText.split('\n').filter((line) => line.trim() !== '')
-  if (lines.length === 0) {
-    dynamicText.value = ''
+  console.log('开始初始化动态文本')
+  console.log('CSV 内容长度:', likoCsv.length)
+  console.log('CSV 内容前100字符:', likoCsv.substring(0, 100))
+  
+  quotes.value = parseCsv(likoCsv)
+  console.log('解析后 quotes 长度:', quotes.value.length)
+  console.log('quotes 内容:', quotes.value)
+  
+  if (quotes.value.length === 0) {
+    console.log('没有解析到引用数据')
+    dynamicText.value = '加载中...'
     return
   }
-  const shuffledLines = shuffleArray(lines)
+  
+  const shuffledQuotes = shuffleArray(quotes.value)
+  console.log('打乱后的 quotes:', shuffledQuotes)
+  
   let currentIndex = 0
 
   // 设置初始文本
-  dynamicText.value = shuffledLines[currentIndex]!
+  currentQuote.value = shuffledQuotes[currentIndex]!
+  dynamicText.value = currentQuote.value.content
+  console.log('初始文本:', dynamicText.value)
 
   // 每6秒轮换文本
   textInterval = setInterval(() => {
-    currentIndex = (currentIndex + 1) % shuffledLines.length
-    dynamicText.value = shuffledLines[currentIndex]!
+    currentIndex = (currentIndex + 1) % shuffledQuotes.length
+    currentQuote.value = shuffledQuotes[currentIndex]!
+    dynamicText.value = currentQuote.value.content
+    console.log('切换文本:', dynamicText.value)
   }, 30 * 1000)
 }
 
