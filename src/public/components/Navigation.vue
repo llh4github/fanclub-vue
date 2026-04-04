@@ -14,7 +14,7 @@
             >
               <Carrot class="w-5 h-5 text-[#DF7623] fill-current" />
             </div>
-            <span class="font-bold text-lg hidden sm:block">莉蔻的兔子窝</span>
+            <span class="font-bold text-lg hidden sm:block text-white">莉蔻的兔子窝</span>
           </router-link>
 
           <!-- Desktop Navigation -->
