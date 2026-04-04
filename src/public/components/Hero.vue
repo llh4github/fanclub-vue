@@ -8,11 +8,15 @@
       <div
         class="absolute bottom-20 right-10 w-64 h-64 bg-[#DF7623]/5 blur-[100px] rounded-full"
       ></div>
+      <ThreeScrollingText :isLive="liveStatus.status === 'LIVING'" />
     </div>
 
     <div class="max-w-5xl mx-auto text-center relative z-10">
       <!-- 圆形头像框 -->
-      <div class="relative w-36 h-36 mx-auto mb-6" :class="{ 'animate-fade-in-delay-100': true }">
+      <div
+        class="relative w-36 h-36 mx-auto mb-6 z-10"
+        :class="{ 'animate-fade-in-delay-100': true }"
+      >
         <div
           class="absolute inset-0 rounded-full bg-gradient-to-r from-[#DF7623] via-amber-400 to-[#DF7623] animate-spin-slow opacity-70"
         ></div>
@@ -21,43 +25,39 @@
         >
           <img :src="randomAvatar" alt="莉蔻" class="w-full h-full object-cover" />
         </div>
-        <!-- 气泡对话框 -->
-        <transition name="bubble">
-          <div v-show="showBubble" class="absolute -top-12 -right-12 bg-white border-2 border-white px-4 py-2 clip-corner">
-            <span class="text-[#DF7623] font-bold">蒄爆VR</span>
-            <div class="absolute bottom-0 right-4 w-0 h-0 border-l-8px border-r-8px border-t-8px border-l-transparent border-r-transparent border-t-white"></div>
-          </div>
-        </transition>
       </div>
 
       <h1
         class="text-4xl sm:text-5xl md:text-7xl mb-6 tracking-tight relative"
         :class="{ 'animate-fade-in-delay-200': true }"
       >
-      <div class="relative">
-        <!-- 弹孔图标 -->
-        <svg 
-          class="absolute -top-4 -left-4 w-12 h-12 text-gray-500 opacity-0 transform scale-0 rotate-45" 
-          :class="{ 'animate-bullet-hole-entry': showBulletHole }"
-          xmlns="http://www.w3.org/2000/svg" 
-          width="512" 
-          height="512" 
-          viewBox="0 0 512 512"
-        >
-          <path fill="currentColor" d="M105.4 26.28C122.1 96.08 82.98 121 27 132.6c70.72 24.3 36.69 48.4 21.99 72.6c66.01-5.1 87.51 25.8 87.41 74.3c36.5-20.1 51.6-62.3 147.1-21.6c-23.4-43.1-31.9-75.3 20.3-118.5c-39.7-14.2-77-30.2-58.1-81.17c-56.3 37.85-98.9 5.52-140.3-31.95m66.9 67.89a62.23 62.23 0 0 1 62.2 62.23a62.23 62.23 0 0 1-62.2 62.2a62.23 62.23 0 0 1-62.2-62.2a62.23 62.23 0 0 1 62.2-62.23M318.9 218.2c17.3 81.3-25 98-89 91.2c30.9 31.9 50.2 68 16.1 123.1c45.3-11.2 88.5-13.6 113.9 49.8c22.5-46.1 64.8-52.4 116.7-38.7c-17.9-27.7-38-55.4 16.9-82.8c-37-25.5-74.3-50.7-49.4-124.5c-45.3 51-86.7 40.1-125.2-18.1m47.4 76.7a62.23 62.23 0 0 1 62.2 62.2a62.23 62.23 0 0 1-62.2 62.2a62.23 62.23 0 0 1-62.2-62.2a62.23 62.23 0 0 1 62.2-62.2"/>
-        </svg>
-        
-        <span class="text-foreground">莉蔻</span>
-        <span class="text-[#DF7623] ml-2 glow-text">Liko</span>
-      </div>
+        <div class="relative">
+          <span class="text-foreground">莉蔻</span>
+          <span class="text-[#DF7623] ml-2 glow-text">Liko</span>
+        </div>
       </h1>
 
-      <p
-        class="text-lg sm:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto"
+      <div
+        class="text-lg sm:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto flex items-center gap-2"
         :class="{ 'animate-fade-in-delay-400': true }"
       >
-        &#123; 16岁的侏儒兔，是见习杀手 &#125;
-      </p>
+        <div class="text-2xl sm:text-3xl font-bold">{</div>
+        <div class="flex flex-col">
+          <div>16岁的侏儒兔，是见习杀手</div>
+          <div class="h-7 sm:h-8 overflow-hidden">
+            <transition name="flip-up" mode="out-in">
+              <div
+                :key="dynamicText"
+                class="transition-all duration-500 cursor-pointer hover:text-[#00f5ff]"
+                @click="handleQuoteClick"
+              >
+                “{{ dynamicText.trim() }}”
+              </div>
+            </transition>
+          </div>
+        </div>
+        <div class="text-2xl sm:text-3xl font-bold">}</div>
+      </div>
       <div
         class="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-card border border-[#DF7623]/30 clip-corner"
         :class="{ 'animate-fade-in': true }"
@@ -69,12 +69,132 @@
         class="flex flex-col sm:flex-row gap-4 justify-center items-center"
         :class="{ 'animate-fade-in-delay-600': true }"
       >
+        <NTooltip
+          v-if="liveStatus.status !== 'LIVING' && liveStatus.liveTime"
+          placement="top"
+          trigger="hover"
+        >
+          <template #trigger>
+            <button
+              @click="openLivePage()"
+              :class="{
+                'px-8 py-4 text-white relative overflow-hidden group clip-corner transition-all': true,
+                'bg-[#DF7623] hover:bg-[#DF7623]/90': liveStatus.status === 'LIVING',
+                'bg-gray-600 hover:bg-gray-500': liveStatus.status !== 'LIVING',
+              }"
+            >
+              <span class="relative z-10 flex items-center gap-2">
+                <span
+                  v-if="liveStatus.status === 'LIVING'"
+                  class="inline-block text-white animate-pulse"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle cx="12" cy="12" r="0" fill="currentColor">
+                      <animate
+                        id="SVGHRb9bJhy"
+                        fill="freeze"
+                        attributeName="r"
+                        begin="0;SVGUoIUme6Z.begin+0.4s"
+                        calcMode="spline"
+                        dur="1.2s"
+                        keySplines=".52,.6,.25,.99"
+                        values="0;11"
+                      />
+                      <animate
+                        fill="freeze"
+                        attributeName="opacity"
+                        begin="0;SVGUoIUme6Z.begin+0.4s"
+                        calcMode="spline"
+                        dur="1.2s"
+                        keySplines=".52,.6,.25,.99"
+                        values="1;0"
+                      />
+                    </circle>
+                    <circle cx="12" cy="12" r="0" fill="currentColor">
+                      <animate
+                        id="SVGaun8abat"
+                        fill="freeze"
+                        attributeName="r"
+                        begin="SVGHRb9bJhy.begin+0.4s"
+                        calcMode="spline"
+                        dur="1.2s"
+                        keySplines=".52,.6,.25,.99"
+                        values="0;11"
+                      />
+                      <animate
+                        fill="freeze"
+                        attributeName="opacity"
+                        begin="SVGHRb9bJhy.begin+0.4s"
+                        calcMode="spline"
+                        dur="1.2s"
+                        keySplines=".52,.6,.25,.99"
+                        values="1;0"
+                      />
+                    </circle>
+                    <circle cx="12" cy="12" r="0" fill="currentColor">
+                      <animate
+                        id="SVGUoIUme6Z"
+                        fill="freeze"
+                        attributeName="r"
+                        begin="SVGHRb9bJhy.begin+0.8s"
+                        calcMode="spline"
+                        dur="1.2s"
+                        keySplines=".52,.6,.25,.99"
+                        values="0;11"
+                      />
+                      <animate
+                        fill="freeze"
+                        attributeName="opacity"
+                        begin="SVGHRb9bJhy.begin+0.8s"
+                        calcMode="spline"
+                        dur="1.2s"
+                        keySplines=".52,.6,.25,.99"
+                        values="1;0"
+                      />
+                    </circle>
+                  </svg>
+                </span>
+                <template v-if="liveStatus.status === 'LIVING'">
+                  直播中
+                  <span v-if="liveDuration > 0" class="text-sm opacity-90"
+                    >({{ formatDuration(liveDuration) }})</span
+                  >
+                </template>
+                <template v-else> 未直播 </template>
+              </span>
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"
+              ></div>
+            </button>
+          </template>
+          <div class="text-xs">
+            <div v-if="liveStatus.liveTime">
+              上次直播：{{ formatLiveTime(liveStatus.liveTime) }}
+            </div>
+            <div v-if="liveStatus.liveDuration">
+              直播时长：{{ formatLiveDuration(liveStatus.liveDuration) }}
+            </div>
+          </div>
+        </NTooltip>
         <button
-          @click="scrollToSection('works')"
-          class="px-8 py-4 bg-[#DF7623] hover:bg-[#DF7623]/90 text-white relative overflow-hidden group clip-corner transition-all"
+          v-else
+          @click="openLivePage()"
+          :class="{
+            'px-8 py-4 text-white relative overflow-hidden group clip-corner transition-all': true,
+            'bg-[#DF7623] hover:bg-[#DF7623]/90': liveStatus.status === 'LIVING',
+            'bg-gray-600 hover:bg-gray-500': liveStatus.status !== 'LIVING',
+          }"
         >
           <span class="relative z-10 flex items-center gap-2">
-            <span class="inline-block text-white animate-pulse">
+            <span
+              v-if="liveStatus.status === 'LIVING'"
+              class="inline-block text-white animate-pulse"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="0" fill="currentColor">
                   <animate
@@ -141,7 +261,13 @@
                 </circle>
               </svg>
             </span>
-            直播中
+            <template v-if="liveStatus.status === 'LIVING'">
+              直播中
+              <span v-if="liveDuration > 0" class="text-sm opacity-90"
+                >({{ formatDuration(liveDuration) }})</span
+              >
+            </template>
+            <template v-else> 未直播 </template>
           </span>
           <div
             class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"
@@ -149,7 +275,7 @@
         </button>
 
         <button
-          @click="scrollToSection('fanzone')"
+          @click="openBilibiliPage()"
           class="px-8 py-4 border-2 border-[#DF7623] text-[#DF7623] hover:bg-[#DF7623]/10 clip-corner transition-all"
         >
           B站主页
@@ -161,19 +287,85 @@
         :class="{ 'animate-fade-in-delay-800': true }"
       >
         <div class="flex items-center gap-2">
-          <DollarSign class="w-5 h-5 text-[#DF7623] fill-current" />
-          <span class="text-sm text-muted-foreground">
-            身价：
-          <n-number-animation :from="0"  :to="7681"  :duration="3000"  />
-            蔻萝特
-          </span>
+          <n-popover
+            trigger="click"
+            placement="bottom-start"
+            :width="320"
+            :content-style="{
+              backgroundColor: '#1a1a2e',
+              borderColor: '#333',
+              borderRadius: '8px',
+            }"
+            :theme-overrides="popoverThemeOverrides"
+          >
+            <template #trigger>
+              <div class="follwer-num-info flex items-center gap-1 relative group cursor-pointer">
+                <span
+                  class="text-sm text-muted-foreground flex items-center gap-1 group-hover:text-[#DF7623] transition-colors cursor-pointer"
+                >
+                  <DollarSign
+                    class="w-5 h-5 text-[#DF7623] fill-current group-hover:scale-110 transition-transform"
+                  />
+                  身价：
+                  <n-number-animation :from="0" :to="followerNum" :duration="3000" />
+                  蔻萝特
+                </span>
+              </div>
+            </template>
+            <!-- 弹出的图表 -->
+            <div class="p-4 bg-[#1a1a2e] text-white">
+              <v-chart class="w-full h-60" :option="followerChartOption" />
+            </div>
+          </n-popover>
         </div>
         <div class="w-px h-4 bg-border"></div>
-        <div class="flex items-center gap-2">
-          <Calendar class="w-5 h-5 text-[#00f5ff]" />
-          <span class="text-sm text-muted-foreground"
-            >已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天</span
+        <div class="flex items-center gap-2 group">
+          <n-popover
+            trigger="click"
+            placement="bottom-start"
+            :width="320"
+            :content-style="{
+              backgroundColor: '#1a1a2e',
+              borderColor: '#333',
+              borderRadius: '8px',
+            }"
+            :theme-overrides="popoverThemeOverrides"
           >
+            <template #trigger>
+              <span
+                class="text-sm text-muted-foreground flex items-center gap-2 group-hover:text-[#00f5ff] transition-colors cursor-pointer"
+              >
+                <Calendar
+                  class="w-5 h-5 text-[#00f5ff] group-hover:scale-110 transition-transform"
+                />
+                已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天
+              </span>
+            </template>
+            <!-- 弹出的热力图 -->
+            <div class="p-4 bg-[#1a1a2e] text-white">
+              <n-config-provider :locale="locale" :date-locale="dateLocale" :theme="theme">
+                <n-heatmap
+                  :color-theme="'red'"
+                  :data="
+                    liveDurationHistory.map((item) => ({
+                      timestamp: dayjs(item.statDate).valueOf(),
+                      value: parseFloat((item.liveDuration / 3600).toFixed(1)), // 转化为小时数并保留一位小数
+                    }))
+                  "
+                  :size="'medium'"
+                  :show-month-labels="true"
+                  :show-week-labels="true"
+                  :show-color-indicator="true"
+                  :tooltip="{ placement: 'bottom', delay: 50 }"
+                >
+                  <template #tooltip="{ timestamp, value }">
+                    <div>{{ dayjs(timestamp).format('YYYY-MM-DD') }}</div>
+                    <div>直播 {{ value?.toFixed(1) ?? 0 }} 小时</div>
+                  </template>
+                </n-heatmap>
+              </n-config-provider>
+            </div>
+          </n-popover>
         </div>
       </div>
     </div>
@@ -188,17 +380,59 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { DollarSign, ArrowDown, Users, Calendar } from 'lucide-vue-next'
-import { NNumberAnimation } from 'naive-ui';
+import {
+  NNumberAnimation,
+  NTooltip,
+  NPopover,
+  NHeatmap,
+  NConfigProvider,
+  zhCN,
+  dateZhCN,
+  darkTheme,
+} from 'naive-ui'
+
+// 确保语言包和主题在模板中可用
+const locale = zhCN
+const dateLocale = dateZhCN
+const theme = darkTheme
+
+// popover 深色主题覆盖
+const popoverThemeOverrides = {
+  color: '#1a1a2e',
+  textColor: '#fff',
+}
+
+import { LIKO_INFO } from '@/common/constants/anchor'
+import {
+  anchorService,
+  type AnchorFollowerDateNum,
+  type AnchorLiveDurationDateDuration,
+} from '@/api'
 import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
+import likoCsv from '@/assets/texts/liko.csv?raw'
+import dayjs from 'dayjs'
+import ThreeScrollingText from './ThreeScrollingText.vue'
+import VChart from 'vue-echarts'
+import { use } from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+import { LineChart } from 'echarts/charts'
+import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components'
+import { LabelLayout, UniversalTransition } from 'echarts/features'
 
-// 控制弹孔图标的入场动画
-const showBulletHole = ref(false);
-// 控制气泡对话框的显示和隐藏
-const showBubble = ref(false);
+// 注册 ECharts 组件
+use([
+  CanvasRenderer,
+  LineChart,
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  LabelLayout,
+  UniversalTransition,
+])
 
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id)
@@ -207,40 +441,383 @@ const scrollToSection = (id: string) => {
   }
 }
 
-const randomAvatar = ref<string>(avatarA as string)
-const daysSinceDebut = ref<number>(0)
-
-const calculateDaysSinceDebut = () => {
-  const debutDate = new Date('2026-01-14')
-  const today = new Date()
-  const timeDiff = today.getTime() - debutDate.getTime()
-  const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24))
-  return daysDiff
+const openBilibiliPage = () => {
+  window.open('https://space.bilibili.com/1536601294', '_blank', 'noopener,noreferrer')
 }
 
-onMounted(() => {
+const openLivePage = () => {
+  window.open('https://live.bilibili.com/1713548468', '_blank', 'noopener,noreferrer')
+}
+
+const randomAvatar = ref<string>(avatarA as string)
+const daysSinceDebut = ref<number>(0)
+const followerNum = ref<number>(0)
+const liveStatus = ref<{
+  status: string
+  liveTime?: string
+  endLiveTime?: string
+  liveDuration?: number
+}>({ status: 'UNKNOWN' })
+const liveDuration = ref<number>(0)
+
+// 动态文本相关
+interface LikoQuote {
+  content: string
+  bv: string
+}
+
+const dynamicText = ref<string>('')
+const currentQuote = ref<LikoQuote | null>(null)
+const quotes = ref<LikoQuote[]>([])
+let textInterval: ReturnType<typeof setInterval> | null = null
+
+// Fisher-Yates 洗牌算法
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = shuffled[i]!
+    shuffled[i] = shuffled[j]!
+    shuffled[j] = temp
+  }
+  return shuffled
+}
+
+// 解析 CSV 数据
+const parseCsv = (csv: string): LikoQuote[] => {
+  // 移除 BOM 头
+  const cleanCsv = csv.replace(/^\ufeff/, '')
+  const lines = cleanCsv.split('\n').filter((line) => line.trim() !== '')
+
+  if (lines.length === 0) {
+    return []
+  }
+
+  const headers = lines[0]?.split(',').map((header) => header.trim()) || []
+
+  const contentIndex = headers.indexOf('content')
+  const bvIndex = headers.indexOf('bv')
+
+  if (contentIndex === -1 || bvIndex === -1) {
+    return []
+  }
+
+  const quotes = lines
+    .slice(1)
+    .map((line) => {
+      const values = line.split(',')
+      return {
+        content: values[contentIndex]?.trim() || '',
+        bv: values[bvIndex]?.trim() || '',
+      }
+    })
+    .filter((quote) => quote.content && quote.bv)
+
+  return quotes
+}
+
+// 处理点击跳转
+const handleQuoteClick = () => {
+  if (currentQuote.value?.bv) {
+    window.open(
+      `https://www.bilibili.com/video/${currentQuote.value.bv}`,
+      '_blank',
+      'noopener,noreferrer',
+    )
+  }
+}
+
+// 初始化动态文本轮换
+const initDynamicText = () => {
+  quotes.value = parseCsv(likoCsv)
+
+  if (quotes.value.length === 0) {
+    dynamicText.value = '加载中...'
+    return
+  }
+
+  const shuffledQuotes = shuffleArray(quotes.value)
+  let currentIndex = 0
+
+  // 设置初始文本
+  currentQuote.value = shuffledQuotes[currentIndex]!
+  dynamicText.value = currentQuote.value.content
+
+  // 每6秒轮换文本
+  textInterval = setInterval(() => {
+    currentIndex = (currentIndex + 1) % shuffledQuotes.length
+    currentQuote.value = shuffledQuotes[currentIndex]!
+    dynamicText.value = currentQuote.value.content
+  }, 30 * 1000)
+}
+
+// 粉丝数历史相关
+const followerHistory = ref<AnchorFollowerDateNum[]>([])
+const isLoadingFollowerHistory = ref<boolean>(false)
+
+// 直播时长历史相关
+const liveDurationHistory = ref<AnchorLiveDurationDateDuration[]>([])
+const isLoadingLiveDurationHistory = ref<boolean>(false)
+
+// 图表配置
+const followerChartOption = computed(() => {
+  return {
+    backgroundColor: 'transparent',
+    textStyle: {
+      color: '#e5e5e5',
+    },
+    tooltip: {
+      trigger: 'axis',
+      backgroundColor: 'rgba(10, 10, 15, 0.8)',
+      borderColor: '#333',
+      textStyle: {
+        color: '#e5e5e5',
+      },
+      formatter: function (params: any) {
+        return `${params[0].name}<br/>粉丝数: ${params[0].value.toLocaleString()}`
+      },
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true,
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: followerHistory.value.map((item) => item.cntDate),
+      axisLine: {
+        lineStyle: {
+          color: '#555',
+        },
+      },
+      axisLabel: {
+        color: '#999',
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#333',
+        },
+      },
+    },
+    yAxis: {
+      type: 'value',
+      min: 7000,
+      axisLine: {
+        lineStyle: {
+          color: '#555',
+        },
+      },
+      axisLabel: {
+        formatter: '{value}',
+        color: '#999',
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#333',
+        },
+      },
+    },
+    series: [
+      {
+        name: '粉丝数',
+        type: 'line',
+        smooth: true,
+        data: followerHistory.value.map((item) => item.followerNum),
+        lineStyle: {
+          color: '#DF7623',
+        },
+        itemStyle: {
+          color: '#DF7623',
+        },
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              {
+                offset: 0,
+                color: 'rgba(223, 118, 35, 0.3)',
+              },
+              {
+                offset: 1,
+                color: 'rgba(223, 118, 35, 0.1)',
+              },
+            ],
+          },
+        },
+      },
+    ],
+  }
+})
+
+// 加载粉丝数历史数据
+const loadFollowerHistory = async () => {
+  if (isLoadingFollowerHistory.value) return
+
+  try {
+    // 检查本地缓存
+    const cachedData = localStorage.getItem('followerHistory')
+    const cacheTimestamp = localStorage.getItem('followerHistoryTimestamp')
+    const today = dayjs().startOf('day').valueOf()
+
+    // 如果缓存存在且未过期（到当天0时）
+    if (cachedData && cacheTimestamp && parseInt(cacheTimestamp) >= today) {
+      followerHistory.value = JSON.parse(cachedData)
+      return
+    }
+
+    isLoadingFollowerHistory.value = true
+
+    // 调用接口获取数据
+    const response = await anchorService.queryFollowerHistory({
+      biliId: LIKO_INFO.uid,
+      cntDate: dayjs().format('YYYY-MM-DD'),
+    })
+
+    if (response.data) {
+      followerHistory.value = response.data
+
+      // 缓存数据到本地，设置过期时间为当天0时
+      localStorage.setItem('followerHistory', JSON.stringify(response.data))
+      localStorage.setItem('followerHistoryTimestamp', today.toString())
+    }
+  } catch (error) {
+    console.error('获取粉丝数历史失败:', error)
+  } finally {
+    isLoadingFollowerHistory.value = false
+  }
+}
+
+// 加载直播时长历史数据
+const loadLiveDurationHistory = async () => {
+  if (isLoadingLiveDurationHistory.value) return
+
+  try {
+    // 检查本地缓存
+    const cachedData = localStorage.getItem('liveDurationHistory')
+    const cacheTimestamp = localStorage.getItem('liveDurationHistoryTimestamp')
+    const today = dayjs().startOf('day').valueOf()
+
+    // 如果缓存存在且未过期（到当天0时）
+    if (cachedData && cacheTimestamp && parseInt(cacheTimestamp) >= today) {
+      liveDurationHistory.value = JSON.parse(cachedData)
+      return
+    }
+
+    isLoadingLiveDurationHistory.value = true
+
+    // 调用接口获取数据
+    const response = await anchorService.queryLiveDurationHistory(
+      LIKO_INFO.roomId,
+      dayjs().format('YYYY-MM-DD'),
+    )
+
+    if (response.data) {
+      liveDurationHistory.value = response.data
+
+      // 缓存数据到本地，设置过期时间为当天0时
+      localStorage.setItem('liveDurationHistory', JSON.stringify(response.data))
+      localStorage.setItem('liveDurationHistoryTimestamp', today.toString())
+    }
+  } catch (error) {
+    console.error('获取直播时长历史失败:', error)
+  } finally {
+    isLoadingLiveDurationHistory.value = false
+  }
+}
+
+// 组件挂载时加载数据
+onMounted(async () => {
+  await loadFollowerHistory()
+  await loadLiveDurationHistory()
+})
+
+const calculateDaysSinceDebut = () => {
+  return dayjs(new Date()).diff(dayjs(LIKO_INFO.debutDate), 'day')
+}
+
+const updateLiveDuration = () => {
+  if (liveStatus.value.status === 'LIVING' && liveStatus.value.liveTime) {
+    const liveStartTime = dayjs(liveStatus.value.liveTime)
+    const now = dayjs()
+    liveDuration.value = now.diff(liveStartTime, 'second')
+  } else {
+    liveDuration.value = 0
+  }
+}
+
+const formatDuration = (seconds: number): string => {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secs = seconds % 60
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
+
+// 格式化直播时间
+const formatLiveTime = (time: string): string => {
+  return dayjs(time).format('YYYY-MM-DD HH:mm')
+}
+
+// 格式化直播时长（转换为小时数）
+const formatLiveDuration = (seconds: number): string => {
+  const hours = (seconds / 3600).toFixed(1)
+  return `${hours} 小时`
+}
+
+onMounted(async () => {
   // 随机选择头像
-  const avatars = [avatarA, avatarKu, avatarXiao];
-  randomAvatar.value = avatars[Math.floor(Math.random() * avatars.length)] as string;
-  
+  const avatars = [avatarA, avatarKu, avatarXiao]
+  randomAvatar.value = avatars[Math.floor(Math.random() * avatars.length)] as string
+
   // 计算出道天数
-  daysSinceDebut.value = calculateDaysSinceDebut();
-  
-  // 5秒后触发弹孔图标的入场动画
-  setTimeout(() => {
-    showBulletHole.value = true;
-  }, 5000);
-  
-  // 3秒后显示气泡对话框
-  setTimeout(() => {
-    showBubble.value = true;
-  }, 3000);
-  
-  // 6秒后隐藏气泡对话框
-  setTimeout(() => {
-    showBubble.value = false;
-  }, 6000);
-});
+  daysSinceDebut.value = calculateDaysSinceDebut()
+
+  // 获取粉丝数
+  try {
+    const today = new Date().toISOString().split('T')[0] || ''
+    const response = await anchorService.queryFollowerNum({
+      biliId: LIKO_INFO.uid,
+      cntDate: today,
+    })
+    followerNum.value = response.data || 0
+  } catch (error) {
+    console.error('获取粉丝数失败:', error)
+    followerNum.value = 7681 // 失败时使用默认值
+  }
+
+  // 获取直播状态
+  try {
+    const response = await anchorService.getLiveStatus(LIKO_INFO.roomId)
+    if (response.data) {
+      liveStatus.value = {
+        status: response.data.liveStatus,
+        liveTime: response.data.liveTime,
+        endLiveTime: response.data.endLiveTime,
+        liveDuration: response.data.liveDuration,
+      }
+    }
+  } catch (error) {
+    console.error('获取直播状态失败:', error)
+  }
+
+  // 每秒更新直播时长
+  setInterval(updateLiveDuration, 1000)
+
+  // 初始化动态文本
+  initDynamicText()
+})
+
+// 组件卸载时清理定时器
+onUnmounted(() => {
+  if (textInterval) {
+    clearInterval(textInterval)
+  }
+})
 </script>
 
 <style scoped>
@@ -259,6 +836,21 @@ onMounted(() => {
   text-shadow:
     0 0 20px rgba(223, 118, 35, 0.5),
     0 0 40px rgba(223, 118, 35, 0.3);
+}
+
+.flip-up-enter-active,
+.flip-up-leave-active {
+  transition: all 0.5s ease;
+}
+
+.flip-up-enter-from {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.flip-up-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
 }
 
 @keyframes fadeIn {
@@ -321,45 +913,5 @@ onMounted(() => {
   to {
     transform: rotate(360deg);
   }
-}
-
-/* 弹孔图标入场动画 */
-@keyframes bullet-hole-entry {
-  0% {
-    opacity: 0;
-    transform: scale(0) rotate(45deg);
-  }
-  30% {
-    opacity: 1;
-    transform: scale(2) rotate(0deg);
-    filter: drop-shadow(0 0 20px #6b7280);
-  }
-  50% {
-    transform: scale(1.5) rotate(-15deg);
-  }
-  70% {
-    transform: scale(1.2) rotate(10deg);
-  }
-  100% {
-    opacity: 0.7;
-    transform: scale(1) rotate(0deg);
-    filter: drop-shadow(0 0 10px #6b7280);
-  }
-}
-
-.animate-bullet-hole-entry {
-  animation: bullet-hole-entry 1.5s ease-out forwards;
-}
-
-/* 气泡对话框过渡动画 */
-.bubble-enter-active,
-.bubble-leave-active {
-  transition: all 0.5s ease;
-}
-
-.bubble-enter-from,
-.bubble-leave-to {
-  opacity: 0;
-  transform: scale(0) translateY(20px);
 }
 </style>

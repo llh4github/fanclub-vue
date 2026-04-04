@@ -1,3 +1,4 @@
+local-*
 # Logs
 logs
 *.log
@@ -13,7 +14,7 @@ dist
 dist-ssr
 coverage
 *.local
-
+*.production
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

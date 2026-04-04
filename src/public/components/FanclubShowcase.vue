@@ -34,9 +34,7 @@ import Footer from './Footer.vue'
 </script>
 
 <style scoped>
-/* 引入衬线字体 */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
-
+/* 使用系统字体替代 Google Fonts */
 button {
   background: transparent !important;
   border: none !important;
