@@ -19,17 +19,28 @@
 
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center gap-8">
-            <button
-              v-for="(item, index) in navItems"
-              :key="index"
-              @click="scrollToSection(item.id)"
-              class="text-sm hover:text-[#DF7623] transition-colors relative group"
-            >
-              {{ item.label }}
-              <span
-                class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#DF7623] group-hover:w-full transition-all duration-300"
-              ></span>
-            </button>
+            <template v-for="(item, index) in navItems" :key="index">
+              <router-link
+                v-if="item.route"
+                :to="item.route"
+                class="text-sm hover:text-[#DF7623] transition-colors relative group"
+              >
+                {{ item.label }}
+                <span
+                  class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#DF7623] group-hover:w-full transition-all duration-300"
+                ></span>
+              </router-link>
+              <button
+                v-else
+                @click="scrollToSection(item.id)"
+                class="text-sm hover:text-[#DF7623] transition-colors relative group"
+              >
+                {{ item.label }}
+                <span
+                  class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#DF7623] group-hover:w-full transition-all duration-300"
+                ></span>
+              </button>
+            </template>
           </div>
 
           <!-- Mobile Menu Button -->
@@ -51,15 +62,25 @@
         class="fixed inset-y-0 right-0 z-40 w-full sm:w-80 bg-card border-l border-border md:hidden"
       >
         <div class="flex flex-col h-full pt-24 px-6">
-          <button
-            v-for="(item, index) in navItems"
-            :key="index"
-            @click="scrollToSection(item.id)"
-            class="py-4 text-left border-b border-border hover:text-[#DF7623] transition-colors"
-            :style="{ animationDelay: `${index * 0.1}s` }"
-          >
-            {{ item.label }}
-          </button>
+          <template v-for="(item, index) in navItems" :key="index">
+            <router-link
+              v-if="item.route"
+              :to="item.route"
+              @click="isMobileMenuOpen = false"
+              class="py-4 text-left border-b border-border hover:text-[#DF7623] transition-colors"
+              :style="{ animationDelay: `${index * 0.1}s` }"
+            >
+              {{ item.label }}
+            </router-link>
+            <button
+              v-else
+              @click="scrollToSection(item.id)"
+              class="py-4 text-left border-b border-border hover:text-[#DF7623] transition-colors"
+              :style="{ animationDelay: `${index * 0.1}s` }"
+            >
+              {{ item.label }}
+            </button>
+          </template>
         </div>
       </div>
     </transition>
@@ -98,6 +119,7 @@ const navItems = [
   // { label: '训练纪录', id: 'about' },
   { label: '历程', id: 'timeline' },
   // { label: '歌单', id: 'playlist' },
+  { label: '关于本站', route: '/about-site' },
 ]
 
 const handleScroll = () => {
@@ -145,8 +167,10 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-/* Button styles */
-button {
+/* Button and router-link styles */
+button,
+a.router-link-active,
+a.router-link-exact-active {
   animation: fadeIn 0.5s ease forwards;
   background: none;
   border: none;
@@ -156,10 +180,12 @@ button {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
+  text-decoration: none;
 }
 
-/* Desktop navigation buttons */
-button.text-sm {
+/* Desktop navigation buttons and links */
+button.text-sm,
+a.text-sm {
   color: var(--foreground);
 }
 
