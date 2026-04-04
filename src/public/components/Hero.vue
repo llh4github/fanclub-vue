@@ -44,7 +44,13 @@
         <div class="text-2xl sm:text-3xl font-bold">{</div>
         <div class="flex flex-col">
           <div>16岁的侏儒兔，是见习杀手</div>
-          <div>"{{ dynamicText }}"</div>
+          <div class="h-7 sm:h-8 overflow-hidden">
+            <transition name="flip-up" mode="out-in">
+              <div :key="dynamicText" class="transition-all duration-500">
+                “{{ dynamicText.trim() }}”
+              </div>
+            </transition>
+          </div>
         </div>
         <div class="text-2xl sm:text-3xl font-bold">}</div>
       </div>
@@ -281,7 +287,8 @@
             trigger="click"
             placement="bottom-start"
             :width="320"
-            :content-style="{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }"
+            :content-style="{ backgroundColor: '#1a1a2e', borderColor: '#333', borderRadius: '8px' }"
+            :theme-overrides="popoverThemeOverrides"
           >
             <template #trigger>
               <div class="follwer-num-info flex items-center gap-1 relative group cursor-pointer">
@@ -298,7 +305,7 @@
               </div>
             </template>
             <!-- 弹出的图表 -->
-            <div class="p-4 bg-card border border-border">
+            <div class="p-4 bg-[#1a1a2e] text-white">
               <v-chart class="w-full h-60" :option="followerChartOption" />
             </div>
           </n-popover>
@@ -753,6 +760,21 @@ onUnmounted(() => {
   text-shadow:
     0 0 20px rgba(223, 118, 35, 0.5),
     0 0 40px rgba(223, 118, 35, 0.3);
+}
+
+.flip-up-enter-active,
+.flip-up-leave-active {
+  transition: all 0.5s ease;
+}
+
+.flip-up-enter-from {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.flip-up-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
 }
 
 @keyframes fadeIn {
