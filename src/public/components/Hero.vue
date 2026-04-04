@@ -309,7 +309,8 @@
             trigger="click"
             placement="bottom-start"
             :width="320"
-            :content-style="{ backgroundColor: 'var(--card)', borderColor: 'var(--border)' }"
+            :content-style="{ backgroundColor: '#1a1a2e', borderColor: '#333', borderRadius: '8px' }"
+            :theme-overrides="popoverThemeOverrides"
           >
             <template #trigger>
               <span
@@ -322,26 +323,28 @@
               </span>
             </template>
             <!-- 弹出的热力图 -->
-            <div class="p-4 bg-card border border-border">
-              <n-heatmap
-                :color-theme="'red'"
-                :data="
-                  liveDurationHistory.map((item) => ({
-                    timestamp: dayjs(item.statDate).valueOf(),
-                    value: parseFloat((item.liveDuration / 3600).toFixed(1)), // 转化为小时数并保留一位小数
-                  }))
-                "
-                :size="'medium'"
-                :show-month-labels="true"
-                :show-week-labels="true"
-                :show-color-indicator="true"
-                :tooltip="{ placement: 'bottom', delay: 50 }"
-              >
-                <template #tooltip="{ timestamp, value }">
-                  <div>{{ dayjs(timestamp).format('YYYY-MM-DD') }}</div>
-                  <div>直播 {{ value?.toFixed(1) ?? 0 }} 小时</div>
-                </template>
-              </n-heatmap>
+            <div class="p-4 bg-[#1a1a2e] text-white">
+              <n-config-provider :locale="locale" :date-locale="dateLocale" :theme="theme">
+                <n-heatmap
+                  :color-theme="'red'"
+                  :data="
+                    liveDurationHistory.map((item) => ({
+                      timestamp: dayjs(item.statDate).valueOf(),
+                      value: parseFloat((item.liveDuration / 3600).toFixed(1)), // 转化为小时数并保留一位小数
+                    }))
+                  "
+                  :size="'medium'"
+                  :show-month-labels="true"
+                  :show-week-labels="true"
+                  :show-color-indicator="true"
+                  :tooltip="{ placement: 'bottom', delay: 50 }"
+                >
+                  <template #tooltip="{ timestamp, value }">
+                    <div>{{ dayjs(timestamp).format('YYYY-MM-DD') }}</div>
+                    <div>直播 {{ value?.toFixed(1) ?? 0 }} 小时</div>
+                  </template>
+                </n-heatmap>
+              </n-config-provider>
             </div>
           </n-popover>
         </div>
@@ -360,7 +363,19 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { DollarSign, ArrowDown, Users, Calendar } from 'lucide-vue-next'
-import { NNumberAnimation, NTooltip, NPopover, NHeatmap } from 'naive-ui'
+import { NNumberAnimation, NTooltip, NPopover, NHeatmap, NConfigProvider, zhCN, dateZhCN, darkTheme } from 'naive-ui'
+
+// 确保语言包和主题在模板中可用
+const locale = zhCN
+const dateLocale = dateZhCN
+const theme = darkTheme
+
+// popover 深色主题覆盖
+const popoverThemeOverrides = {
+  color: '#1a1a2e',
+  textColor: '#fff',
+}
+
 import { LIKO_INFO } from '@/common/constants/anchor'
 import {
   anchorService,
