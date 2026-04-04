@@ -291,7 +291,11 @@
             trigger="click"
             placement="bottom-start"
             :width="320"
-            :content-style="{ backgroundColor: '#1a1a2e', borderColor: '#333', borderRadius: '8px' }"
+            :content-style="{
+              backgroundColor: '#1a1a2e',
+              borderColor: '#333',
+              borderRadius: '8px',
+            }"
             :theme-overrides="popoverThemeOverrides"
           >
             <template #trigger>
@@ -320,7 +324,11 @@
             trigger="click"
             placement="bottom-start"
             :width="320"
-            :content-style="{ backgroundColor: '#1a1a2e', borderColor: '#333', borderRadius: '8px' }"
+            :content-style="{
+              backgroundColor: '#1a1a2e',
+              borderColor: '#333',
+              borderRadius: '8px',
+            }"
             :theme-overrides="popoverThemeOverrides"
           >
             <template #trigger>
@@ -374,7 +382,16 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { DollarSign, ArrowDown, Users, Calendar } from 'lucide-vue-next'
-import { NNumberAnimation, NTooltip, NPopover, NHeatmap, NConfigProvider, zhCN, dateZhCN, darkTheme } from 'naive-ui'
+import {
+  NNumberAnimation,
+  NTooltip,
+  NPopover,
+  NHeatmap,
+  NConfigProvider,
+  zhCN,
+  dateZhCN,
+  darkTheme,
+} from 'naive-ui'
 
 // 确保语言包和主题在模板中可用
 const locale = zhCN
@@ -470,32 +487,35 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 const parseCsv = (csv: string): LikoQuote[] => {
   // 移除 BOM 头
   const cleanCsv = csv.replace(/^\ufeff/, '')
-  const lines = cleanCsv.split('\n').filter(line => line.trim() !== '')
-  
+  const lines = cleanCsv.split('\n').filter((line) => line.trim() !== '')
+
   if (lines.length === 0) {
     console.log('CSV 文件为空')
     return []
   }
-  
-  const headers = lines[0]?.split(',').map(header => header.trim()) || []
+
+  const headers = lines[0]?.split(',').map((header) => header.trim()) || []
   console.log('CSV 表头:', headers)
-  
+
   const contentIndex = headers.indexOf('content')
   const bvIndex = headers.indexOf('bv')
-  
+
   if (contentIndex === -1 || bvIndex === -1) {
     console.log('CSV 缺少必要字段')
     return []
   }
-  
-  const quotes = lines.slice(1).map(line => {
-    const values = line.split(',')
-    return {
-      content: values[contentIndex]?.trim() || '',
-      bv: values[bvIndex]?.trim() || ''
-    }
-  }).filter(quote => quote.content && quote.bv)
-  
+
+  const quotes = lines
+    .slice(1)
+    .map((line) => {
+      const values = line.split(',')
+      return {
+        content: values[contentIndex]?.trim() || '',
+        bv: values[bvIndex]?.trim() || '',
+      }
+    })
+    .filter((quote) => quote.content && quote.bv)
+
   console.log('解析出的引用数量:', quotes.length)
   return quotes
 }
@@ -503,7 +523,11 @@ const parseCsv = (csv: string): LikoQuote[] => {
 // 处理点击跳转
 const handleQuoteClick = () => {
   if (currentQuote.value?.bv) {
-    window.open(`https://www.bilibili.com/video/${currentQuote.value.bv}`, '_blank', 'noopener,noreferrer')
+    window.open(
+      `https://www.bilibili.com/video/${currentQuote.value.bv}`,
+      '_blank',
+      'noopener,noreferrer',
+    )
   }
 }
 
@@ -512,20 +536,20 @@ const initDynamicText = () => {
   console.log('开始初始化动态文本')
   console.log('CSV 内容长度:', likoCsv.length)
   console.log('CSV 内容前100字符:', likoCsv.substring(0, 100))
-  
+
   quotes.value = parseCsv(likoCsv)
   console.log('解析后 quotes 长度:', quotes.value.length)
   console.log('quotes 内容:', quotes.value)
-  
+
   if (quotes.value.length === 0) {
     console.log('没有解析到引用数据')
     dynamicText.value = '加载中...'
     return
   }
-  
+
   const shuffledQuotes = shuffleArray(quotes.value)
   console.log('打乱后的 quotes:', shuffledQuotes)
-  
+
   let currentIndex = 0
 
   // 设置初始文本
