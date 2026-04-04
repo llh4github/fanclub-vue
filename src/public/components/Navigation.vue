@@ -8,39 +8,28 @@
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16 sm:h-20">
-          <div @click="scrollToSection('')" class="flex items-center gap-2 cursor-pointer group">
+          <router-link to="/" class="flex items-center gap-2 cursor-pointer group">
             <div
               class="w-10 h-10 border-2 border-[#DF7623] flex items-center justify-center clip-corner group-hover:bg-[#DF7623]/10 transition-colors"
             >
               <Carrot class="w-5 h-5 text-[#DF7623] fill-current" />
             </div>
             <span class="font-bold text-lg hidden sm:block">莉蔻的兔子窝</span>
-          </div>
+          </router-link>
 
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center gap-8">
-            <template v-for="(item, index) in navItems" :key="index">
-              <router-link
-                v-if="item.route"
-                :to="item.route"
-                class="text-sm hover:text-[#DF7623] transition-colors relative group"
-              >
-                {{ item.label }}
-                <span
-                  class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#DF7623] group-hover:w-full transition-all duration-300"
-                ></span>
-              </router-link>
-              <button
-                v-else
-                @click="scrollToSection(item.id)"
-                class="text-sm hover:text-[#DF7623] transition-colors relative group"
-              >
-                {{ item.label }}
-                <span
-                  class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#DF7623] group-hover:w-full transition-all duration-300"
-                ></span>
-              </button>
-            </template>
+            <router-link
+              v-for="(item, index) in navItems"
+              :key="index"
+              :to="item.route"
+              class="text-sm hover:text-[#DF7623] transition-colors relative group"
+            >
+              {{ item.label }}
+              <span
+                class="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#DF7623] group-hover:w-full transition-all duration-300"
+              ></span>
+            </router-link>
           </div>
 
           <!-- Mobile Menu Button -->
@@ -62,25 +51,16 @@
         class="fixed inset-y-0 right-0 z-40 w-full sm:w-80 bg-card border-l border-border md:hidden"
       >
         <div class="flex flex-col h-full pt-24 px-6">
-          <template v-for="(item, index) in navItems" :key="index">
-            <router-link
-              v-if="item.route"
-              :to="item.route"
-              @click="isMobileMenuOpen = false"
-              class="py-4 text-left border-b border-border hover:text-[#DF7623] transition-colors"
-              :style="{ animationDelay: `${index * 0.1}s` }"
-            >
-              {{ item.label }}
-            </router-link>
-            <button
-              v-else
-              @click="scrollToSection(item.id)"
-              class="py-4 text-left border-b border-border hover:text-[#DF7623] transition-colors"
-              :style="{ animationDelay: `${index * 0.1}s` }"
-            >
-              {{ item.label }}
-            </button>
-          </template>
+          <router-link
+            v-for="(item, index) in navItems"
+            :key="index"
+            :to="item.route"
+            @click="isMobileMenuOpen = false"
+            class="py-4 text-left border-b border-border hover:text-[#DF7623] transition-colors"
+            :style="{ animationDelay: `${index * 0.1}s` }"
+          >
+            {{ item.label }}
+          </router-link>
         </div>
       </div>
     </transition>
@@ -98,27 +78,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Menu, X, Carrot } from 'lucide-vue-next'
+
+const router = useRouter()
 
 const isScrolled = ref(false)
 const isMobileMenuOpen = ref(false)
 
-const scrollToSection = (id: string) => {
-  const element = document.getElementById(id)
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' })
-    isMobileMenuOpen.value = false
-  } else {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    isMobileMenuOpen.value = false
-  }
-}
-
 const navItems = [
-  { label: '首页', id: '' },
-  // { label: '训练纪录', id: 'about' },
-  { label: '历程', id: 'timeline' },
-  // { label: '歌单', id: 'playlist' },
+  { label: '首页', route: '/' },
+  // { label: '训练纪录', route: '/about' },
+  // { label: '歌单', route: '/playlist' },
   { label: '关于本站', route: '/about-site' },
 ]
 
