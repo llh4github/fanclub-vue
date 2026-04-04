@@ -331,7 +331,6 @@
                     value: parseFloat((item.liveDuration / 3600).toFixed(1)), // 转化为小时数并保留一位小数
                   }))
                 "
-                :active-colors="['#2ed573', '#10ac84', '#009432']"
                 :size="'medium'"
                 :show-month-labels="true"
                 :show-week-labels="true"
