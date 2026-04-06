@@ -31,8 +31,29 @@
       </div>
       <div class="text-2xl sm:text-3xl font-bold">}</div>
     </div>
+    <NPopover trigger="click" placement="bottom">
+      <template #trigger>
+        <div
+          class="mb-3 flex items-center justify-center gap-2 px-4 py-2 bg-card border border-[#DF7623]/30 clip-corner cursor-pointer hover:bg-card/80 transition-colors"
+          :class="{ 'animate-fade-in': true }"
+        >
+          <Calendar class="w-4 h-4 text-[#00f5ff]" />
+          <span class="text-sm tracking-wider">本周日程</span>
+        </div>
+      </template>
+      <div class="p-2" style="width: 600px;">
+        <VueCal
+          :events="[]"
+          :disable-views="['years', 'year', 'month', 'week']"
+          default-view="day"
+          :min-date="new Date()"
+          :time="false"
+          locale="zh-cn"
+        />
+      </div>
+    </NPopover>
     <div
-      class="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-card border border-[#DF7623]/30 clip-corner"
+      class="mb-3 flex items-center justify-center gap-2 px-4 py-2 bg-card border border-[#DF7623]/30 clip-corner"
       :class="{ 'animate-fade-in': true }"
     >
       <Users class="w-4 h-4 text-[#00f5ff]" />
@@ -43,8 +64,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { Users } from 'lucide-vue-next'
+import { Users, Calendar } from 'lucide-vue-next'
+import { NPopover } from 'naive-ui'
+import { VueCal } from 'vue-cal'
+import 'vue-cal/style'
 import likoCsv from '@/assets/texts/liko.csv?raw'
+
+
 
 // 动态文本相关
 interface LikoQuote {
