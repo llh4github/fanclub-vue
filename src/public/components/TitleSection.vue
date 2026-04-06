@@ -41,15 +41,31 @@
           <span class="text-sm tracking-wider">本周日程</span>
         </div>
       </template>
-      <div class="p-2" style="width: 600px;">
+      <div class="p-2 bg-[#1a1a1a] text-white" style="width: 700px;">
         <VueCal
-          :events="[]"
-          :disable-views="['years', 'year', 'month', 'week']"
-          default-view="day"
+          ref="calendarRef"
+          :events="calendarEvents"
+          :disable-views="['years', 'year', 'month']"
+          default-view="week"
           :min-date="new Date()"
-          :time="false"
+          :time="true"
           locale="zh-cn"
+          :start-week-on-sunday="false"
+          :time-cell-height="25"
+          :time-step="60"
+          :time-from="60*6"
+          :time-to="1440"
+          :views-bar="false"
+          :title-bar="false"
+          theme="dark"
+          @ready="handleCalendarReady"
         />
+        <!-- 免责说明 -->
+        <div class="mt-4 text-xs text-gray-400">
+          <p>1. 数据来源于AI识别主播周表图</p>
+          <p>2. 主播有播瘾，结束时间仅供参考，大概率会播很久</p>
+          <p>3. 页面直播日程仅供参考，以主播实际安排为准</p>
+        </div>
       </div>
     </NPopover>
     <div
@@ -76,6 +92,29 @@ import likoCsv from '@/assets/texts/liko.csv?raw'
 interface LikoQuote {
   content: string
   bv: string
+}
+
+// 日历事件数据
+const calendarEvents = [
+  { "title": "午间杂谈", "start": "2026-04-06 11:00", "end": "2026-04-06 13:00" },
+  { "title": "晚间杂谈", "start": "2026-04-06 21:00", "end": "2026-04-06 23:00" },
+  { "title": "午间杂谈", "start": "2026-04-07 11:00", "end": "2026-04-07 13:00" },
+  { "title": "一起收拾行李", "start": "2026-04-07 20:00", "end": "2026-04-07 22:00" },
+  { "title": "回来啦！", "start": "2026-04-12 21:00", "end": "2026-04-12 23:00" }
+]
+
+// 日历 ref
+const calendarRef = ref<any>(null)
+
+// 当日历准备就绪时滚动到当前时间
+const handleCalendarReady = () => {
+  if (calendarRef.value) {
+    try {
+      calendarRef.value.scrollToCurrentTime()
+    } catch (error) {
+      console.error('Error scrolling to current time:', error)
+    }
+  }
 }
 
 const dynamicText = ref<string>('')
@@ -234,5 +273,45 @@ onUnmounted(() => {
   animation: fadeIn 0.8s ease-out 0.4s forwards;
   opacity: 0;
   transform: translateY(20px);
+}
+</style>
+
+<style>
+/* 日历事件样式 */
+.vuecal__event-details {
+  background-color: #DF7623 !important;
+  color: white !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  font-size: 12px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  margin: 2px 0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 隐藏时间列 */
+.vuecal__time-column {
+  visibility: hidden !important;
+  width: 5px !important;
+}
+
+/* 为单元格添加左右边框 */
+.vuecal__cell {
+  border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* NPopover 暗色样式 */
+.n-popover-shared {
+  background-color: #1a1a1a !important;
+  border-color: #333 !important;
+}
+
+.n-popover-shared--show-arrow::before {
+  border-color: transparent !important;
+}
+
+.n-popover-shared--show-arrow::after {
+  border-color: #1a1a1a !important;
 }
 </style>
