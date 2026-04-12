@@ -3,15 +3,25 @@
     <div class="max-w-5xl mx-auto">
       <div class="text-center mb-16 animate-fade-in">
         <div class="inline-block mb-4">
-          <span class="text-sm tracking-[0.3em] text-[#DF7623] border border-[#DF7623]/30 px-4 py-1 clip-corner">
+          <span
+            class="text-sm tracking-[0.3em] text-[#DF7623] border border-[#DF7623]/30 px-4 py-1 clip-corner"
+          >
             CALENDAR
           </span>
         </div>
-        <h2 class="text-3xl sm:text-5xl mb-2 cursor-pointer hover:text-[#DF7623] transition-colors" @click="handleTitleClick">本周日程</h2>
+        <h2
+          class="text-3xl sm:text-5xl mb-2 cursor-pointer hover:text-[#DF7623] transition-colors"
+          @click="handleTitleClick"
+        >
+          本周日程
+        </h2>
         <p class="text-sm text-muted-foreground">{{ weekDateRange }}</p>
       </div>
 
-      <div class="bg-[#1a1a1a] border border-border p-6 clip-corner" style="max-height: 600px; overflow: auto;">
+      <div
+        class="bg-[#1a1a1a] border border-border p-6 clip-corner"
+        style="max-height: 600px; overflow: auto"
+      >
         <VueCal
           ref="calendarRef"
           :events="calendarEvents"
@@ -28,10 +38,10 @@
           :views-bar="false"
           :title-bar="false"
           theme="dark"
-          :event-class="event => event.class ? event.class : ''"
+          :event-class="(event: CalendarEvent) => (event.class ? event.class : '')"
           @ready="handleCalendarReady"
         />
- </div>
+      </div>
 
       <!-- 图例说明 -->
       <div class="mt-4 text-xs text-gray-400">
@@ -54,7 +64,6 @@
         <p>3. 页面直播日程仅供参考，以主播实际安排为准</p>
       </div>
     </div>
-
   </section>
 </template>
 
@@ -101,14 +110,17 @@ const handleTitleClick = () => {
   }
 }
 
+// 定义日历事件类型
+interface CalendarEvent {
+  title: string
+  start: Date
+  end: Date
+  class?: string
+  source?: string
+}
+
 // 日历事件数据
-const calendarEvents = ref<Array<{
-  title: string;
-  start: string;
-  end: string;
-  class?: string;
-  source?: string;
-}>>([])
+const calendarEvents = ref<CalendarEvent[]>([])
 
 // 日历 ref
 const calendarRef = ref<any>(null)
@@ -127,45 +139,45 @@ const handleCalendarReady = () => {
 // 获取周日程数据
 const fetchWeekSchedule = async () => {
   try {
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date().toISOString().split('T')[0] || ''
 
     // 并行请求两个接口
     const [scheduleResponse, recordResponse] = await Promise.all([
       anchorService.queryWeekSchedule({
         week: today,
-        bid: LIKO_INFO.uid
+        bid: LIKO_INFO.uid,
       }),
       anchorService.queryWeekLiveRecord({
         week: today,
-        roomId: LIKO_INFO.roomId
-      })
+        roomId: LIKO_INFO.roomId,
+      }),
     ])
 
     // 清空现有事件
     calendarEvents.value = []
 
     // 添加日程数据（计划）
-    if (scheduleResponse.success && scheduleResponse.data) {
+    if (scheduleResponse.code === '200' && scheduleResponse.data) {
       scheduleResponse.data.forEach((item: AnchorLiveScheduleItemView) => {
         calendarEvents.value.push({
           title: item.topic,
-          start: item.startTime,
-          end: item.endTime,
+          start: new Date(item.startTime),
+          end: new Date(item.endTime),
           class: 'schedule-event',
-          source: 'schedule'
+          source: 'schedule',
         })
       })
     }
 
     // 添加直播记录数据（实际）
-    if (recordResponse.success && recordResponse.data) {
+    if (recordResponse.code === '200' && recordResponse.data) {
       recordResponse.data.forEach((item: any) => {
         calendarEvents.value.push({
           title: '实际直播',
-          start: item.liveTime,
-          end: item.endLiveTime,
+          start: new Date(item.liveTime),
+          end: new Date(item.endLiveTime),
           class: 'record-event',
-          source: 'record'
+          source: 'record',
         })
       })
     }
@@ -222,7 +234,7 @@ onMounted(() => {
 
 /* 计划直播事件样式 */
 .schedule-event {
-  background-color: #DF7623 !important;
+  background-color: #df7623 !important;
   color: white !important;
 }
 

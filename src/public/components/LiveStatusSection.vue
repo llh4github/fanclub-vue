@@ -22,12 +22,7 @@
               v-if="liveStatus.status === 'LIVING'"
               class="inline-block text-white animate-pulse"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="0" fill="currentColor">
                   <animate
                     id="SVGHRb9bJhy"
@@ -107,9 +102,7 @@
         </button>
       </template>
       <div class="text-xs">
-        <div v-if="liveStatus.liveTime">
-          上次直播：{{ formatLiveTime(liveStatus.liveTime) }}
-        </div>
+        <div v-if="liveStatus.liveTime">上次直播：{{ formatLiveTime(liveStatus.liveTime) }}</div>
         <div v-if="liveStatus.liveDuration">
           直播时长：{{ formatLiveDuration(liveStatus.liveDuration) }}
         </div>
@@ -125,10 +118,7 @@
       }"
     >
       <span class="relative z-10 flex items-center gap-2">
-        <span
-          v-if="liveStatus.status === 'LIVING'"
-          class="inline-block text-white animate-pulse"
-        >
+        <span v-if="liveStatus.status === 'LIVING'" class="inline-block text-white animate-pulse">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="0" fill="currentColor">
               <animate

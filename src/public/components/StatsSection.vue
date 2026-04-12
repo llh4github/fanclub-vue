@@ -40,9 +40,7 @@
       <span
         class="text-sm text-muted-foreground flex items-center gap-2 group-hover:text-[#00f5ff] transition-colors"
       >
-        <Calendar
-          class="w-5 h-5 text-[#00f5ff] group-hover:scale-110 transition-transform"
-        />
+        <Calendar class="w-5 h-5 text-[#00f5ff] group-hover:scale-110 transition-transform" />
         已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天
       </span>
     </div>

@@ -1,15 +1,10 @@
 <template>
   <!-- 圆形头像框 -->
-  <div
-    class="relative w-36 h-36 mx-auto mb-6 z-10"
-    :class="{ 'animate-fade-in-delay-100': true }"
-  >
+  <div class="relative w-36 h-36 mx-auto mb-6 z-10" :class="{ 'animate-fade-in-delay-100': true }">
     <div
       class="absolute inset-0 rounded-full bg-gradient-to-r from-[#DF7623] via-amber-400 to-[#DF7623] animate-spin-slow opacity-70"
     ></div>
-    <div
-      class="absolute inset-1 rounded-full bg-[#1a1a2e] overflow-hidden border border-gray-700"
-    >
+    <div class="absolute inset-1 rounded-full bg-[#1a1a2e] overflow-hidden border border-gray-700">
       <img :src="randomAvatar" alt="莉蔻" class="w-full h-full object-cover" />
     </div>
   </div>

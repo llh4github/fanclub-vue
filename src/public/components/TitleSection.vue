@@ -32,8 +32,6 @@
       <div class="text-2xl sm:text-3xl font-bold">}</div>
     </div>
 
-
-
     <div
       class="mb-3 flex items-center justify-center gap-2 px-4 py-2 bg-card border border-[#DF7623]/30 clip-corner"
       :class="{ 'animate-fade-in': true }"
@@ -49,14 +47,11 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { Users } from 'lucide-vue-next'
 import likoCsv from '@/assets/texts/liko.csv?raw'
 
-
-
 // 动态文本相关
 interface LikoQuote {
   content: string
   bv: string
 }
-
 
 const dynamicText = ref<string>('')
 const currentQuote = ref<LikoQuote | null>(null)
@@ -216,7 +211,3 @@ onUnmounted(() => {
   transform: translateY(20px);
 }
 </style>
-
-
-
-
