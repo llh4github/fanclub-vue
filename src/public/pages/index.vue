@@ -4,6 +4,7 @@
     <main class="relative z-10">
       <Hero />
       <!-- <About /> -->
+      <WeekCalendar />
       <Timeline />
       <!-- <Playlist /> -->
     </main>
@@ -15,6 +16,7 @@
 import Navigation from '../components/Navigation.vue'
 import Hero from '../components/Hero.vue'
 // import About from '../components/About.vue'
+import WeekCalendar from '../components/WeekCalendar.vue'
 import Timeline from '../components/Timeline.vue'
 // import Playlist from '../components/Playlist.vue'
 import Footer from '../components/Footer.vue'

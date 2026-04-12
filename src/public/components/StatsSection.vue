@@ -37,52 +37,14 @@
     </div>
     <div class="w-px h-4 bg-border"></div>
     <div class="flex items-center gap-2 group">
-      <n-popover
-        trigger="click"
-        placement="bottom-start"
-        :width="320"
-        :content-style="{
-          backgroundColor: '#1a1a2e',
-          borderColor: '#333',
-          borderRadius: '8px',
-        }"
-        :theme-overrides="popoverThemeOverrides"
+      <span
+        class="text-sm text-muted-foreground flex items-center gap-2 group-hover:text-[#00f5ff] transition-colors"
       >
-        <template #trigger>
-          <span
-            class="text-sm text-muted-foreground flex items-center gap-2 group-hover:text-[#00f5ff] transition-colors cursor-pointer"
-          >
-            <Calendar
-              class="w-5 h-5 text-[#00f5ff] group-hover:scale-110 transition-transform"
-            />
-            已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天
-          </span>
-        </template>
-        <!-- 弹出的热力图 -->
-        <div class="p-4 bg-[#1a1a2e] text-white">
-          <n-config-provider :locale="locale" :date-locale="dateLocale" :theme="theme">
-            <n-heatmap
-              :color-theme="'red'"
-              :data="
-                liveDurationHistory.map((item) => ({
-                  timestamp: dayjs(item.statDate).valueOf(),
-                  value: parseFloat((item.liveDuration / 3600).toFixed(1)), // 转化为小时数并保留一位小数
-                }))
-              "
-              :size="'medium'"
-              :show-month-labels="true"
-              :show-week-labels="true"
-              :show-color-indicator="true"
-              :tooltip="{ placement: 'bottom', delay: 50 }"
-            >
-              <template #tooltip="{ timestamp, value }">
-                <div>{{ dayjs(timestamp).format('YYYY-MM-DD') }}</div>
-                <div>直播 {{ value?.toFixed(1) ?? 0 }} 小时</div>
-              </template>
-            </n-heatmap>
-          </n-config-provider>
-        </div>
-      </n-popover>
+        <Calendar
+          class="w-5 h-5 text-[#00f5ff] group-hover:scale-110 transition-transform"
+        />
+        已出道 <n-number-animation :from="0" :to="daysSinceDebut" :duration="3000" /> 天
+      </span>
     </div>
   </div>
 </template>
@@ -271,10 +233,14 @@ const loadFollowerHistory = async () => {
     })
 
     if (response.data) {
-      followerHistory.value = response.data
+      // 对数据按日期升序排序
+      const sortedData = response.data.sort((a, b) => {
+        return new Date(a.cntDate).getTime() - new Date(b.cntDate).getTime()
+      })
+      followerHistory.value = sortedData
 
       // 缓存数据到本地，设置过期时间为当天0时
-      localStorage.setItem('followerHistory', JSON.stringify(response.data))
+      localStorage.setItem('followerHistory', JSON.stringify(sortedData))
       localStorage.setItem('followerHistoryTimestamp', today.toString())
     }
   } catch (error) {
@@ -309,10 +275,14 @@ const loadLiveDurationHistory = async () => {
     )
 
     if (response.data) {
-      liveDurationHistory.value = response.data
+      // 对数据按日期升序排序
+      const sortedData = response.data.sort((a, b) => {
+        return new Date(a.statDate).getTime() - new Date(b.statDate).getTime()
+      })
+      liveDurationHistory.value = sortedData
 
       // 缓存数据到本地，设置过期时间为当天0时
-      localStorage.setItem('liveDurationHistory', JSON.stringify(response.data))
+      localStorage.setItem('liveDurationHistory', JSON.stringify(sortedData))
       localStorage.setItem('liveDurationHistoryTimestamp', today.toString())
     }
   } catch (error) {

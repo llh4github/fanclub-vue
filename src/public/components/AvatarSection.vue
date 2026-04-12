@@ -20,12 +20,13 @@ import { ref, onMounted } from 'vue'
 import avatarA from '@/assets/avatar/avatar_a.webp'
 import avatarKu from '@/assets/avatar/avatar_ku.webp'
 import avatarXiao from '@/assets/avatar/avatar_xiao.webp'
+import avatar04 from '@/assets/avatar/avatar_04.jpg'
 
 const randomAvatar = ref<string>(avatarA as string)
 
 onMounted(() => {
   // 随机选择头像
-  const avatars = [avatarA, avatarKu, avatarXiao]
+  const avatars = [avatarA, avatarKu, avatarXiao, avatar04]
   randomAvatar.value = avatars[Math.floor(Math.random() * avatars.length)] as string
 })
 </script>

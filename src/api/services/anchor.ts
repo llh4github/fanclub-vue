@@ -60,6 +60,52 @@ export interface AnchorLiveDurationDateDuration {
 }
 
 /**
+ * 查询周日程请求参数
+ */
+export interface AnchorLiveWeekScheduleSpec {
+  /** B站ID（通常称为UID） */
+  bid?: number
+  /** 当前周的任意一天，格式：YYYY-MM-DD */
+  week: string
+}
+
+/**
+ * 直播日程项
+ */
+export interface AnchorLiveScheduleItemView {
+  /** 直播开始时间，格式：YYYY-MM-DD HH:mm:ss */
+  startTime: string
+  /** 直播结束时间，格式：YYYY-MM-DD HH:mm:ss */
+  endTime: string
+  /** 直播主题 */
+  topic: string
+}
+
+/**
+ * 周直播记录请求参数
+ */
+export interface AnchorWeekLiveRecordSpec {
+  /** 直播间ID */
+  roomId?: number
+  /** 当前周的任意一天，格式：YYYY-MM-DD */
+  week: string
+}
+
+/**
+ * 直播时间记录
+ */
+export interface AnchorLiveTimeRecord {
+  /** 直播开始时间，格式：YYYY-MM-DD HH:mm:ss */
+  liveTime: string
+  /** 直播结束时间，格式：YYYY-MM-DD HH:mm:ss */
+  endLiveTime: string
+  /** 直播时长(秒) */
+  liveDuration: number
+  /** 直播状态 */
+  liveStatus: string
+}
+
+/**
  * 主播 API 服务
  */
 export const anchorService = {
@@ -106,5 +152,27 @@ export const anchorService = {
       roomId,
       date,
     })
+  },
+
+  /**
+   * 查询周日程
+   * @param params 查询参数
+   * @returns 周日程列表
+   */
+  async queryWeekSchedule(
+    params: AnchorLiveWeekScheduleSpec,
+  ): Promise<JsonWrapper<AnchorLiveScheduleItemView[]>> {
+    return apiClient.post<AnchorLiveScheduleItemView[]>('/anchor/live-schedule/query-week', params)
+  },
+
+  /**
+   * 查询周直播记录
+   * @param params 查询参数
+   * @returns 周直播记录列表
+   */
+  async queryWeekLiveRecord(
+    params: AnchorWeekLiveRecordSpec,
+  ): Promise<JsonWrapper<AnchorLiveTimeRecord[]>> {
+    return apiClient.post<AnchorLiveTimeRecord[]>('/anchor/live-record/week-live-record', params)
   },
 }
