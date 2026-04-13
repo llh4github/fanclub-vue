@@ -7,6 +7,30 @@ export interface ApiClientConfig {
   baseURL: string
   timeout?: number
   headers?: Record<string, string>
+  debounceDelay?: number
+}
+
+/**
+ * 防抖函数
+ */
+function debounce(
+  func: (url: string, options?: RequestInit) => Promise<any>,
+  delay: number,
+): (url: string, options?: RequestInit) => Promise<any> {
+  let timeoutId: ReturnType<typeof setTimeout>
+  return (url: string, options?: RequestInit) => {
+    clearTimeout(timeoutId)
+    return new Promise((resolve, reject) => {
+      timeoutId = setTimeout(async () => {
+        try {
+          const result = await func(url, options)
+          resolve(result)
+        } catch (error) {
+          reject(error)
+        }
+      }, delay)
+    })
+  }
 }
 
 /**
@@ -14,15 +38,19 @@ export interface ApiClientConfig {
  */
 export class ApiClient {
   private config: ApiClientConfig
+  private debouncedRequest: (url: string, options?: RequestInit) => Promise<any>
 
   constructor(config: ApiClientConfig) {
     this.config = {
       timeout: 10000,
+      debounceDelay: 300,
       headers: {
         'Content-Type': 'application/json',
       },
       ...config,
     }
+
+    this.debouncedRequest = debounce(this.request.bind(this), this.config.debounceDelay as number)
   }
 
   /**
@@ -84,38 +112,38 @@ export class ApiClient {
   async get<T>(url: string, params?: Record<string, any>): Promise<JsonWrapper<T>> {
     const queryString = params ? '?' + new URLSearchParams(params).toString() : ''
 
-    return this.request<T>(url + queryString, {
+    return this.debouncedRequest(url + queryString, {
       method: 'GET',
-    })
+    }) as Promise<JsonWrapper<T>>
   }
 
   /**
    * POST 请求
    */
   async post<T>(url: string, data?: any): Promise<JsonWrapper<T>> {
-    return this.request<T>(url, {
+    return this.debouncedRequest(url, {
       method: 'POST',
       body: JSON.stringify(data),
-    })
+    }) as Promise<JsonWrapper<T>>
   }
 
   /**
    * PUT 请求
    */
   async put<T>(url: string, data?: any): Promise<JsonWrapper<T>> {
-    return this.request<T>(url, {
+    return this.debouncedRequest(url, {
       method: 'PUT',
       body: JSON.stringify(data),
-    })
+    }) as Promise<JsonWrapper<T>>
   }
 
   /**
    * DELETE 请求
    */
   async delete<T>(url: string): Promise<JsonWrapper<T>> {
-    return this.request<T>(url, {
+    return this.debouncedRequest(url, {
       method: 'DELETE',
-    })
+    }) as Promise<JsonWrapper<T>>
   }
 }
 
