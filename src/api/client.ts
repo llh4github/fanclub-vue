@@ -60,11 +60,15 @@ export class ApiClient {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), this.config.timeout)
 
+    // 获取存储的访问令牌
+    const accessToken = localStorage.getItem('accessToken')
+
     try {
       const response = await fetch(`${this.config.baseURL}${url}`, {
         ...options,
         headers: {
           ...this.config.headers,
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
           ...options.headers,
         },
         signal: controller.signal,

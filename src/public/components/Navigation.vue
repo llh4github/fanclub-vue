@@ -88,6 +88,7 @@ const isMobileMenuOpen = ref(false)
 
 const navItems = [
   { label: '首页', route: '/' },
+  { label: '兔子洞', route: '/admin/login' },
   // { label: '训练纪录', route: '/about' },
   // { label: '歌单', route: '/playlist' },
   { label: '关于本站', route: '/about-site' },

@@ -1,13 +1,13 @@
 import type { RouteRecordRaw } from 'vue-router'
-import AdminIndex from '../AdminIndex.vue'
+import Login from '../pages/Login.vue'
 
 const adminRoutes: RouteRecordRaw[] = [
   {
-    path: '/',
-    name: 'admin-home',
-    component: AdminIndex,
+    path: '/login',
+    name: 'admin-login',
+    component: Login,
     meta: {
-      title: '后台管理',
+      title: '管理员登录',
     },
   },
 ]
