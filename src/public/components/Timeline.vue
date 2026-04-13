@@ -9,7 +9,12 @@
             TIMELINE
           </span>
         </div>
-        <h2 class="text-3xl sm:text-5xl mb-6">成长历程</h2>
+        <h2
+          class="text-3xl sm:text-5xl mb-6 cursor-pointer hover:text-[#DF7623] transition-colors"
+          @click="handleTitleClick"
+        >
+          成长历程
+        </h2>
         <p class="text-muted-foreground max-w-2xl mx-auto">每一步都值得铭记</p>
       </div>
 
@@ -144,6 +149,18 @@ const getStatusText = (status: string): string => {
       return '已完成'
     default:
       return ''
+  }
+}
+
+// 处理标题点击事件，添加锚点功能
+const handleTitleClick = () => {
+  // 设置URL hash
+  window.location.hash = 'timeline'
+
+  // 滚动到当前section
+  const section = document.getElementById('timeline')
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth' })
   }
 }
 

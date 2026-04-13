@@ -52,7 +52,7 @@ function connectWebSocket() {
   // 从环境变量中获取WebSocket服务器地址
   const wsUrl = import.meta.env.VITE_WS_URL || 'wss://your-websocket-server.com/danmaku'
 
-  ws = new WebSocket(wsUrl + '/ws/danmu?uid=' + LIKO_INFO.uid)
+  ws = new WebSocket(wsUrl + '/ws/danmu?roomId=' + LIKO_INFO.roomId)
 
   ws.onopen = () => {
     console.log('WebSocket connected')

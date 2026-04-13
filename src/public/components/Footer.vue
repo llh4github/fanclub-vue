@@ -29,6 +29,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { Heart } from 'lucide-vue-next'
 
 const currentYear = computed(() => new Date().getFullYear())
 </script>
