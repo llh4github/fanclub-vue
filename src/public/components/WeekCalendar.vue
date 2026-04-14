@@ -20,7 +20,7 @@
 
       <div
         class="bg-[#1a1a1a] border border-border p-6 clip-corner"
-        style="max-height: 600px; overflow: auto"
+        style="max-height: 600px"
       >
         <VueCal
           ref="calendarRef"

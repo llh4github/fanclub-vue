@@ -1,109 +1,208 @@
 <template>
-  <section id="playlist" class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 relative">
-    <div class="absolute inset-0 grid-background"></div>
-
-    <div class="max-w-7xl mx-auto relative z-10">
-      <div class="text-center mb-16">
+  <section id="playlist" class="py-20 sm:py-32 px-4 sm:px-6 lg:px-8 bg-card/30">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 animate-fade-in">
         <div class="inline-block mb-4">
-          <span
-            class="text-sm tracking-[0.3em] text-[#DF7623] border border-[#DF7623]/30 px-4 py-1 clip-corner"
-          >
-            PLAYLIST
-          </span>
+          <span class="text-sm tracking-[0.3em] text-[#DF7623] border border-[#DF7623]/30 px-4 py-1 clip-corner"> PLAYLIST </span>
         </div>
-        <h2 class="text-3xl sm:text-5xl mb-6">歌单</h2>
-        <p class="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          莉蔻的精选歌单，记录每一个精彩瞬间
-        </p>
-        <n-text type="warning"> 我真的要做这个功能么？🤣 </n-text>
+        <h2 class="text-3xl sm:text-5xl mb-6 cursor-pointer hover:text-[#DF7623] transition-colors" @click="handleTitleClick"> 歌单 </h2>
+        <p class="text-muted-foreground max-w-2xl mx-auto">精选歌曲列表</p>
       </div>
 
-      <div class="space-y-6">
-        <!-- 歌曲表单 -->
-        <div
-          v-for="(song, index) in songs"
-          :key="index"
-          class="bg-card border border-border p-6 clip-corner hover:border-[#DF7623]/50 transition-all duration-300"
-        >
-          <div class="flex items-center gap-6">
-            <!-- 歌曲序号 -->
-            <div
-              class="w-10 h-10 flex items-center justify-center border border-[#DF7623] clip-corner text-[#DF7623] font-bold"
+      <div class="bg-card border border-border rounded-lg overflow-hidden">
+        <div class="p-4 border-b border-border">
+          <div class="flex justify-end">
+            <n-input
+              v-model:value="searchName"
+              placeholder="搜索歌曲名称"
+              size="small"
+              class="mr-2"
+              @keyup.enter="handleSearch"
             >
-              {{ index + 1 }}
-            </div>
-
-            <!-- 歌曲信息 -->
-            <div class="flex-1">
-              <h3 class="text-lg font-bold mb-2">{{ song.title }}</h3>
-              <p class="text-sm text-muted-foreground">{{ song.artist }}</p>
-            </div>
-
-            <!-- 操作按钮 -->
-            <div class="flex items-center gap-4">
-              <button
-                class="w-10 h-10 flex items-center justify-center border border-[#DF7623] clip-corner hover:bg-[#DF7623]/10 transition-colors"
-              >
-                <Play class="w-5 h-5 text-[#DF7623]" />
-              </button>
-              <button
-                class="w-10 h-10 flex items-center justify-center border border-[#DF7623] clip-corner hover:bg-[#DF7623]/10 transition-colors"
-              >
-                <Heart class="w-5 h-5 text-[#DF7623]" />
-              </button>
-            </div>
+              <template #prefix>
+                <n-icon>
+                  <Search />
+                </n-icon>
+              </template>
+            </n-input>
+            <n-button size="small" @click="handleSearch">搜索</n-button>
           </div>
         </div>
+        <n-data-table
+          :columns="columns"
+          :data="songs"
+          :loading="loading"
+          :pagination="{
+            page: pageIndex,
+            pageSize: pageSize,
+            itemCount: total,
+            showSizePicker: false,
+            showQuickJumper: true
+          }"
+          @update:pagination="handlePaginationChange"
+          :row-key="(row) => row.id"
+          size="medium"
+          bordered
+        />
+        <!-- 由于 Naive UI 的 DataTable 版本可能不支持 cell 插槽，这里使用列的 render 函数来处理 BV 号的链接 -->
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { Play, Heart } from 'lucide-vue-next'
+import { ref, reactive, onMounted } from 'vue'
+import { NDataTable, NInput, NButton, useMessage, NIcon } from 'naive-ui'
+import { Search } from 'lucide-vue-next'
+import { songService, type AnchorSongPageView } from '../../api/services/song'
 
-// 歌曲数据
-const songs = [
+const message = useMessage()
+
+const loading = ref(false)
+const songs = ref<AnchorSongPageView[]>([])
+const total = ref(0)
+const pageIndex = ref(1)
+const pageSize = ref(10)
+const searchName = ref('')
+
+const columns = [
   {
-    title: '彩虹糖的梦',
-    artist: '莉蔻',
+    title: 'ID',
+    key: 'id',
+    width: 80
   },
   {
-    title: '要抱抱',
-    artist: '莉蔻',
+    title: '歌曲名称',
+    key: 'name',
+    width: 300
   },
   {
-    title: '老公天下第一',
-    artist: '莉蔻',
+    title: '价格',
+    key: 'price',
+    width: 100,
+    render(row: AnchorSongPageView) {
+      return `${row.price} 元`
+    }
   },
   {
-    title: '素颜',
-    artist: '莉蔻',
+    title: 'BV号',
+    key: 'bv',
+    width: 200
   },
-  {
-    title: 'VTL',
-    artist: '莉蔻',
-  },
+
 ]
+
+const fetchSongs = async () => {
+  try {
+    loading.value = true
+    const response = await songService.getSongPage({
+      name: searchName.value || undefined,
+      pageParam: {
+        pageIndex: pageIndex.value,
+        pageSize: pageSize.value
+      }
+    })
+    if (response.data) {
+      songs.value = response.data.records
+      total.value = response.data.totalRowCount
+    }
+  } catch (err) {
+    console.error('获取歌曲列表失败:', err)
+    message.error('获取歌曲列表失败，请重试')
+  } finally {
+    loading.value = false
+  }
+}
+
+const handlePaginationChange = (pagination: any) => {
+  pageIndex.value = pagination.page
+  pageSize.value = pagination.pageSize
+  fetchSongs()
+}
+
+const handleSearch = () => {
+  pageIndex.value = 1
+  fetchSongs()
+}
+
+// 处理标题点击事件，添加锚点功能
+const handleTitleClick = () => {
+  // 设置URL hash
+  window.location.hash = 'playlist'
+
+  // 滚动到当前section
+  const section = document.getElementById('playlist')
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth' })
+  }
+}
+
+onMounted(() => {
+  fetchSongs()
+})
 </script>
 
 <style scoped>
-.clip-corner {
-  clip-path: polygon(
-    0 0,
-    calc(100% - 12px) 0,
-    100% 12px,
-    100% 100%,
-    12px 100%,
-    0 calc(100% - 12px)
-  );
+/* 自定义样式 */
+:deep(.n-data-table) {
+  background-color: transparent !important;
 }
 
-.grid-background {
-  background-image:
-    linear-gradient(rgba(223, 118, 35, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(223, 118, 35, 0.05) 1px, transparent 1px);
-  background-size: 50px 50px;
-  mask-image: radial-gradient(ellipse at center, black, transparent 80%);
+:deep(.n-data-table th) {
+  background-color: rgba(10, 10, 15, 0.8) !important;
+  color: #e5e5e5 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.n-data-table td) {
+  background-color: rgba(10, 10, 15, 0.6) !important;
+  color: #e5e5e5 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.n-data-table tr:hover td) {
+  background-color: rgba(223, 118, 35, 0.3) !important;
+  color: white !important;
+}
+
+:deep(.n-pagination) {
+  background-color: rgba(10, 10, 15, 0.8) !important;
+  color: #e5e5e5 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.n-pagination-item) {
+  background-color: rgba(10, 10, 15, 0.8) !important;
+  color: #e5e5e5 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.n-pagination-item:hover) {
+  background-color: rgba(223, 118, 35, 0.2) !important;
+}
+
+:deep(.n-pagination-item--active) {
+  background-color: rgba(223, 118, 35, 0.5) !important;
+  border-color: #DF7623 !important;
+}
+
+:deep(.n-input) {
+  background-color: rgba(10, 10, 15, 0.8) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+:deep(.n-input__input-el) {
+  color: white !important;
+}
+
+:deep(.n-button) {
+  background-color: rgba(223, 118, 35, 0.8) !important;
+  color: white !important;
+  border: 1px solid #DF7623 !important;
+}
+
+:deep(.n-button:hover) {
+  background-color: rgba(223, 118, 35, 1) !important;
 }
 </style>
