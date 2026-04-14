@@ -7,6 +7,9 @@ import type { JsonWrapper } from '../types'
 export interface LoginRequest {
   username: string
   password: string
+  captcha: string
+  captchaKey: string
+  cryptoSid: string
 }
 
 /**

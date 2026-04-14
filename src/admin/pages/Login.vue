@@ -1,12 +1,12 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-background">
+  <div class="min-h-screen flex items-center justify-center bg-background p-4">
     <div class="w-full max-w-md p-8 bg-card rounded-lg border border-border shadow-lg">
       <h1 class="text-2xl font-bold text-center mb-8 text-[#DF7623]">管理员登录</h1>
       <n-form
         ref="formRef"
         :model="form"
         :rules="formRules"
-        @submit.prevent="handleLogin"
+        label-placement="top"
         class="space-y-6"
       >
         <n-form-item label="用户名" path="username">
@@ -25,8 +25,8 @@
         </n-form-item>
         <n-form-item label="密码" path="password">
           <n-input
-            type="password"
             v-model:value="form.password"
+            type="password"
             placeholder="请输入密码"
             :disabled="isLoading"
             :focusable="!isLoading"
@@ -39,9 +39,26 @@
             </template>
           </n-input>
         </n-form-item>
-        <div v-if="error" class="text-red-500 text-sm">
-          {{ error }}
-        </div>
+        <n-form-item label="验证码" path="captcha">
+          <div class="flex space-x-2 items-center">
+            <n-input-otp
+              v-model:value="otpValue"
+              :length="captchaLength"
+              :disabled="isLoading"
+              class="flex-1"
+            />
+            <div class="flex-shrink-0">
+              <img
+                :src="captchaImage"
+                alt="验证码"
+                class="h-10 w-32 object-contain cursor-pointer"
+                @click="fetchCaptcha"
+                :disabled="isLoading"
+              />
+            </div>
+          </div>
+        </n-form-item>
+        <!-- 错误提示将使用 message 组件显示 -->
         <n-button
           :loading="isLoading"
           :disabled="isLoading"
@@ -60,65 +77,126 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { NInput, NButton, NForm, NFormItem, NIcon, useMessage } from 'naive-ui'
+import { NForm, NFormItem, NInput, NButton, useMessage, NIcon, NInputOtp } from 'naive-ui'
 import { User, Lock } from 'lucide-vue-next'
 import { authService } from '../../api/services/auth'
+import { cryptoService } from '../../api/services/crypto'
 
 const router = useRouter()
 const message = useMessage()
+const formRef = ref()
 
-const form = ref({
+const isLoading = ref(false)
+const captchaImage = ref('')
+const captchaLength = ref(4)
+const aesKey = ref('')
+const sessionId = ref(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
+
+const form = reactive({
   username: '',
   password: '',
+  captcha: '',
+  captchaKey: ''
+})
+
+// 验证码输入框的计算属性
+const otpValue = computed({
+  get: () => form.captcha.split(''),
+  set: (value: string[]) => {
+    form.captcha = value.join('')
+  }
 })
 
 const formRules = {
   username: [
-    {
-      required: true,
-      message: '请输入用户名',
-      trigger: ['input', 'blur'],
-    },
-    {
-      min: 3,
-      max: 30,
-      message: '用户名长度应在 3-30 之间',
-      trigger: ['input', 'blur'],
-    },
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 30, message: '用户名长度应在 3-30 之间', trigger: 'blur' }
   ],
   password: [
-    {
-      required: true,
-      message: '请输入密码',
-      trigger: ['input', 'blur'],
-    },
-    {
-      min: 6,
-      max: 50,
-      message: '密码长度应在 6-50 之间',
-      trigger: ['input', 'blur'],
-    },
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, max: 50, message: '密码长度应在 6-50 之间', trigger: 'blur' }
   ],
+  captcha: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    { min: 4, max: 6, message: '验证码长度应在 4-6 之间', trigger: 'blur' }
+  ]
 }
 
-const formRef = ref()
-const isLoading = ref(false)
-const error = ref('')
+// 初始化
+onMounted(async () => {
+  // 生成会话ID
+  sessionId.value = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  // 获取验证码
+  await fetchCaptcha()
+  // 初始化密钥交换
+  await initKeyExchange()
+})
+
+// 获取验证码
+const fetchCaptcha = async () => {
+  try {
+    const response = await cryptoService.generateCaptcha()
+    if (response.data) {
+      form.captchaKey = response.data.key
+      captchaImage.value = response.data.images
+      // 清空验证码输入框
+      form.captcha = ''
+      // 更新验证码长度
+      if (response.data.len) {
+        captchaLength.value = response.data.len
+      }
+    }
+  } catch (err) {
+    console.error('获取验证码失败:', err)
+    message.error('获取验证码失败，请重试')
+  }
+}
+
+// 初始化密钥交换
+const initKeyExchange = async () => {
+  try {
+    const response = await cryptoService.initKeyExchange()
+    if (response.data) {
+      // 使用后端返回的 cryptoSid
+      sessionId.value = response.data.cryptoSid
+      // 生成AES密钥
+      aesKey.value = cryptoService.generateAesKey()
+      // 用RSA公钥加密AES密钥
+      const encryptedAesKey = cryptoService.encryptAesKeyWithRsa(aesKey.value, response.data.publicKey)
+      // 完成密钥交换
+      await cryptoService.completeKeyExchange({
+        cryptoSid: sessionId.value,
+        encryptedAesKey: encryptedAesKey
+      })
+    }
+  } catch (err) {
+    console.error('密钥交换失败:', err)
+    message.error('密钥交换失败，请刷新页面重试')
+  }
+}
 
 const handleLogin = async () => {
   try {
     isLoading.value = true
-    error.value = ''
 
     // 表单验证
     if (formRef.value) {
       await formRef.value.validate()
     }
 
+    // 加密密码
+    const encryptedPassword = cryptoService.encryptWithAesGcm(form.password, aesKey.value)
+
     // 调用登录接口
-    const response = await authService.login(form.value)
+    const response = await authService.login({
+      username: form.username,
+      password: encryptedPassword,
+      captcha: form.captcha,
+      captchaKey: form.captchaKey,
+      cryptoSid: sessionId.value
+    })
 
     // 登录成功后存储令牌信息
     if (response.data) {
@@ -138,8 +216,11 @@ const handleLogin = async () => {
       console.log('表单验证错误:', err)
     } else {
       // 登录失败错误
-      error.value = err.msg || '登录失败，请检查用户名和密码'
+      const errorMessage = err.msg || '登录失败，请检查用户名和密码'
+      message.error(errorMessage)
       console.error('登录失败:', err)
+      // 刷新验证码
+      await fetchCaptcha()
     }
   } finally {
     isLoading.value = false
@@ -152,8 +233,7 @@ const goToHome = () => {
 </script>
 
 <style scoped>
-/* 调整表单标签颜色为浅色系 */
 :deep(.n-form-item-label__text) {
-  color: #ece9e9 !important;
+  color: #666 !important;
 }
 </style>
