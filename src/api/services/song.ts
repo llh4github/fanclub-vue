@@ -46,8 +46,19 @@ export const songService = {
   /**
    * 分页查询歌曲
    */
-  async getSongPage(data: AnchorSongQuerySpec): Promise<JsonWrapper<PageResponseAnchorSongPageView>> {
+  async getSongPage(
+    data: AnchorSongQuerySpec,
+  ): Promise<JsonWrapper<PageResponseAnchorSongPageView>> {
     return apiClient.post<PageResponseAnchorSongPageView>('/anchor/song/page', data)
+  },
+
+  /**
+   * liko专用分页查询
+   */
+  async getSongPageLiko(
+    data: AnchorSongQuerySpec,
+  ): Promise<JsonWrapper<PageResponseAnchorSongPageView>> {
+    return apiClient.post<PageResponseAnchorSongPageView>('/anchor/song/page/liko', data)
   },
 
   /**
@@ -55,5 +66,5 @@ export const songService = {
    */
   async getSongById(id: number): Promise<JsonWrapper<AnchorSongPageView>> {
     return apiClient.get<AnchorSongPageView>(`/anchor/song?id=${id}`)
-  }
+  },
 }

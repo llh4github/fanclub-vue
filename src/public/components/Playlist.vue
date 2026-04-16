@@ -3,9 +3,18 @@
     <div class="max-w-7xl mx-auto">
       <div class="text-center mb-16 animate-fade-in">
         <div class="inline-block mb-4">
-          <span class="text-sm tracking-[0.3em] text-[#DF7623] border border-[#DF7623]/30 px-4 py-1 clip-corner"> PLAYLIST </span>
+          <span
+            class="text-sm tracking-[0.3em] text-[#DF7623] border border-[#DF7623]/30 px-4 py-1 clip-corner"
+          >
+            PLAYLIST
+          </span>
         </div>
-        <h2 class="text-3xl sm:text-5xl mb-6 cursor-pointer hover:text-[#DF7623] transition-colors" @click="handleTitleClick"> 歌单 </h2>
+        <h2
+          class="text-3xl sm:text-5xl mb-6 cursor-pointer hover:text-[#DF7623] transition-colors"
+          @click="handleTitleClick"
+        >
+          歌单
+        </h2>
         <p class="text-muted-foreground max-w-2xl mx-auto">精选歌曲列表</p>
       </div>
 
@@ -37,7 +46,7 @@
             pageSize: pageSize,
             itemCount: total,
             showSizePicker: false,
-            showQuickJumper: true
+            showQuickJumper: true,
           }"
           @update:pagination="handlePaginationChange"
           :row-key="(row) => row.id"
@@ -69,12 +78,12 @@ const columns = [
   {
     title: 'ID',
     key: 'id',
-    width: 80
+    width: 80,
   },
   {
     title: '歌曲名称',
     key: 'name',
-    width: 300
+    width: 300,
   },
   {
     title: '价格',
@@ -82,25 +91,24 @@ const columns = [
     width: 100,
     render(row: AnchorSongPageView) {
       return `${row.price} 元`
-    }
+    },
   },
   {
     title: 'BV号',
     key: 'bv',
-    width: 200
+    width: 200,
   },
-
 ]
 
 const fetchSongs = async () => {
   try {
     loading.value = true
-    const response = await songService.getSongPage({
+    const response = await songService.getSongPageLiko({
       name: searchName.value || undefined,
       pageParam: {
         pageIndex: pageIndex.value,
-        pageSize: pageSize.value
-      }
+        pageSize: pageSize.value,
+      },
     })
     if (response.data) {
       songs.value = response.data.records
@@ -183,7 +191,7 @@ onMounted(() => {
 
 :deep(.n-pagination-item--active) {
   background-color: rgba(223, 118, 35, 0.5) !important;
-  border-color: #DF7623 !important;
+  border-color: #df7623 !important;
 }
 
 :deep(.n-input) {
@@ -199,7 +207,7 @@ onMounted(() => {
 :deep(.n-button) {
   background-color: rgba(223, 118, 35, 0.8) !important;
   color: white !important;
-  border: 1px solid #DF7623 !important;
+  border: 1px solid #df7623 !important;
 }
 
 :deep(.n-button:hover) {

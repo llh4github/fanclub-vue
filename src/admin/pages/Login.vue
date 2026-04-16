@@ -91,14 +91,14 @@ const formRef = ref()
 const isLoading = ref(false)
 const captchaImage = ref('')
 const captchaLength = ref(4)
-const aesKey = ref('')
-const sessionId = ref(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`)
+const aesKey = ref<CryptoKey | null>(null)
+const sessionId = ref('')
 
 const form = reactive({
   username: '',
   password: '',
   captcha: '',
-  captchaKey: ''
+  captchaKey: '',
 })
 
 // 验证码输入框的计算属性
@@ -106,28 +106,26 @@ const otpValue = computed({
   get: () => form.captcha.split(''),
   set: (value: string[]) => {
     form.captcha = value.join('')
-  }
+  },
 })
 
 const formRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 30, message: '用户名长度应在 3-30 之间', trigger: 'blur' }
+    { min: 3, max: 30, message: '用户名长度应在 3-30 之间', trigger: 'blur' },
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 50, message: '密码长度应在 6-50 之间', trigger: 'blur' }
+    { min: 6, max: 15, message: '密码长度应在 6-15 之间', trigger: 'blur' },
   ],
   captcha: [
     { required: true, message: '请输入验证码', trigger: 'blur' },
-    { min: 4, max: 6, message: '验证码长度应在 4-6 之间', trigger: 'blur' }
-  ]
+    { min: 4, max: 6, message: '验证码长度应在 4-6 之间', trigger: 'blur' },
+  ],
 }
 
 // 初始化
 onMounted(async () => {
-  // 生成会话ID
-  sessionId.value = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   // 获取验证码
   await fetchCaptcha()
   // 初始化密钥交换
@@ -157,19 +155,60 @@ const fetchCaptcha = async () => {
 // 初始化密钥交换
 const initKeyExchange = async () => {
   try {
+    // 检查缓存
+    const cachedData = localStorage.getItem('cryptoCache')
+    const now = Date.now()
+
+    if (cachedData) {
+      try {
+        const parsedCache = JSON.parse(cachedData)
+        if (parsedCache.expiry && now < parsedCache.expiry) {
+          // 使用缓存数据
+          sessionId.value = parsedCache.cryptoSid
+          // 导入 AES 密钥
+          aesKey.value = await cryptoService.importAesKey(parsedCache.aesKey)
+          return
+        }
+      } catch (e) {
+        // 缓存解析失败，清除缓存
+        localStorage.removeItem('cryptoCache')
+      }
+    }
+
     const response = await cryptoService.initKeyExchange()
     if (response.data) {
       // 使用后端返回的 cryptoSid
-      sessionId.value = response.data.cryptoSid
+      const cryptoSid = response.data.cryptoSid
       // 生成AES密钥
-      aesKey.value = cryptoService.generateAesKey()
+      const generatedAesKey = await cryptoService.generateAesKey()
       // 用RSA公钥加密AES密钥
-      const encryptedAesKey = cryptoService.encryptAesKeyWithRsa(aesKey.value, response.data.publicKey)
+      const encryptedAesKey = await cryptoService.encryptAesKeyWithRsa(
+        generatedAesKey,
+        response.data.publicKey,
+      )
       // 完成密钥交换
       await cryptoService.completeKeyExchange({
-        cryptoSid: sessionId.value,
-        encryptedAesKey: encryptedAesKey
+        cryptoSid: cryptoSid,
+        encryptedAesKey: encryptedAesKey,
       })
+
+      // 导出 AES 密钥为字符串
+      const aesKeyStr = await cryptoService.exportAesKey(generatedAesKey)
+
+      // 存储到本地存储，有效期24小时
+      const expiry = now + 24 * 60 * 60 * 1000
+      localStorage.setItem(
+        'cryptoCache',
+        JSON.stringify({
+          cryptoSid: cryptoSid,
+          aesKey: aesKeyStr,
+          expiry: expiry,
+        }),
+      )
+
+      // 更新本地变量
+      sessionId.value = cryptoSid
+      aesKey.value = generatedAesKey
     }
   } catch (err) {
     console.error('密钥交换失败:', err)
@@ -187,7 +226,10 @@ const handleLogin = async () => {
     }
 
     // 加密密码
-    const encryptedPassword = cryptoService.encryptWithAesGcm(form.password, aesKey.value)
+    if (!aesKey.value) {
+      throw new Error('AES 密钥未初始化')
+    }
+    const encryptedPassword = await cryptoService.encryptWithAesGcm(form.password, aesKey.value)
 
     // 调用登录接口
     const response = await authService.login({
@@ -195,7 +237,7 @@ const handleLogin = async () => {
       password: encryptedPassword,
       captcha: form.captcha,
       captchaKey: form.captchaKey,
-      cryptoSid: sessionId.value
+      cryptoSid: sessionId.value,
     })
 
     // 登录成功后存储令牌信息
