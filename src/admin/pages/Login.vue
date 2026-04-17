@@ -81,8 +81,8 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { NForm, NFormItem, NInput, NButton, useMessage, NIcon, NInputOtp } from 'naive-ui'
 import { User, Lock } from 'lucide-vue-next'
-import { authService } from '../../api/services/auth'
-import { cryptoService } from '../../api/services/crypto'
+import { authService } from '@/api/services/auth'
+import { cryptoService } from '@/api/services/crypto'
 
 const router = useRouter()
 const message = useMessage()
@@ -246,6 +246,7 @@ const handleLogin = async () => {
       localStorage.setItem('refreshToken', response.data.refreshToken)
       localStorage.setItem('userId', response.data.userId.toString())
       localStorage.setItem('username', response.data.uname)
+      localStorage.setItem('nickname', response.data.nickname || response.data.uname)
     }
 
     // 登录成功后跳转到管理员首页
@@ -256,6 +257,11 @@ const handleLogin = async () => {
       const errorMessage = err[0].message || '请检查输入信息'
       message.error(errorMessage)
       console.log('表单验证错误:', err)
+    } else if (err.code === 'CRYPTO_KEY_ERROR') {
+      // 密钥错误，需要重新获取加密 key
+      localStorage.removeItem('cryptoCache')
+      await initKeyExchange()
+      message.warning('密钥已更新，请重新点击登录')
     } else {
       // 登录失败错误
       const errorMessage = err.msg || '登录失败，请检查用户名和密码'

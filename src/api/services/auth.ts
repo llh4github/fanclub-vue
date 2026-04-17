@@ -21,6 +21,16 @@ export interface LoginResponse {
   expiresIn: string
   userId: number
   uname: string
+  nickname?: string
+}
+
+/**
+ * 更新密码请求数据
+ */
+export interface UpdatePasswordRequest {
+  id?: number
+  password: string
+  cryptoSid: string
 }
 
 /**
@@ -46,5 +56,12 @@ export const authService = {
    */
   async getCurrentUser(): Promise<JsonWrapper<{ id: number; username: string; role: string }>> {
     return apiClient.get<{ id: number; username: string; role: string }>('/auth/user')
+  },
+
+  /**
+   * 更新密码
+   */
+  async updatePassword(data: UpdatePasswordRequest): Promise<JsonWrapper<boolean>> {
+    return apiClient.put<boolean>('/sys/user/updatePassword', data)
   },
 }
