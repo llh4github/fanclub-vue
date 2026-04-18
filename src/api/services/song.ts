@@ -13,6 +13,7 @@ export interface PageQueryRequest {
  * 歌曲查询参数
  */
 export interface AnchorSongQuerySpec {
+  bid?: number
   name?: string
   pageParam: PageQueryRequest
 }
@@ -28,6 +29,34 @@ export interface AnchorSongPageView {
   name: string
   price: number
   bv: string
+}
+
+/**
+ * 添加歌曲请求参数
+ */
+export interface AnchorSongAddInput {
+  bid: number
+  name: string
+  price: number
+  bv: string
+}
+
+/**
+ * 更新歌曲请求参数
+ */
+export interface AnchorSongUpdateInput {
+  id: number
+  bid: number
+  name: string
+  price: number
+  bv: string
+}
+
+/**
+ * 删除歌曲请求参数
+ */
+export interface DeleteIds {
+  ids: number[]
 }
 
 /**
@@ -66,5 +95,26 @@ export const songService = {
    */
   async getSongById(id: number): Promise<JsonWrapper<AnchorSongPageView>> {
     return apiClient.get<AnchorSongPageView>(`/anchor/song?id=${id}`)
+  },
+
+  /**
+   * 添加歌曲
+   */
+  async addSong(data: AnchorSongAddInput): Promise<JsonWrapper<boolean>> {
+    return apiClient.post<boolean>('/anchor/song/add', data)
+  },
+
+  /**
+   * 更新歌曲
+   */
+  async updateSong(data: AnchorSongUpdateInput): Promise<JsonWrapper<void>> {
+    return apiClient.put<void>('/anchor/song/update', data)
+  },
+
+  /**
+   * 删除歌曲
+   */
+  async deleteSong(data: DeleteIds): Promise<JsonWrapper<number>> {
+    return apiClient.delete<number>('/anchor/song/delete')
   },
 }

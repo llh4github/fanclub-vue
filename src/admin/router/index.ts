@@ -18,6 +18,14 @@ const adminRoutes: RouteRecordRaw[] = [
     },
     children: [
       {
+        path: '',
+        name: 'admin-song-management',
+        component: () => import('../pages/SongManagement.vue'),
+        meta: {
+          title: '歌曲管理',
+        },
+      },
+      {
         path: 'change-password',
         name: 'admin-change-password',
         component: () => import('../pages/ChangePassword.vue'),
