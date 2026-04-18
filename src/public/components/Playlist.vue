@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, h } from 'vue'
 import { NDataTable, NInput, NButton, useMessage, NIcon } from 'naive-ui'
 import { Search } from 'lucide-vue-next'
 import { songService, type AnchorSongPageView } from '@/api/services/song'
@@ -89,17 +89,55 @@ const columns = [
     width: 300,
   },
   {
-    title: '价格',
+    title: '建议点歌价',
     key: 'price',
     width: 100,
     render(row: AnchorSongPageView) {
-      return `${row.price} 元`
+      return `${row.price}`
     },
   },
   {
     title: 'BV号',
     key: 'bv',
     width: 200,
+    ellipsis: { tooltip: true },
+    render: (row: AnchorSongPageView) => {
+      if (!row.bv) return ''
+      return h(
+        'a',
+        {
+          href: `https://www.bilibili.com/video/${row.bv}`,
+          target: '_blank',
+          class: 'text-blue-400 hover:text-blue-300 underline',
+        },
+        row.bv,
+      )
+    },
+  },
+  {
+    title: '操作',
+    key: 'actions',
+    width: 100,
+    render: (row: AnchorSongPageView) => {
+      return h(
+        NButton,
+        {
+          size: 'small',
+          type: 'primary',
+          onClick: () => {
+            navigator.clipboard
+              .writeText(`点歌 ${row.name}`)
+              .then(() => {
+                message.success('点歌弹幕已复制到剪贴板')
+              })
+              .catch(() => {
+                message.error('复制失败，请手动复制')
+              })
+          },
+        },
+        { default: () => '点歌' },
+      )
+    },
   },
 ]
 
