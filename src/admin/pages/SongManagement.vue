@@ -33,6 +33,18 @@
             :max="10000"
             style="width: 100%"
           />
+
+          <div class="flex gap-2 mt-2">
+            <n-button
+              v-for="price in quickPrices"
+              :key="price"
+              size="small"
+              :type="form.price === price ? 'primary' : 'default'"
+              @click="form.price = price"
+            >
+              {{ price }}
+            </n-button>
+          </div>
         </n-form-item>
         <n-form-item label="BV号" path="bv">
           <n-input v-model:value="form.bv" placeholder="请输入BV号" />
@@ -87,6 +99,8 @@ import {
 import { LIKO_INFO } from '@/common/constants/anchor'
 
 const message = useMessage()
+
+const quickPrices = [0, 30, 50, 100, 138, 168]
 
 const isLoading = ref(false)
 const isSubmitting = ref(false)
@@ -231,7 +245,9 @@ const fetchSongList = async () => {
       pagination.pageSize = pagination.pageSize
     }
   } catch (error: any) {
-    message.error(error.message || '获取歌曲列表失败')
+    const errorMessage =
+      error.response?.data?.msg || error.msg || error.message || '获取歌曲列表失败'
+    message.error(errorMessage)
   } finally {
     isLoading.value = false
   }
@@ -290,7 +306,8 @@ const handleSubmit = async () => {
       showModal.value = false
       fetchSongList()
     } catch (error: any) {
-      message.error(error.message || '操作失败')
+      const errorMessage = error.response?.data?.msg || error.msg || error.message || '操作失败'
+      message.error(errorMessage)
     } finally {
       isSubmitting.value = false
     }
@@ -310,7 +327,8 @@ const handleConfirmDelete = async () => {
     selectedRowKeys.value = []
     fetchSongList()
   } catch (error: any) {
-    message.error(error.message || '删除失败')
+    const errorMessage = error.response?.data?.msg || error.msg || error.message || '删除失败'
+    message.error(errorMessage)
   } finally {
     isDeleting.value = false
   }
