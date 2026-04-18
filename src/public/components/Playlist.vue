@@ -79,7 +79,7 @@ const columns = [
     title: '序号',
     key: 'index',
     width: 80,
-    render: (_row, index) => {
+    render: (_row: unknown, index: number) => {
       return index + 1
     },
   },
