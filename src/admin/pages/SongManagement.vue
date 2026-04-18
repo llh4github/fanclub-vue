@@ -2,7 +2,16 @@
   <div class="song-management min-h-screen bg-background text-foreground p-4">
     <div class="mb-4 flex justify-between items-center">
       <h2 class="text-2xl font-bold text-white">歌曲管理</h2>
-      <div class="flex gap-2">
+      <div class="flex gap-2 items-center">
+        <n-input
+          v-model:value="searchName"
+          placeholder="搜索歌曲名称"
+          clearable
+          style="width: 200px"
+          @keyup.enter="handleSearch"
+        />
+        <n-button type="primary" @click="handleSearch">搜索</n-button>
+        <n-button @click="handleReset">重置</n-button>
         <n-button
           type="error"
           :disabled="selectedRowKeys.length === 0"
@@ -89,6 +98,7 @@
 
 <script setup lang="ts" name="SongManagement">
 import { ref, reactive, onMounted, h } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   useMessage,
   NButton,
@@ -102,17 +112,26 @@ import {
   NText,
 } from 'naive-ui'
 import type { DataTableColumns, DataTableRowKey } from 'naive-ui'
-import {
-  songService,
-  type AnchorSongPageView,
-  type AnchorSongAddInput,
-  type AnchorSongUpdateInput,
-} from '@/api/services/song'
+import { songService, type AnchorSongPageView } from '@/api/services/song'
+import { type AnchorSongAddInput, type AnchorSongUpdateInput } from '@/api/services/song'
 import { LIKO_INFO } from '@/common/constants/anchor'
 
 const message = useMessage()
+const router = useRouter()
 
 const quickPrices = [0, 30, 50, 100, 138, 168]
+const searchName = ref('')
+
+const handleUnauthorized = () => {
+  message.error('登录已失效，请重新登录')
+  localStorage.removeItem('accessToken')
+  localStorage.removeItem('refreshToken')
+  localStorage.removeItem('userId')
+  localStorage.removeItem('username')
+  localStorage.removeItem('nickname')
+  localStorage.removeItem('cryptoCache')
+  router.push('/admin/login')
+}
 
 const isLoading = ref(false)
 const isSubmitting = ref(false)
@@ -257,7 +276,7 @@ const fetchSongList = async () => {
   try {
     const response = await songService.getSongPage({
       bid: undefined,
-      name: undefined,
+      name: searchName.value || undefined,
       pageParam: {
         pageIndex: pagination.page,
         pageSize: pagination.pageSize,
@@ -269,12 +288,28 @@ const fetchSongList = async () => {
       pagination.pageSize = pagination.pageSize
     }
   } catch (error: any) {
+    const errorCode = error.response?.data?.code || error.code
+    if (errorCode === '401') {
+      handleUnauthorized()
+      return
+    }
     const errorMessage =
       error.response?.data?.msg || error.msg || error.message || '获取歌曲列表失败'
     message.error(errorMessage)
   } finally {
     isLoading.value = false
   }
+}
+
+const handleSearch = () => {
+  pagination.page = 1
+  fetchSongList()
+}
+
+const handleReset = () => {
+  searchName.value = ''
+  pagination.page = 1
+  fetchSongList()
 }
 
 const handleAdd = () => {
@@ -342,6 +377,11 @@ const handleSubmit = async () => {
       showModal.value = false
       fetchSongList()
     } catch (error: any) {
+      const errorCode = error.response?.data?.code || error.code
+      if (errorCode === '401') {
+        handleUnauthorized()
+        return
+      }
       const errorMessage = error.response?.data?.msg || error.msg || error.message || '操作失败'
       message.error(errorMessage)
     } finally {
@@ -363,6 +403,11 @@ const handleConfirmDelete = async () => {
     selectedRowKeys.value = []
     fetchSongList()
   } catch (error: any) {
+    const errorCode = error.response?.data?.code || error.code
+    if (errorCode === '401') {
+      handleUnauthorized()
+      return
+    }
     const errorMessage = error.response?.data?.msg || error.msg || error.message || '删除失败'
     message.error(errorMessage)
   } finally {

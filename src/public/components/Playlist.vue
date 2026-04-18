@@ -76,9 +76,12 @@ const searchName = ref('')
 
 const columns = [
   {
-    title: 'ID',
-    key: 'id',
+    title: '序号',
+    key: 'index',
     width: 80,
+    render: (_row, index) => {
+      return index + 1
+    },
   },
   {
     title: '歌曲名称',
