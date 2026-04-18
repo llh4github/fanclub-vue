@@ -1,7 +1,7 @@
 <template>
-  <div class="song-management">
+  <div class="song-management min-h-screen bg-background text-foreground p-4">
     <div class="mb-4 flex justify-between items-center">
-      <h2 class="text-2xl font-bold text-gray-800">歌曲管理</h2>
+      <h2 class="text-2xl font-bold text-white">歌曲管理</h2>
       <div class="flex gap-2">
         <n-button
           type="error"
@@ -15,7 +15,7 @@
       </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow-md p-6 flex-1 overflow-auto">
+    <div class="bg-card rounded-lg shadow-md p-6 flex-1 overflow-auto">
       <n-data-table
         :columns="columns"
         :data="songList"
@@ -180,7 +180,7 @@ const columns: DataTableColumns<AnchorSongPageView> = [
     key: 'index',
     width: 80,
     render: (_row, index) => {
-      return (pagination.page - 1) * pagination.pageSize + index + 1
+      return index + 1
     },
   },
   {
@@ -191,8 +191,20 @@ const columns: DataTableColumns<AnchorSongPageView> = [
   {
     title: 'BV号',
     key: 'bv',
-    width: 150,
+    width: 180,
     ellipsis: { tooltip: true },
+    render: (row) => {
+      if (!row.bv) return ''
+      return h(
+        'a',
+        {
+          href: `https://www.bilibili.com/video/${row.bv}`,
+          target: '_blank',
+          class: 'text-blue-400 hover:text-blue-300 underline',
+        },
+        row.bv,
+      )
+    },
   },
   {
     title: '价格',
@@ -362,7 +374,6 @@ const handleConfirmDelete = async () => {
 <style scoped>
 .song-management {
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
 }

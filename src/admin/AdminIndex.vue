@@ -1,26 +1,38 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-100">
-    <header
-      class="bg-primary text-white py-4 px-6 sm:px-8 shadow-md flex justify-between items-center"
-    >
-      <h1 class="text-xl sm:text-2xl font-bold">后台管理页面</h1>
-      <div class="flex items-center space-x-4">
-        <n-dropdown :options="actionOptions" @select="handleAction">
-          <n-button text>{{ nickname }}</n-button>
-        </n-dropdown>
-      </div>
-    </header>
+  <n-config-provider :theme="darkTheme">
+    <n-message-provider>
+      <div class="min-h-screen flex flex-col bg-background text-foreground">
+        <header
+          class="bg-card text-white py-4 px-6 sm:px-8 shadow-md flex justify-between items-center"
+        >
+          <h1 class="text-xl sm:text-2xl font-bold">兔子洞管理页面</h1>
+          <div class="flex items-center space-x-4">
+            <router-link to="/" class="text-white hover:text-gray-300">主站</router-link>
+            <n-dropdown :options="actionOptions" @select="handleAction">
+              <n-button text>{{ nickname }}</n-button>
+            </n-dropdown>
+          </div>
+        </header>
 
-    <main class="flex-1 p-4 sm:p-6 md:p-8 overflow-auto">
-      <router-view class="h-full" />
-    </main>
-  </div>
+        <main class="flex-1 p-4 sm:p-6 md:p-8 overflow-auto">
+          <router-view class="h-full" />
+        </main>
+      </div>
+    </n-message-provider>
+  </n-config-provider>
 </template>
 
 <script setup lang="ts" name="AdminIndex">
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { NDropdown, useMessage, NButton } from 'naive-ui'
+import {
+  darkTheme,
+  NConfigProvider,
+  NMessageProvider,
+  NDropdown,
+  NButton,
+  useMessage,
+} from 'naive-ui'
 import { authService } from '@/api/services/auth'
 
 const router = useRouter()
