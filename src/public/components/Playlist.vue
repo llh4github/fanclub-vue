@@ -60,10 +60,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { NDataTable, NInput, NButton, useMessage, NIcon } from 'naive-ui'
 import { Search } from 'lucide-vue-next'
-import { songService, type AnchorSongPageView } from '../../api/services/song'
+import { songService, type AnchorSongPageView } from '@/api/services/song'
 
 const message = useMessage()
 
