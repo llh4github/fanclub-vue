@@ -11,8 +11,8 @@
       </div>
     </header>
 
-    <main class="flex-1 p-4 sm:p-6 md:p-8">
-      <router-view />
+    <main class="flex-1 p-4 sm:p-6 md:p-8 overflow-auto">
+      <router-view class="h-full" />
     </main>
   </div>
 </template>

@@ -144,9 +144,10 @@ export class ApiClient {
   /**
    * DELETE 请求
    */
-  async delete<T>(url: string): Promise<JsonWrapper<T>> {
+  async delete<T>(url: string, data?: any): Promise<JsonWrapper<T>> {
     return this.debouncedRequest(url, {
       method: 'DELETE',
+      body: data ? JSON.stringify(data) : undefined,
     }) as Promise<JsonWrapper<T>>
   }
 }

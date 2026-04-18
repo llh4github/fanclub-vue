@@ -2,16 +2,28 @@
   <div class="song-management">
     <div class="mb-4 flex justify-between items-center">
       <h2 class="text-2xl font-bold text-gray-800">歌曲管理</h2>
-      <n-button type="primary" @click="handleAdd"> 添加歌曲 </n-button>
+      <div class="flex gap-2">
+        <n-button
+          type="error"
+          :disabled="selectedRowKeys.length === 0"
+          :loading="isDeleting"
+          @click="handleBatchDelete"
+        >
+          批量删除{{ selectedRowKeys.length > 0 ? ` (${selectedRowKeys.length})` : '' }}
+        </n-button>
+        <n-button type="primary" @click="handleAdd"> 添加歌曲 </n-button>
+      </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="bg-white rounded-lg shadow-md p-6 flex-1 overflow-auto">
       <n-data-table
         :columns="columns"
         :data="songList"
         :pagination="pagination"
         :loading="isLoading"
         :row-key="(row: AnchorSongPageView) => row.id"
+        :checked-row-keys="selectedRowKeys"
+        @update:checked-row-keys="handleSelectionChange"
       />
     </div>
 
@@ -278,6 +290,18 @@ const handleDelete = (ids: number[]) => {
   showDeleteConfirm.value = true
 }
 
+const handleBatchDelete = () => {
+  if (selectedRowKeys.value.length === 0) {
+    message.warning('请选择要删除的歌曲')
+    return
+  }
+  showDeleteConfirm.value = true
+}
+
+const handleSelectionChange = (keys: DataTableRowKey[]) => {
+  selectedRowKeys.value = keys as number[]
+}
+
 const handleSubmit = async () => {
   if (formRef.value) {
     await formRef.value.validate()
@@ -338,5 +362,8 @@ const handleConfirmDelete = async () => {
 <style scoped>
 .song-management {
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>

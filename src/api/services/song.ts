@@ -115,6 +115,6 @@ export const songService = {
    * 删除歌曲
    */
   async deleteSong(data: DeleteIds): Promise<JsonWrapper<number>> {
-    return apiClient.delete<number>('/anchor/song/delete')
+    return apiClient.delete<number>('/anchor/song/delete', data)
   },
 }
