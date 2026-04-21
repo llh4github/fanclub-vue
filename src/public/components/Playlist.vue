@@ -42,14 +42,7 @@
           :data="songs"
           :loading="loading"
           :remote="true"
-          :pagination="{
-            page: pageIndex,
-            pageSize: pageSize,
-            itemCount: total,
-            showSizePicker: false,
-            showQuickJumper: true,
-          }"
-          @update:pagination="handlePaginationChange"
+          :pagination="pagination"
           :row-key="(row) => row.id"
           size="medium"
           bordered
@@ -63,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, h } from 'vue'
+import { ref, onMounted, h, reactive } from 'vue'
 import { NDataTable, NInput, NButton, useMessage, NIcon } from 'naive-ui'
 import { Search } from 'lucide-vue-next'
 import { songService, type AnchorSongPageView } from '@/api/services/song'
@@ -72,10 +65,19 @@ const message = useMessage()
 
 const loading = ref(false)
 const songs = ref<AnchorSongPageView[]>([])
-const total = ref(0)
-const pageIndex = ref(1)
-const pageSize = ref(10)
 const searchName = ref('')
+
+const pagination = reactive({
+  page: 1,
+  pageSize: 10,
+  itemCount: 0,
+  showSizePicker: false,
+  showQuickJumper: true,
+  onChange: (page: number) => {
+    pagination.page = page
+    fetchSongs()
+  },
+})
 
 const columns = [
   {
@@ -150,13 +152,13 @@ const fetchSongs = async () => {
     const response = await songService.getSongPageLiko({
       name: searchName.value || undefined,
       pageParam: {
-        pageIndex: pageIndex.value,
-        pageSize: pageSize.value,
+        pageIndex: pagination.page,
+        pageSize: pagination.pageSize,
       },
     })
     if (response.data) {
       songs.value = response.data.records
-      total.value = response.data.totalRowCount
+      pagination.itemCount = response.data.totalRowCount
     }
   } catch (err) {
     console.error('获取歌曲列表失败:', err)
@@ -166,14 +168,8 @@ const fetchSongs = async () => {
   }
 }
 
-const handlePaginationChange = (pagination: any) => {
-  pageIndex.value = pagination.page
-  pageSize.value = pagination.pageSize
-  fetchSongs()
-}
-
 const handleSearch = () => {
-  pageIndex.value = 1
+  pagination.page = 1
   fetchSongs()
 }
 
@@ -193,68 +189,3 @@ onMounted(() => {
   fetchSongs()
 })
 </script>
-
-<style scoped>
-/* 自定义样式 */
-:deep(.n-data-table) {
-  background-color: transparent !important;
-}
-
-:deep(.n-data-table th) {
-  background-color: rgba(10, 10, 15, 0.8) !important;
-  color: #e5e5e5 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-:deep(.n-data-table td) {
-  background-color: rgba(10, 10, 15, 0.6) !important;
-  color: #e5e5e5 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-:deep(.n-data-table tr:hover td) {
-  background-color: rgba(223, 118, 35, 0.3) !important;
-  color: white !important;
-}
-
-:deep(.n-pagination) {
-  background-color: rgba(10, 10, 15, 0.8) !important;
-  color: #e5e5e5 !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-:deep(.n-pagination-item) {
-  background-color: rgba(10, 10, 15, 0.8) !important;
-  color: #e5e5e5 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-:deep(.n-pagination-item:hover) {
-  background-color: rgba(223, 118, 35, 0.2) !important;
-}
-
-:deep(.n-pagination-item--active) {
-  background-color: rgba(223, 118, 35, 0.5) !important;
-  border-color: #df7623 !important;
-}
-
-:deep(.n-input) {
-  background-color: rgba(10, 10, 15, 0.8) !important;
-  color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-:deep(.n-input__input-el) {
-  color: white !important;
-}
-
-:deep(.n-button) {
-  background-color: rgba(223, 118, 35, 0.8) !important;
-  color: white !important;
-  border: 1px solid #df7623 !important;
-}
-
-:deep(.n-button:hover) {
-  background-color: rgba(223, 118, 35, 1) !important;
-}
-</style>
