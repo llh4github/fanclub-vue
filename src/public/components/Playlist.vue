@@ -41,6 +41,7 @@
           :columns="columns"
           :data="songs"
           :loading="loading"
+          :remote="true"
           :pagination="{
             page: pageIndex,
             pageSize: pageSize,
@@ -52,7 +53,9 @@
           :row-key="(row) => row.id"
           size="medium"
           bordered
-        />
+        >
+        </n-data-table>
+
         <!-- 由于 Naive UI 的 DataTable 版本可能不支持 cell 插槽，这里使用列的 render 函数来处理 BV 号的链接 -->
       </div>
     </div>

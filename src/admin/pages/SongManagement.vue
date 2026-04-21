@@ -30,6 +30,7 @@
         :data="songList"
         :pagination="pagination"
         :loading="isLoading"
+        :remote="true"
         :row-key="(row: AnchorSongPageView) => row.id"
         :checked-row-keys="selectedRowKeys"
         @update:checked-row-keys="handleSelectionChange"
@@ -175,6 +176,7 @@ const rules = {
 const pagination = reactive({
   page: 1,
   pageSize: 10,
+  itemCount: 0,
   showSizePicker: true,
   showQuickJumper: true,
   pageSizes: [10, 20, 50],
@@ -182,7 +184,7 @@ const pagination = reactive({
     pagination.page = page
     fetchSongList()
   },
-  onUpdatePageSize: (pageSize: number) => {
+  'onUpdate:pageSize': (pageSize: number) => {
     pagination.pageSize = pageSize
     pagination.page = 1
     fetchSongList()
@@ -284,8 +286,7 @@ const fetchSongList = async () => {
     })
     if (response.data) {
       songList.value = response.data.records
-      pagination.page = pagination.page
-      pagination.pageSize = pagination.pageSize
+      pagination.itemCount = response.data.totalRowCount
     }
   } catch (error: any) {
     const errorCode = error.response?.data?.code || error.code
