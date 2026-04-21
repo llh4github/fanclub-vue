@@ -11,17 +11,21 @@ export interface ApiClientConfig {
 }
 
 /**
- * 防抖函数
+ * 防抖函数 - 对每个URL分别进行防抖
  */
 function debounce(
   func: (url: string, options?: RequestInit) => Promise<any>,
   delay: number,
 ): (url: string, options?: RequestInit) => Promise<any> {
-  let timeoutId: ReturnType<typeof setTimeout>
+  const timeoutMap = new Map<string, ReturnType<typeof setTimeout>>()
   return (url: string, options?: RequestInit) => {
-    clearTimeout(timeoutId)
+    const key = url
+    if (timeoutMap.has(key)) {
+      clearTimeout(timeoutMap.get(key) as ReturnType<typeof setTimeout>)
+    }
     return new Promise((resolve, reject) => {
-      timeoutId = setTimeout(async () => {
+      const timeoutId = setTimeout(async () => {
+        timeoutMap.delete(key)
         try {
           const result = await func(url, options)
           resolve(result)
@@ -29,6 +33,7 @@ function debounce(
           reject(error)
         }
       }, delay)
+      timeoutMap.set(key, timeoutId)
     })
   }
 }

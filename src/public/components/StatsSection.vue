@@ -226,7 +226,7 @@ const loadFollowerHistory = async () => {
 
     // 调用接口获取数据
     const response = await anchorService.queryFollowerHistory({
-      biliId: LIKO_INFO.uid,
+      bid: LIKO_INFO.uid,
       cntDate: dayjs().format('YYYY-MM-DD'),
     })
 
@@ -298,7 +298,7 @@ onMounted(async () => {
   try {
     const today = new Date().toISOString().split('T')[0] || ''
     const response = await anchorService.queryFollowerNum({
-      biliId: LIKO_INFO.uid,
+      bid: LIKO_INFO.uid,
       cntDate: today,
     })
     followerNum.value = response.data || 0

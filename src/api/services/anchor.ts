@@ -33,8 +33,8 @@ export interface AnchorLiveRecordLiveStatus {
  * 查询指定日期的粉丝数量请求参数
  */
 export interface AnchorFollowerDateNumQuerySpec {
-  /** B站UID */
-  biliId: number
+  /** B站ID */
+  bid: number
   /** 统计日期，格式：YYYY-MM-DD */
   cntDate: string
 }
