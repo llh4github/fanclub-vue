@@ -5,7 +5,7 @@
       <Hero />
       <!-- <About /> -->
       <WeekCalendar />
-      <Playlist />
+      <SongList />
       <Timeline />
     </main>
     <Footer />
@@ -18,7 +18,7 @@ import Hero from '../components/Hero.vue'
 // import About from '../components/About.vue'
 import WeekCalendar from '../components/WeekCalendar.vue'
 import Timeline from '../components/Timeline.vue'
-import Playlist from '../components/Playlist.vue'
+import SongList from '../components/SongList.vue'
 import Footer from '../components/Footer.vue'
 </script>
 

@@ -20,14 +20,13 @@
 
       <div class="bg-card border border-border rounded-lg overflow-hidden">
         <div class="p-4 border-b border-border">
-          <div class="flex justify-end">
+          <div class="flex justify-end gap-2">
             <n-input
               v-model:value="searchName"
               placeholder="搜索歌曲名称"
               size="small"
-              class="mr-2"
+              style="width: 180px"
               @keyup.enter="handleSearch"
-              clearable
             >
               <template #prefix>
                 <n-icon>

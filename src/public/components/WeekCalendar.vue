@@ -18,7 +18,7 @@
         <p class="text-sm text-muted-foreground">{{ weekDateRange }}</p>
       </div>
 
-      <div class="bg-[#1a1a1a] border border-border p-6 clip-corner" style="max-height: 600px">
+      <div class="bg-[#1a1a1a] border border-border p-6 clip-corner" style="max-height: 600px; overflow-y: auto;">
         <VueCal
           ref="calendarRef"
           :events="calendarEvents"
