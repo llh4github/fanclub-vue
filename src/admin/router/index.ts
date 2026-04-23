@@ -1,14 +1,39 @@
 import type { RouteRecordRaw } from 'vue-router'
-import AdminIndex from '../AdminIndex.vue'
 
 const adminRoutes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/admin/login',
+    name: 'admin-login',
+    component: () => import('../pages/Login.vue'),
+    meta: {
+      title: '管理员登录',
+    },
+  },
+  {
+    path: '/admin',
     name: 'admin-home',
-    component: AdminIndex,
+    component: () => import('../AdminIndex.vue'),
     meta: {
       title: '后台管理',
     },
+    children: [
+      {
+        path: '',
+        name: 'admin-song-management',
+        component: () => import('../pages/SongManagement.vue'),
+        meta: {
+          title: '歌曲管理',
+        },
+      },
+      {
+        path: 'change-password',
+        name: 'admin-change-password',
+        component: () => import('../pages/ChangePassword.vue'),
+        meta: {
+          title: '修改密码',
+        },
+      },
+    ],
   },
 ]
 

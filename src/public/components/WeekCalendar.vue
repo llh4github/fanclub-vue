@@ -18,10 +18,7 @@
         <p class="text-sm text-muted-foreground">{{ weekDateRange }}</p>
       </div>
 
-      <div
-        class="bg-[#1a1a1a] border border-border p-6 clip-corner"
-        style="max-height: 600px; overflow: auto"
-      >
+      <div class="bg-[#1a1a1a] border border-border p-6 clip-corner" style="max-height: 600px; overflow-y: auto;">
         <VueCal
           ref="calendarRef"
           :events="calendarEvents"
@@ -129,7 +126,16 @@ const calendarRef = ref<any>(null)
 const handleCalendarReady = () => {
   if (calendarRef.value) {
     try {
-      calendarRef.value.scrollToCurrentTime()
+      // 检查是否存在 scrollToCurrentTime 方法
+      if (typeof calendarRef.value.scrollToCurrentTime === 'function') {
+        calendarRef.value.scrollToCurrentTime()
+      } else if (typeof calendarRef.value.scrollToTime === 'function') {
+        // 尝试使用 scrollToTime 方法
+        const now = new Date()
+        calendarRef.value.scrollToTime(now.getHours(), now.getMinutes())
+      } else {
+        console.log('No scroll to time method found in vue-cal')
+      }
     } catch (error) {
       console.error('Error scrolling to current time:', error)
     }

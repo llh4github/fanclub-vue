@@ -101,12 +101,14 @@
           ></div>
         </button>
       </template>
-      <div class="text-xs">
-        <div v-if="liveStatus.liveTime">上次直播：{{ formatLiveTime(liveStatus.liveTime) }}</div>
-        <div v-if="liveStatus.liveDuration">
-          直播时长：{{ formatLiveDuration(liveStatus.liveDuration) }}
+      <template #default>
+        <div class="text-xs">
+          <div v-if="liveStatus.liveTime">上次直播：{{ formatLiveTime(liveStatus.liveTime) }}</div>
+          <div v-if="liveStatus.liveDuration">
+            直播时长：{{ formatLiveDuration(liveStatus.liveDuration) }}
+          </div>
         </div>
-      </div>
+      </template>
     </NTooltip>
     <button
       v-else
