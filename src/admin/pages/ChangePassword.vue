@@ -1,6 +1,6 @@
 <template>
-  <div class="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">
-    <h2 class="text-2xl font-bold mb-6 text-gray-800">修改密码</h2>
+  <div class="max-w-lg mx-auto p-6 bg-card rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-foreground">修改密码</h2>
 
     <n-form ref="formRef" :model="form" :rules="rules" label-placement="top" class="space-y-4">
       <n-form-item label="新密码" path="password">
@@ -50,9 +50,11 @@ const rules = {
     {
       required: true,
       validator: (rule: any, value: string) => {
-        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,15}$/.test(value)
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+])[A-Za-z\d~!@#$%^&*()_+]{6,15}$/.test(
+          value,
+        )
       },
-      message: '密码必须包含大小写字母和数字',
+      message: '密码必须包含大小写字母、数字和常用符号(~!@#$%^&*()_+)',
       trigger: 'blur',
     },
   ],
