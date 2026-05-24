@@ -488,6 +488,13 @@ onBeforeUnmount(() => {
   min-height: 220px;
   flex-shrink: 0;
   scroll-snap-align: start;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .day-card-glass {
@@ -511,21 +518,21 @@ onBeforeUnmount(() => {
 }
 
 .day-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+  border-color: rgba(102, 126, 234, 0.35);
   box-shadow:
-    0 8px 32px rgba(102, 126, 234, 0.15),
-    0 0 20px rgba(139, 92, 246, 0.1),
+    0 8px 32px rgba(102, 126, 234, 0.18),
+    0 0 20px rgba(139, 92, 246, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
 }
 
 .day-card.today {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border-color: rgba(102, 126, 234, 0.5);
   box-shadow:
-    0 0 30px rgba(102, 126, 234, 0.2),
-    0 0 60px rgba(139, 92, 246, 0.1),
+    0 0 30px rgba(102, 126, 234, 0.25),
+    0 0 60px rgba(139, 92, 246, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 

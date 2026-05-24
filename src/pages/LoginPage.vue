@@ -220,14 +220,23 @@ function goBack() {
 
               <div class="form-group">
                 <label class="form-label">密码</label>
-                <NInput v-model:value="formData.password" type="password" show-password-on="click" placeholder="请输入密码">
+                <NInput
+                  v-model:value="formData.password"
+                  type="password"
+                  show-password-on="click"
+                  placeholder="请输入密码"
+                >
                 </NInput>
               </div>
 
               <div class="captcha-wrapper">
-                <button type="button" class="captcha-btn"
-                  :disabled="!formData.username || !formData.password || isCaptchaVerified" @click="openCaptchaModal"
-                  :class="{ 'is-verified': isCaptchaVerified }">
+                <button
+                  type="button"
+                  class="captcha-btn"
+                  :disabled="!formData.username || !formData.password || isCaptchaVerified"
+                  @click="openCaptchaModal"
+                  :class="{ 'is-verified': isCaptchaVerified }"
+                >
                   <span class="captcha-btn-icon">🔐</span>
                   <span class="captcha-btn-text">
                     {{ isCaptchaVerified ? "已验证 ✓" : "点击进行安全验证" }}
@@ -246,12 +255,19 @@ function goBack() {
         </div>
       </main>
 
-      <NModal v-model:show="showCaptchaModal" preset="card" :mask-closable="true" class="captcha-modal" title="验证码"
-        :style="{ maxWidth: '420px' }" :content-style="{
+      <NModal
+        v-model:show="showCaptchaModal"
+        preset="card"
+        :mask-closable="true"
+        class="captcha-modal"
+        title="验证码"
+        :style="{ maxWidth: '420px' }"
+        :content-style="{
           background: 'rgba(10, 15, 30, 0.95)',
           border: '1px solid rgba(139, 92, 246, 0.3)',
           borderRadius: '12px',
-        }">
+        }"
+      >
         <template #default>
           <div class="captcha-modal-content">
             <div v-if="isCaptchaLoading" class="captcha-loading">
@@ -259,16 +275,20 @@ function goBack() {
               <span>加载验证码中...</span>
             </div>
             <div v-else-if="captchaData" class="captcha-component-wrapper">
-              <Click :config="{
-                width: 300,
-                height: 220,
-                thumbHeight: 60,
-                title: '请依次点击',
-                buttonText: '验证',
-              }" :data="{
-                image: captchaData.image,
-                thumb: captchaData.thumb,
-              }" :events="captchaEvents" />
+              <Click
+                :config="{
+                  width: 300,
+                  height: 220,
+                  thumbHeight: 60,
+                  title: '请依次点击',
+                  buttonText: '验证',
+                }"
+                :data="{
+                  image: captchaData.image,
+                  thumb: captchaData.thumb,
+                }"
+                :events="captchaEvents"
+              />
             </div>
             <div v-else class="captcha-error">
               <span>验证码加载失败</span>
@@ -302,7 +322,14 @@ function goBack() {
 
 .login-page {
   @apply min-h-screen min-h-[100svh] relative overflow-hidden;
-  background: linear-gradient(135deg, #1e1008 0%, #0f172a 25%, #2d1810 50%, #1e1008 75%, #0f172a 100%);
+  background: linear-gradient(
+    135deg,
+    #1e1008 0%,
+    #0f172a 25%,
+    #2d1810 50%,
+    #1e1008 75%,
+    #0f172a 100%
+  );
 }
 
 .login-bg {
@@ -334,7 +361,6 @@ function goBack() {
 }
 
 @keyframes pulse-orb {
-
   0%,
   100% {
     transform: scale(1);
@@ -441,7 +467,6 @@ function goBack() {
 }
 
 @keyframes pulse-icon {
-
   0%,
   100% {
     transform: scale(1);
