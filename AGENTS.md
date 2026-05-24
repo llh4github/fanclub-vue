@@ -1,89 +1,96 @@
-# AGENTS
-所有AI编码工具都应遵守本文档规范。
-1. 你必须使用中文回答我的问题。
-2. vue组件使用 Composition API + <script setup lang="ts"> 风格。
-3. 
+# AGENTS.md
 
+你必须用中文回答所有问题。
 
-## 开发流程
-1. 本项目使用pnpm作为包管理器。
-2. 本项目使用Vue 3 + TypeScript 开发。
-3. 修改完代码文件后，使用 `pnpm typecheck && pnpm format` 检查并格式化代码。
+## 项目概览
+
+- **项目名称**: demo-homepage
+- **包管理器**: pnpm
+- **类型**: Vue 3 + TypeScript + Vite 单页应用
+
+## 技术栈
+
+- **框架**: Vue 3（使用 `<script setup>` 单文件组件）
+- **构建工具**: Vite 8.x
+- **语言**: TypeScript
+- **样式**: Tailwind CSS 4.x（使用 @tailwindcss/vite 插件）
+- **UI 库**: Naive UI 2.x
+- **动画**: GSAP, AOS, Animate.css, Three.js
+
+## 命令
+
+```bash
+pnpm vue-tsc -b  # AI 修改代码后，需要重新运行此命令检查类型
+pnpm dev          # 启动开发服务器
+pnpm build        # 构建生产版本（类型检查 + vite build）
+pnpm preview      # 预览生产构建
+```
 
 ## 项目结构
 
 ```
-├── .trae/                 # Trae相关配置
-├── .vscode/               # VS Code配置
-├── public/                # 公共静态文件
-├── src/                   # 源代码目录
-│   ├── admin/             # 管理后台
-│   │   ├── router/        # 管理后台路由
-│   │   └── AdminIndex.vue # 管理后台入口组件
-│   ├── api/               # API相关代码
-│   │   ├── services/      # API服务
-│   │   ├── client.ts      # API客户端
-│   │   ├── index.ts       # API入口
-│   │   └── types.ts       # API类型定义
-│   ├── assets/            # 静态资源
-│   │   ├── avatar/        # 头像资源
-│   │   ├── fullbody/      # 全身像资源
-│   │   ├── texts/         # 文本资源
-│   │   └── texture/       # 纹理资源
-│   ├── common/            # 通用组件和工具
-│   │   ├── assets/        # 通用资源
-│   │   ├── components/    # 通用组件
-│   │   ├── constants/     # 常量定义
-│   │   ├── router/        # 通用路由
-│   │   └── stores/        # 状态管理
-│   ├── public/            # 公共页面
-│   │   ├── components/    # 公共组件
-│   │   ├── pages/         # 公共页面
-│   │   └── router/        # 公共路由
-│   ├── types/             # TypeScript类型定义
-│   ├── websocket/         # WebSocket相关代码
-│   ├── App.vue            # 主应用组件
-│   └── main.ts            # 入口文件
-├── .editorconfig          # 编辑器配置
-├── .env                   # 环境变量
-├── .gitattributes         # Git属性配置
-├── .gitignore             # Git忽略文件
-├── .oxfmtrc.json          # Oxlint格式化配置
-├── .oxlintrc.json         # Oxlint配置
-├── AGENTS.md              # AI编码工具规范
-├── LICENSE                # 许可证
-├── README.md              # 项目说明
-├── env.d.ts               # 环境类型定义
-├── eslint.config.ts       # ESLint配置
-├── index.html             # HTML入口
-├── package.json           # 项目配置和依赖
-├── pnpm-lock.yaml         # pnpm依赖锁文件
-├── pnpm-workspace.yaml    # pnpm工作区配置
-├── postcss.config.js      # PostCSS配置
-├── tailwind.config.js     # Tailwind CSS配置
-├── tsconfig.app.json      # TypeScript应用配置
-├── tsconfig.json          # TypeScript配置
-├── tsconfig.node.json     # TypeScript Node配置
-├── uno.config.ts          # UnoCSS配置
-└── vite.config.ts         # Vite配置
+src/
+├── api/          # API 模块（captcha, crypto, follower, schedule, song, request）
+├── assets/       # 静态资源
+├── components/   # Vue 组件（UI 区块和模态框）
+├── config/       # 配置文件
+├── pages/        # 路由页面（Home, Login, Admin）
+├── router/       # Vue Router 配置
+├── utils/        # 工具函数
+├── App.vue
+└── main.ts
 ```
 
-### 目录说明
+## 路由
 
-- **src/admin/**: 管理后台相关代码，包含管理后台的路由和入口组件。
-- **src/api/**: API相关代码，包含API服务、客户端、入口和类型定义。
-- **src/assets/**: 静态资源，包含头像、全身像、文本和纹理资源。
-- **src/common/**: 通用组件和工具，包含通用资源、组件、常量、路由和状态管理。
-- **src/public/**: 公共页面，包含公共组件、页面和路由。
-- **src/types/**: TypeScript类型定义，包含项目中使用的类型。
-- **src/websocket/**: WebSocket相关代码，处理实时通信。
+| 路径           | 名称  | 组件             |
+| -------------- | ----- | ---------------- |
+| `/`            | home  | HomePage.vue     |
+| `/admin/login` | login | LoginPage.vue    |
+| `/admin`       | admin | AdminPage.vue    |
+| `/demo`        | demo  | TailwindDemo.vue |
 
-### 核心文件
+## API 代理
 
-- **src/App.vue**: 主应用组件，应用的根组件。
-- **src/main.ts**: 入口文件，初始化Vue应用。
-- **package.json**: 项目配置和依赖管理。
-- **vite.config.ts**: Vite构建工具配置。
-- **tsconfig.json**: TypeScript配置。
-- **tailwind.config.js**: Tailwind CSS配置。
+- Vite 开发服务器代理 `/api/*` → `http://localhost:8080`（保留 `/api` 前缀）
 
+## 关键依赖
+
+- **状态管理**: @vueuse/core
+- **图表**: （通过组件）
+- **加密**: go-captcha-vue
+- **3D**: three.js
+
+## 开发注意事项
+
+- 所有 Vue 组件使用 `<script setup>` 语法
+- 外部组件优先使用按需导入。
+- Tailwind CSS v4 使用 `@tailwindcss/vite` 插件（无 tailwind.config.js）
+- 启用 TypeScript 严格模式
+- 环境类型定义在 `src/env.d.ts`
+- **类型约束**：严禁使用 `any`！如果遇到类型不确定的情况，使用 `unknown` 并做类型守卫。
+- 修改完vue ts 代码后，需要重新运行 `pnpm run format` 和 `pnpm vue-tsc -b` 来检查代码是否有误。
+- 项目内的导入组件禁止使用 `../` 相对路径，所有源码内导入统一使用 `@/` , 如`import { formatTime } from '@/utils/time'`
+- 禁止在vue组件使用多行ts代码，所有代码必须在 `<script setup>` 中。
+  禁止:
+  ```vue
+  <button
+    @click="
+      auditStatusFilter = undefined
+      pagination.page = 1
+      loadSubmissions()
+    "
+  />
+  ```
+  使用:
+  ```vue
+  <button @click="clickHandler" />
+  <script setup lang="ts">
+  const clickHandler = () => {
+    auditStatusFilter = undefined
+    pagination.page = 1
+    loadSubmissions()
+  }
+  </script>
+  ```
+- 所有 API 调用后用，必须使用 `api/types/isSuccess` 函数判断后再提示成功或失败。

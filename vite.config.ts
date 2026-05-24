@@ -1,53 +1,61 @@
-import { fileURLToPath, URL } from "node:url";
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import tailwindcss from '@tailwindcss/vite'
+import path from 'path'
+import AutoImport from 'unplugin-auto-import/vite'
 
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
-import vueDevTools from "vite-plugin-vue-devtools";
-import Unocss from "unocss/vite";
-
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-    Unocss({
-      content: {
-        filesystem: ["src/**/*.{vue,ts,js}"],
-      },
-    }),
-  ],
-  resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+export default defineConfig(() => {
+  return {
+    plugins: [
+      vue(),
+      tailwindcss(),
+      AutoImport({
+        imports: [
+          'vue',
+          {
+            'naive-ui': [
+              'useMessage',
+              'useNotification',
+              'useDialog',
+              'useLoadingBar',
+            ],
+          },
+        ],
+      }),
+    ],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, 'src'),
+      }
     },
-  },
-  server: {
-    proxy: {
-      "/api": {
-        target: "http://localhost:8080",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-      },
-    },
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          // 分离第三方库
-          vendor: ['vue', 'vue-router', 'pinia'],
-          // 分离大型依赖
-          three: ['three'],
-          // 分离UI库
-          ui: ['naive-ui'],
-          // 分离工具库
-          utils: ['@vueuse/core', 'dayjs'],
-          // 分离图表库
-          charts: ['echarts', 'vue-echarts'],
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
         },
       },
     },
-    // 调整chunk大小警告限制
-    chunkSizeWarningLimit: 500,
-  },
-});
+    build: {
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            if (id.includes('node_modules/date-fns')) {
+              return 'date-fns-vendor'
+            }
+            if (id.includes('node_modules/naive-ui')) {
+              return 'naive-ui-vendor'
+            }
+            if (id.includes('node_modules/@vicons')) {
+              return 'icons-vendor'
+            }
+            if (id.includes('node_modules/three')) {
+              return 'three-vendor'
+            }
+          }
+        }
+      }
+    }
+  }
+})
