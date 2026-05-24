@@ -365,8 +365,8 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 1rem;
   padding: 0.8rem 1rem;
-  background: rgba(102, 126, 234, 0.1);
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  background: rgba(223, 118, 35, 0.1);
+  border: 1px solid rgba(223, 118, 35, 0.2);
   border-radius: 12px;
   margin-bottom: 1rem;
   flex-wrap: wrap;
@@ -419,10 +419,10 @@ onBeforeUnmount(() => {
 }
 
 .search-bar:focus-within {
-  border-color: rgba(102, 126, 234, 0.5);
+  border-color: rgba(223, 118, 35, 0.5);
   box-shadow:
-    0 0 0 3px rgba(102, 126, 234, 0.15),
-    0 0 20px rgba(102, 126, 234, 0.2);
+    0 0 0 3px rgba(223, 118, 35, 0.15),
+    0 0 20px rgba(223, 118, 35, 0.2);
 }
 
 .search-icon {
@@ -466,7 +466,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 0.5rem;
   padding: 2rem 0;
-  color: rgba(139, 92, 246, 0.4);
+  color: rgba(223, 118, 35, 0.4);
   font-size: 0.85rem;
 }
 
@@ -546,7 +546,7 @@ onBeforeUnmount(() => {
 
 .track-item.active .track-title {
   color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+  text-shadow: 0 0 10px rgba(223, 118, 35, 0.5);
 }
 
 .track-meta {
@@ -558,18 +558,18 @@ onBeforeUnmount(() => {
 
 .track-bv {
   font-size: 0.7rem;
-  color: rgba(139, 92, 246, 0.5);
+  color: rgba(223, 118, 35, 0.5);
 }
 
 .track-price {
   font-size: 0.75rem;
-  color: rgba(102, 126, 234, 0.7);
+  color: rgba(223, 118, 35, 0.7);
 }
 
 .copy-btn {
-  background: rgba(102, 126, 234, 0.1);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  color: rgba(102, 126, 234, 0.8);
+  background: rgba(223, 118, 35, 0.1);
+  border: 1px solid rgba(223, 118, 35, 0.2);
+  color: rgba(223, 118, 35, 0.8);
   border-radius: 8px;
   cursor: pointer;
   font-size: 0.8rem;
@@ -579,10 +579,10 @@ onBeforeUnmount(() => {
 }
 
 .copy-btn:hover {
-  background: rgba(102, 126, 234, 0.2);
-  border-color: rgba(102, 126, 234, 0.4);
+  background: rgba(223, 118, 35, 0.2);
+  border-color: rgba(223, 118, 35, 0.4);
   opacity: 1;
-  box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 15px rgba(223, 118, 35, 0.3);
 }
 
 .pagination {
@@ -610,18 +610,18 @@ onBeforeUnmount(() => {
 }
 
 .page-btn:hover:not(:disabled) {
-  background: rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.35);
+  background: rgba(223, 118, 35, 0.15);
+  border-color: rgba(223, 118, 35, 0.35);
   color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 15px rgba(102, 126, 234, 0.25);
+  box-shadow: 0 0 15px rgba(223, 118, 35, 0.25);
 }
 
 .page-btn.active {
-  background: rgba(102, 126, 234, 0.25);
-  border-color: rgba(102, 126, 234, 0.5);
+  background: rgba(223, 118, 35, 0.25);
+  border-color: rgba(223, 118, 35, 0.5);
   color: rgba(255, 255, 255, 0.95);
   font-weight: 700;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 0 20px rgba(223, 118, 35, 0.3);
 }
 
 .page-btn:disabled {
@@ -630,7 +630,7 @@ onBeforeUnmount(() => {
 }
 
 .page-ellipsis {
-  color: rgba(139, 92, 246, 0.3);
+  color: rgba(223, 118, 35, 0.3);
   font-size: 0.85rem;
   padding: 0.5rem;
   user-select: none;
@@ -642,7 +642,7 @@ onBeforeUnmount(() => {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   text-align: center;
   font-size: 0.75rem;
-  color: rgba(139, 92, 246, 0.4);
+  color: rgba(223, 118, 35, 0.4);
 }
 
 @media (max-width: 768px) {

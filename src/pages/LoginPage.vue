@@ -220,23 +220,14 @@ function goBack() {
 
               <div class="form-group">
                 <label class="form-label">密码</label>
-                <NInput
-                  v-model:value="formData.password"
-                  type="password"
-                  show-password-on="click"
-                  placeholder="请输入密码"
-                >
+                <NInput v-model:value="formData.password" type="password" show-password-on="click" placeholder="请输入密码">
                 </NInput>
               </div>
 
               <div class="captcha-wrapper">
-                <button
-                  type="button"
-                  class="captcha-btn"
-                  :disabled="!formData.username || !formData.password || isCaptchaVerified"
-                  @click="openCaptchaModal"
-                  :class="{ 'is-verified': isCaptchaVerified }"
-                >
+                <button type="button" class="captcha-btn"
+                  :disabled="!formData.username || !formData.password || isCaptchaVerified" @click="openCaptchaModal"
+                  :class="{ 'is-verified': isCaptchaVerified }">
                   <span class="captcha-btn-icon">🔐</span>
                   <span class="captcha-btn-text">
                     {{ isCaptchaVerified ? "已验证 ✓" : "点击进行安全验证" }}
@@ -255,19 +246,12 @@ function goBack() {
         </div>
       </main>
 
-      <NModal
-        v-model:show="showCaptchaModal"
-        preset="card"
-        :mask-closable="true"
-        class="captcha-modal"
-        title="验证码"
-        :style="{ maxWidth: '420px' }"
-        :content-style="{
+      <NModal v-model:show="showCaptchaModal" preset="card" :mask-closable="true" class="captcha-modal" title="验证码"
+        :style="{ maxWidth: '420px' }" :content-style="{
           background: 'rgba(10, 15, 30, 0.95)',
           border: '1px solid rgba(139, 92, 246, 0.3)',
           borderRadius: '12px',
-        }"
-      >
+        }">
         <template #default>
           <div class="captcha-modal-content">
             <div v-if="isCaptchaLoading" class="captcha-loading">
@@ -275,20 +259,16 @@ function goBack() {
               <span>加载验证码中...</span>
             </div>
             <div v-else-if="captchaData" class="captcha-component-wrapper">
-              <Click
-                :config="{
-                  width: 300,
-                  height: 220,
-                  thumbHeight: 60,
-                  title: '请依次点击',
-                  buttonText: '验证',
-                }"
-                :data="{
-                  image: captchaData.image,
-                  thumb: captchaData.thumb,
-                }"
-                :events="captchaEvents"
-              />
+              <Click :config="{
+                width: 300,
+                height: 220,
+                thumbHeight: 60,
+                title: '请依次点击',
+                buttonText: '验证',
+              }" :data="{
+                image: captchaData.image,
+                thumb: captchaData.thumb,
+              }" :events="captchaEvents" />
             </div>
             <div v-else class="captcha-error">
               <span>验证码加载失败</span>
@@ -308,12 +288,12 @@ function goBack() {
   --login-card-bg: rgba(255, 255, 255, 0.08);
   --login-dark-bg: rgba(15, 20, 40, 0.3);
   --login-dark-input: rgba(0, 0, 0, 0.4);
-  --login-accent-15: rgba(139, 92, 246, 0.15);
-  --login-accent-30: rgba(139, 92, 246, 0.3);
-  --login-accent-50: rgba(139, 92, 246, 0.5);
-  --login-text-secondary: rgba(200, 220, 255, 0.6);
-  --login-text-muted: rgba(200, 220, 255, 0.3);
-  --login-text-40: rgba(200, 220, 255, 0.4);
+  --login-accent-15: rgba(223, 118, 35, 0.15);
+  --login-accent-30: rgba(223, 118, 35, 0.3);
+  --login-accent-50: rgba(223, 118, 35, 0.5);
+  --login-text-secondary: rgba(255, 212, 179, 0.6);
+  --login-text-muted: rgba(255, 212, 179, 0.3);
+  --login-text-40: rgba(255, 212, 179, 0.4);
   --login-form-bg: rgba(255, 255, 255, 0.04);
   --login-danger-bg: rgba(239, 68, 68, 0.15);
   --login-danger-border: rgba(239, 68, 68, 0.3);
@@ -322,7 +302,7 @@ function goBack() {
 
 .login-page {
   @apply min-h-screen min-h-[100svh] relative overflow-hidden;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  background: linear-gradient(135deg, #1e1008 0%, #0f172a 25%, #2d1810 50%, #1e1008 75%, #0f172a 100%);
 }
 
 .login-bg {
@@ -354,6 +334,7 @@ function goBack() {
 }
 
 @keyframes pulse-orb {
+
   0%,
   100% {
     transform: scale(1);
@@ -380,8 +361,8 @@ function goBack() {
 }
 
 .back-btn:hover {
-  @apply text-[#c8dcff];
-  background: rgba(139, 92, 246, 0.15);
+  @apply text-[#ffd4b3];
+  background: rgba(223, 118, 35, 0.15);
   border-color: var(--login-accent-30);
 }
 
@@ -418,8 +399,8 @@ function goBack() {
 
 .loading-spinner {
   @apply w-10 h-10 sm:w-12 sm:h-12 border-[3px] rounded-full;
-  border-color: rgba(139, 92, 246, 0.2);
-  border-top-color: #8b5cf6;
+  border-color: rgba(223, 118, 35, 0.2);
+  border-top-color: #f5a55c;
   animation: spin 1s linear infinite;
 }
 
@@ -443,11 +424,11 @@ function goBack() {
   @apply px-4 sm:px-6 py-2 rounded-lg cursor-pointer text-sm transition-all duration-300;
   background: var(--login-accent-15);
   border: 1px solid var(--login-accent-30);
-  color: #a78bfa;
+  color: #f5a55c;
 }
 
 .retry-btn:hover {
-  background: rgba(139, 92, 246, 0.25);
+  background: rgba(223, 118, 35, 0.25);
 }
 
 .login-header-section {
@@ -460,6 +441,7 @@ function goBack() {
 }
 
 @keyframes pulse-icon {
+
   0%,
   100% {
     transform: scale(1);
@@ -472,7 +454,7 @@ function goBack() {
 
 .login-title {
   @apply text-xl sm:text-2xl md:text-[1.6rem] font-bold m-0 mb-1 md:mb-2;
-  background: linear-gradient(135deg, #667eea 0%, #8b5cf6 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #df7623 0%, #f5a55c 50%, #ffc87c 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -498,7 +480,7 @@ function goBack() {
 
 .form-label {
   @apply text-sm md:text-base font-medium;
-  color: #a78bfa;
+  color: #f5a55c;
 }
 
 .form-input {
@@ -513,43 +495,43 @@ function goBack() {
 }
 
 :deep(.n-input) {
-  --n-border: 1px solid rgba(139, 92, 246, 0.25) !important;
-  --n-border-hover: 1px solid rgba(139, 92, 246, 0.4) !important;
-  --n-border-focus: 1px solid #8b5cf6 !important;
+  --n-border: 1px solid rgba(223, 118, 35, 0.25) !important;
+  --n-border-hover: 1px solid rgba(223, 118, 35, 0.4) !important;
+  --n-border-focus: 1px solid #f5a55c !important;
   --n-color: rgba(15, 20, 40, 0.6) !important;
   --n-color-focus: rgba(15, 20, 40, 0.8) !important;
   --n-color-focus-error: rgba(15, 20, 40, 0.8) !important;
   --n-color-error: rgba(15, 20, 40, 0.6) !important;
-  --n-text-color: #c8dcff !important;
-  --n-placeholder-color: rgba(200, 220, 255, 0.3) !important;
-  --n-caret-color: #8b5cf6 !important;
+  --n-text-color: #ffd4b3 !important;
+  --n-placeholder-color: rgba(255, 212, 179, 0.3) !important;
+  --n-caret-color: #f5a55c !important;
   --n-border-radius: 8px;
   --n-height: 48px;
-  --n-box-shadow-focus: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+  --n-box-shadow-focus: 0 0 0 3px rgba(223, 118, 35, 0.15) !important;
 }
 
 :deep(.n-input .n-input__input-el) {
-  color: #c8dcff !important;
-  caret-color: #8b5cf6 !important;
+  color: #ffd4b3 !important;
+  caret-color: #f5a55c !important;
 }
 
 :deep(.n-input .n-input__placeholder) {
-  color: rgba(200, 220, 255, 0.3) !important;
+  color: rgba(255, 212, 179, 0.3) !important;
 }
 
 :deep(.n-input .n-input__suffix) {
-  color: rgba(200, 220, 255, 0.6);
+  color: rgba(255, 212, 179, 0.6);
 }
 
 .toggle-password {
   @apply text-xl cursor-pointer transition-transform duration-200;
-  color: rgba(200, 220, 255, 0.6);
+  color: rgba(255, 212, 179, 0.6);
   padding: 4px;
 }
 
 .toggle-password:hover {
   transform: scale(1.1);
-  color: #a78bfa;
+  color: #f5a55c;
 }
 
 .captcha-wrapper {
@@ -561,8 +543,8 @@ function goBack() {
 
 .captcha-btn {
   @apply flex items-center justify-center gap-2 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  background: rgba(223, 118, 35, 0.1);
+  border: 1px solid rgba(223, 118, 35, 0.2);
   backdrop-filter: blur(12px);
   color: var(--login-text-secondary);
   font-size: 0.95rem;
@@ -570,9 +552,9 @@ function goBack() {
 }
 
 .captcha-btn:hover:not(:disabled) {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.4);
-  color: #c8dcff;
+  background: rgba(223, 118, 35, 0.2);
+  border-color: rgba(223, 118, 35, 0.4);
+  color: #ffd4b3;
   transform: translateY(-2px);
 }
 
@@ -618,13 +600,13 @@ function goBack() {
 
 .captcha-loading {
   @apply flex flex-col items-center justify-center gap-3 py-12 px-4;
-  color: rgba(200, 220, 255, 0.6);
+  color: rgba(255, 212, 179, 0.6);
 }
 
 .modal-spinner {
   @apply w-10 h-10 border-[3px] rounded-full;
-  border-color: rgba(139, 92, 246, 0.2);
-  border-top-color: #8b5cf6;
+  border-color: rgba(223, 118, 35, 0.2);
+  border-top-color: #f5a55c;
   animation: spin 1s linear infinite;
 }
 
@@ -635,14 +617,14 @@ function goBack() {
 
 .retry-load-btn {
   @apply px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200;
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  color: #a78bfa;
+  background: rgba(223, 118, 35, 0.15);
+  border: 1px solid rgba(223, 118, 35, 0.3);
+  color: #f5a55c;
 }
 
 .retry-load-btn:hover {
-  background: rgba(139, 92, 246, 0.25);
-  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(223, 118, 35, 0.25);
+  border-color: rgba(223, 118, 35, 0.5);
 }
 
 .error-message {
@@ -654,11 +636,11 @@ function goBack() {
 .login-btn {
   @apply w-full py-2.5 sm:py-3 md:py-[0.9rem] mt-2 sm:mt-3 rounded-xl md:rounded-2xl text-base sm:text-lg font-semibold cursor-pointer transition-all duration-300;
   @apply flex items-center justify-center gap-2;
-  background: linear-gradient(135deg, #667eea 0%, #8b5cf6 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #df7623 0%, #f5a55c 50%, #ffc87c 100%);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow:
-    0 4px 15px rgba(102, 126, 234, 0.3),
+    0 4px 15px rgba(223, 118, 35, 0.3),
     inset 0 1px 1px rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(12px);
 }
@@ -666,7 +648,7 @@ function goBack() {
 .login-btn:hover:not(:disabled) {
   @apply -translate-y-0.5 md:-translate-y-1;
   box-shadow:
-    0 8px 30px rgba(102, 126, 234, 0.4),
+    0 8px 30px rgba(223, 118, 35, 0.4),
     inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
