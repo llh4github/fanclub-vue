@@ -559,7 +559,7 @@ async function copySubmissionId() {
 
 .orb-2 {
   @apply w-[300px] h-[300px];
-  background: #7c3aed;
+  background: #f5a55c;
   bottom: -50px;
   right: -50px;
   animation: pulse-orb 5s ease-in-out infinite reverse;
@@ -595,8 +595,8 @@ async function copySubmissionId() {
 
 .back-btn:hover {
   @apply text-white;
-  background: rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.3);
+  background: rgba(223, 118, 35, 0.15);
+  border-color: rgba(223, 118, 35, 0.3);
 }
 
 .contribute-main {
@@ -723,7 +723,7 @@ async function copySubmissionId() {
 }
 
 :deep(.n-base-selection .n-base-selection-placeholder) {
-  color: rgba(167, 139, 250, 0.4) !important;
+  color: rgba(223, 118, 35, 0.4) !important;
 }
 
 .selected-topic-info {
@@ -844,22 +844,22 @@ async function copySubmissionId() {
 }
 
 :deep(.n-input) {
-  --n-border: 1px solid rgba(102, 126, 234, 0.25) !important;
-  --n-border-hover: 1px solid rgba(102, 126, 234, 0.4) !important;
-  --n-border-focus: 1px solid rgba(167, 139, 250, 0.8) !important;
+  --n-border: 1px solid rgba(223, 118, 35, 0.25) !important;
+  --n-border-hover: 1px solid rgba(223, 118, 35, 0.4) !important;
+  --n-border-focus: 1px solid rgba(223, 118, 35, 0.8) !important;
   --n-color: rgba(255, 255, 255, 0.05) !important;
   --n-color-focus: rgba(255, 255, 255, 0.05) !important;
   --n-color-focus-error: rgba(255, 255, 255, 0.05) !important;
   --n-color-error: rgba(255, 255, 255, 0.05) !important;
   --n-text-color: rgba(255, 255, 255, 0.85) !important;
-  --n-placeholder-color: rgba(167, 139, 250, 0.4) !important;
-  --n-caret-color: rgba(167, 139, 250, 0.8) !important;
+  --n-placeholder-color: rgba(223, 118, 35, 0.4) !important;
+  --n-caret-color: rgba(223, 118, 35, 0.8) !important;
   --n-border-radius: 8px;
 }
 
 :deep(.n-input .n-input__input-el) {
   color: rgba(255, 255, 255, 0.85) !important;
-  caret-color: rgba(167, 139, 250, 0.8) !important;
+  caret-color: rgba(223, 118, 35, 0.8) !important;
 }
 
 .captcha-wrapper {
@@ -868,9 +868,9 @@ async function copySubmissionId() {
 
 .captcha-btn {
   @apply flex items-center justify-center gap-2 px-4 py-3 sm:py-3.5 rounded-lg cursor-pointer transition-all duration-300;
-  background: rgba(102, 126, 234, 0.15);
-  border: 1px solid rgba(102, 126, 234, 0.3);
-  color: rgba(167, 139, 250, 0.8);
+  background: rgba(223, 118, 35, 0.15);
+  border: 1px solid rgba(223, 118, 35, 0.3);
+  color: rgba(223, 118, 35, 0.9);
   font-size: 0.95rem;
   min-width: 200px;
   min-height: 52px;
@@ -885,9 +885,9 @@ async function copySubmissionId() {
 }
 
 .captcha-btn:hover:not(:disabled) {
-  background: rgba(102, 126, 234, 0.2);
-  border-color: rgba(102, 126, 234, 0.4);
-  color: rgba(167, 139, 250, 0.9);
+  background: rgba(223, 118, 35, 0.25);
+  border-color: rgba(223, 118, 35, 0.5);
+  color: rgba(223, 118, 35, 1);
   transform: translateY(-2px);
 }
 
@@ -897,14 +897,14 @@ async function copySubmissionId() {
 }
 
 .captcha-btn.is-verified {
-  background: rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.4);
-  color: rgba(167, 139, 250, 0.9);
+  background: rgba(223, 118, 35, 0.15);
+  border-color: rgba(223, 118, 35, 0.4);
+  color: rgba(223, 118, 35, 0.9);
 }
 
 .captcha-btn.is-verified:hover {
-  background: rgba(102, 126, 234, 0.2);
-  border-color: rgba(102, 126, 234, 0.5);
+  background: rgba(223, 118, 35, 0.25);
+  border-color: rgba(223, 118, 35, 0.5);
   transform: translateY(-2px);
 }
 
@@ -1029,31 +1029,31 @@ async function copySubmissionId() {
 }
 
 .continue-btn {
-  background: rgba(102, 126, 234, 0.15);
-  border: 1px solid rgba(102, 126, 234, 0.3);
-  color: rgba(167, 139, 250, 0.9);
+  background: rgba(223, 118, 35, 0.15);
+  border: 1px solid rgba(223, 118, 35, 0.3);
+  color: rgba(223, 118, 35, 0.9);
 }
 
 .continue-btn:hover {
-  background: rgba(102, 126, 234, 0.25);
-  border-color: rgba(102, 126, 234, 0.5);
+  background: rgba(223, 118, 35, 0.25);
+  border-color: rgba(223, 118, 35, 0.5);
 }
 
 .back-home-btn {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(167, 139, 250, 0.5) 100%);
+  background: linear-gradient(135deg, rgba(223, 118, 35, 0.6) 0%, rgba(245, 165, 92, 0.5) 100%);
   border: none;
   color: white;
 }
 
 .back-home-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 24px rgba(223, 118, 35, 0.4);
 }
 
 .submit-btn {
   @apply w-full py-3 sm:py-3.5 md:py-[0.9rem] rounded-xl md:rounded-2xl text-base sm:text-lg font-semibold cursor-pointer transition-all duration-300;
   @apply flex items-center justify-center gap-2;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(167, 139, 250, 0.5) 100%);
+  background: linear-gradient(135deg, rgba(223, 118, 35, 0.6) 0%, rgba(245, 165, 92, 0.5) 100%);
   color: white;
   border: none;
   min-height: 52px;
@@ -1062,7 +1062,7 @@ async function copySubmissionId() {
 
 .submit-btn:hover:not(:disabled) {
   @apply -translate-y-0.5 md:-translate-y-1;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 24px rgba(223, 118, 35, 0.4);
 }
 
 .submit-btn:disabled {
