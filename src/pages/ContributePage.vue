@@ -352,14 +352,8 @@ async function copySubmissionId() {
 
       <main class="contribute-main">
         <div class="glass-container">
-          <VGlass
-            class="contribute-card"
-            :class="{ 'is-ready': !isLoading }"
-            :blur="15"
-            :scale="40"
-            :base-frequency="0.015"
-            :radius="24"
-          >
+          <VGlass class="contribute-card" :class="{ 'is-ready': !isLoading }" :blur="15" :scale="40"
+            :base-frequency="0.015" :radius="24">
             <div v-if="isLoading" class="init-state">
               <div class="loading-spinner"></div>
               <p class="init-text">加载主题中...</p>
@@ -383,27 +377,25 @@ async function copySubmissionId() {
                 </div>
               </div>
 
+              <div v-else-if="topics.length === 0 && !isLoading" class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h2 class="empty-title">暂无开放投稿</h2>
+                <p class="empty-desc">当前没有可用的投稿主题，请稍后再来</p>
+                <button class="back-home-btn" @click="goBack">返回首页</button>
+              </div>
+
               <template v-else>
                 <div class="topic-section">
                   <label class="form-label">选择主题</label>
-                  <NSelect
-                    v-model:value="selectedTopicId"
-                    :options="topicOptions"
-                    placeholder="请选择主题"
-                    class="topic-select"
-                  />
+                  <NSelect v-model:value="selectedTopicId" :options="topicOptions" placeholder="请选择主题"
+                    class="topic-select" />
                   <div v-if="selectedTopic" class="selected-topic-info">
                     <p class="topic-time" :class="`time-${timeUrgency}`">
                       投稿时间：{{ formatDate(selectedTopic.open_at) }} ~
                       {{ formatDate(selectedTopic.close_at) }}
                       <span v-if="isTopicOpen" class="time-remaining">({{ timeRemaining }})</span>
                     </p>
-                    <NAlert
-                      v-if="selectedTopic.description"
-                      title="主播的话"
-                      type="info"
-                      class="topic-alert"
-                    >
+                    <NAlert v-if="selectedTopic.description" title="主播的话" type="info" class="topic-alert">
                       {{ selectedTopic.description }}
                     </NAlert>
                   </div>
@@ -415,49 +407,27 @@ async function copySubmissionId() {
 
                 <div class="content-section" :class="{ disabled: !selectedTopic || !isTopicOpen }">
                   <label class="form-label">投稿内容 (支持 Markdown)</label>
-                  <MarkdownEditor
-                    ref="markdownEditorRef"
-                    v-model="content"
-                    :disabled="!selectedTopic || !isTopicOpen"
-                    placeholder="请输入投稿内容..."
-                    height="400"
-                  />
+                  <MarkdownEditor ref="markdownEditorRef" v-model="content" :disabled="!selectedTopic || !isTopicOpen"
+                    placeholder="请输入投稿内容..." height="400" />
                   <div class="editor-footer">
                     <span class="draft-hint">内容会自动保存到本地</span>
-                    <div
-                      class="char-counter"
-                      :class="{
-                        warning: markdownEditorRef?.isNearLimit,
-                        error: markdownEditorRef?.isOverLimit,
-                        'under-limit': markdownEditorRef?.isUnderLimit,
-                      }"
-                    >
+                    <div class="char-counter" :class="{
+                      warning: markdownEditorRef?.isNearLimit,
+                      error: markdownEditorRef?.isOverLimit,
+                      'under-limit': markdownEditorRef?.isUnderLimit,
+                    }">
                       <span v-if="markdownEditorRef?.isOverLimit" class="over-limit-icon">⚠️</span>
-                      <span v-if="markdownEditorRef?.isUnderLimit" class="under-limit-icon"
-                        >⚠️</span
-                      >
+                      <span v-if="markdownEditorRef?.isUnderLimit" class="under-limit-icon">⚠️</span>
                       <span>{{ charCount }} / {{ markdownEditorRef?.MAX_CHARS }} 字</span>
-                      <span v-if="markdownEditorRef?.isOverLimit" class="limit-hint"
-                        >（已超出限制）</span
-                      >
-                      <span
-                        v-if="markdownEditorRef?.isUnderLimit && !markdownEditorRef?.isOverLimit"
-                        class="limit-hint"
-                        >（至少需要 {{ markdownEditorRef?.MIN_CHARS }} 字）</span
-                      >
+                      <span v-if="markdownEditorRef?.isOverLimit" class="limit-hint">（已超出限制）</span>
+                      <span v-if="markdownEditorRef?.isUnderLimit && !markdownEditorRef?.isOverLimit"
+                        class="limit-hint">（至少需要 {{ markdownEditorRef?.MIN_CHARS }} 字）</span>
                     </div>
                   </div>
                 </div>
                 <div class="captcha-wrapper">
-                  <button
-                    type="button"
-                    class="captcha-btn"
-                    :disabled="
-                      !canVerifyCaptcha || isCaptchaVerified || !selectedTopic || !isTopicOpen
-                    "
-                    @click="openCaptchaModal"
-                    :class="{ 'is-verified': isCaptchaVerified }"
-                  >
+                  <button type="button" class="captcha-btn" :disabled="!canVerifyCaptcha || isCaptchaVerified || !selectedTopic || !isTopicOpen
+                    " @click="openCaptchaModal" :class="{ 'is-verified': isCaptchaVerified }">
                     <span class="captcha-btn-icon">🔐</span>
                     <span class="captcha-btn-text">
                       {{ isCaptchaVerified ? "已验证 ✓" : "点击进行安全验证" }}
@@ -467,12 +437,8 @@ async function copySubmissionId() {
 
                 <p v-if="errorMsg" class="error-message">{{ errorMsg }}</p>
 
-                <button
-                  type="button"
-                  class="submit-btn"
-                  :disabled="isSubmitting || !selectedTopic || !isTopicOpen"
-                  @click="handleSubmit"
-                >
+                <button type="button" class="submit-btn" :disabled="isSubmitting || !selectedTopic || !isTopicOpen"
+                  @click="handleSubmit">
                   <span v-if="isSubmitting" class="btn-spinner"></span>
                   <span v-else>提 交</span>
                 </button>
@@ -482,20 +448,13 @@ async function copySubmissionId() {
         </div>
       </main>
 
-      <NModal
-        v-model:show="showCaptchaModal"
-        preset="card"
-        :mask-closable="true"
-        class="captcha-modal"
-        title="验证码"
-        :style="{ maxWidth: 'min(420px, 95vw)' }"
-        :content-style="{
+      <NModal v-model:show="showCaptchaModal" preset="card" :mask-closable="true" class="captcha-modal" title="验证码"
+        :style="{ maxWidth: 'min(420px, 95vw)' }" :content-style="{
           background: 'rgba(26, 16, 24, 0.95)',
           border: '1px solid rgba(223, 118, 35, 0.3)',
           borderRadius: '12px',
           padding: '12px',
-        }"
-      >
+        }">
         <template #default>
           <div class="captcha-modal-content">
             <div v-if="isCaptchaLoading" class="captcha-loading">
@@ -503,20 +462,16 @@ async function copySubmissionId() {
               <span>加载验证码中...</span>
             </div>
             <div v-else-if="captchaData" class="captcha-component-wrapper">
-              <Click
-                :config="{
-                  width: Math.min(300, windowWidth - 60),
-                  height: Math.min(220, (Math.min(300, windowWidth - 60) / 300) * 220),
-                  thumbHeight: Math.min(60, (Math.min(300, windowWidth - 60) / 300) * 60),
-                  title: '请依次点击',
-                  buttonText: '验证',
-                }"
-                :data="{
-                  image: captchaData.image,
-                  thumb: captchaData.thumb,
-                }"
-                :events="captchaEvents"
-              />
+              <Click :config="{
+                width: Math.min(300, windowWidth - 60),
+                height: Math.min(220, (Math.min(300, windowWidth - 60) / 300) * 220),
+                thumbHeight: Math.min(60, (Math.min(300, windowWidth - 60) / 300) * 60),
+                title: '请依次点击',
+                buttonText: '验证',
+              }" :data="{
+                image: captchaData.image,
+                thumb: captchaData.thumb,
+              }" :events="captchaEvents" />
             </div>
             <div v-else class="captcha-error">
               <span>{{ captchaError || "验证码加载失败" }}</span>
@@ -566,6 +521,7 @@ async function copySubmissionId() {
 }
 
 @keyframes pulse-orb {
+
   0%,
   100% {
     transform: scale(1);
@@ -665,6 +621,7 @@ async function copySubmissionId() {
 }
 
 @keyframes pulse-icon {
+
   0%,
   100% {
     transform: scale(1);
@@ -763,6 +720,7 @@ async function copySubmissionId() {
 }
 
 @keyframes pulse-critical {
+
   0%,
   100% {
     opacity: 1;
@@ -1017,6 +975,7 @@ async function copySubmissionId() {
 }
 
 @media (max-width: 640px) {
+
   .continue-btn,
   .back-home-btn {
     @apply flex-1;
@@ -1048,6 +1007,24 @@ async function copySubmissionId() {
 .back-home-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(223, 118, 35, 0.4);
+}
+
+.empty-state {
+  @apply flex flex-col items-center gap-4 py-8 sm:py-12;
+}
+
+.empty-icon {
+  @apply text-5xl sm:text-6xl;
+}
+
+.empty-title {
+  @apply text-xl sm:text-2xl font-semibold m-0;
+  color: rgba(255, 228, 204, 0.9);
+}
+
+.empty-desc {
+  @apply text-sm sm:text-base m-0 text-center;
+  color: rgba(255, 228, 204, 0.5);
 }
 
 .submit-btn {
