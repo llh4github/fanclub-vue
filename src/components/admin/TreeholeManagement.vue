@@ -263,7 +263,7 @@ async function handleSubmit() {
       }
     } else {
       const resp = await createTopic({
-        bid: Liko.BID,
+        bid: String(Liko.BID),
         title: formTitle.value,
         description: formDescription.value,
         open_at: new Date(openAt).toISOString(),
@@ -334,6 +334,10 @@ onMounted(() => {
               :options="titleOptions"
               placeholder="请输入话题标题或选择节假日"
               clearable
+              placement="bottom-start"
+              :style="{ zIndex: 1000 }"
+              :maxlength="100"
+              show-count
               @update:value="handleTitleInput"
               @select="handleTitleSelect"
             />
@@ -345,6 +349,8 @@ onMounted(() => {
               type="textarea"
               placeholder="请输入话题描述"
               :rows="3"
+              :maxlength="300"
+              show-count
             />
           </div>
           <div class="form-item">

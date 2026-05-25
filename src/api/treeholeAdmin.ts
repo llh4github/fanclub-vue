@@ -8,14 +8,14 @@ export interface TreeholeTopic {
   open_at: string
   close_at: string
   is_active: boolean
-  bid: number
+  bid: string
   created_time: string
   updated_time: string
 }
 
 export interface TopicPageItem {
   id: string | number
-  bid: number
+  bid: string
   title: string
   description: string
   open_at: string
@@ -27,7 +27,7 @@ export interface TopicPageItem {
 }
 
 export interface CreateTopicReq {
-  bid: number
+  bid: string
   title: string
   description: string
   open_at: string
@@ -58,7 +58,7 @@ export interface PageResp<T> {
 }
 
 export function getTopicPage(params: {
-  bid?: number
+  bid?: string
   is_active?: boolean
   page_index?: number
   page_size?: number
@@ -89,7 +89,7 @@ export function deleteTopic(id: string): Promise<JsonResp<string>> {
 
 export interface TopicDetail {
   id: string
-  bid: number
+  bid: string
   title: string
   description: string
   open_at: string
