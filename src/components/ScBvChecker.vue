@@ -77,7 +77,7 @@ const closeForm = () => {
 const copyBv = async () => {
   if (!bv.value) return
   try {
-    await navigator.clipboard.writeText(bv.value)
+    await navigator.clipboard.writeText(`点播 ${bv.value}`)
     const btn = document.querySelector(".copy-btn")
     if (btn) {
       btn.textContent = "已复制!"
@@ -117,15 +117,8 @@ onClickOutside(formRef, closeForm)
         <div class="form-content">
           <div class="input-group">
             <label class="input-label">BV号</label>
-            <input
-              v-model="bv"
-              type="text"
-              class="bv-input"
-              :class="{ 'input-error': errorMsg }"
-              placeholder="例如: BV1xK4y1b7NP"
-              :disabled="loading"
-              @keyup.enter="debouncedQuery"
-            />
+            <input v-model="bv" type="text" class="bv-input" :class="{ 'input-error': errorMsg }"
+              placeholder="例如: BV1xK4y1b7NP" :disabled="loading" @keyup.enter="debouncedQuery" />
             <span v-if="errorMsg" class="error-text">{{ errorMsg }}</span>
           </div>
 
