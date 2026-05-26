@@ -195,7 +195,7 @@ async function uploadImage(files: File[], vditor: Vditor): Promise<void> {
 
       const result = await new Promise<{ key: string }>((resolve, reject) => {
         observable.subscribe({
-          next: () => {},
+          next: () => { },
           error: (err) => {
             console.error("Upload failed:", err)
             reject(err)
@@ -234,8 +234,8 @@ function initVditor() {
     value: props.modelValue || "",
     placeholder: props.placeholder,
     mode: "wysiwyg",
-    theme: "classic",
-    height: props.height,
+    theme: "dark",
+    height: 400,
     toolbarConfig: {
       pin: true,
       hide: false,
@@ -252,7 +252,7 @@ function initVditor() {
       "ordered-list",
       "code",
       "inline-code",
-      "link",
+      "table",
       "upload",
       "undo",
       "redo",
@@ -395,6 +395,7 @@ watch(
   background: rgba(102, 126, 234, 0.15) !important;
   border: 1px solid rgba(102, 126, 234, 0.25) !important;
   border-radius: 4px;
+  min-height: 180px;
 }
 
 .vditor-wrapper :deep(.vditor-reset code) {
