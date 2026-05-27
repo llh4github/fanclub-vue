@@ -368,7 +368,7 @@ onBeforeUnmount(() => {
   position: relative;
   z-index: 10;
   text-align: center;
-  padding: 2rem;
+  padding: 4rem 2rem;
   opacity: 0;
   transform: translateY(30px);
   transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -377,6 +377,12 @@ onBeforeUnmount(() => {
 .hero-section.loaded .hero-content {
   opacity: 1;
   transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    padding: 3rem 1.5rem;
+  }
 }
 
 .avatar-container {

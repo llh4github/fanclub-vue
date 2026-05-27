@@ -94,7 +94,7 @@ import IconSettings from "@/components/icons/IconSettings.vue"
 /* Side navigation - Glass morphism */
 .side-nav {
   position: fixed;
-  left: 1.5rem;
+  left: 2rem;
   top: 50%;
   transform: translateY(-50%);
   z-index: 100;

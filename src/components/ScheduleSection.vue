@@ -825,7 +825,7 @@ onBeforeUnmount(() => {
   color: rgba(255, 255, 255, 0.3);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .schedule-section {
     padding: 3rem 1rem;
     gap: 1.5rem;

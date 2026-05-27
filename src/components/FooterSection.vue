@@ -30,13 +30,12 @@ const currentYear = new Date().getFullYear()
 
 <style scoped>
 .footer {
-  padding: 3rem 2rem 2rem;
+  padding: 4rem 2rem 3rem;
   text-align: center;
   position: relative;
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(16px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  margin-top: 2rem;
 }
 
 .footer::before {
@@ -57,9 +56,9 @@ const currentYear = new Date().getFullYear()
   );
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .footer {
-    padding-bottom: 5rem;
+    padding: 3rem 1.5rem 5rem;
   }
 }
 
@@ -87,6 +86,8 @@ const currentYear = new Date().getFullYear()
   border-radius: 16px;
   padding: 1.5rem 2rem;
   background: rgba(255, 255, 255, 0.02);
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .footer-hearts {
