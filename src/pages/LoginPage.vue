@@ -8,6 +8,8 @@ import { isSuccess } from "@/api/types"
 import { setAuthData } from "@/utils/auth"
 import { NInput, NModal, NConfigProvider, darkTheme } from "naive-ui"
 import { Click } from "go-captcha-vue"
+import IconArrowLeft from "@/components/icons/IconArrowLeft.vue"
+import IconLock from "@/components/icons/IconLock.vue"
 
 const router = useRouter()
 
@@ -190,8 +192,8 @@ function goBack() {
       </div>
 
       <header class="login-header">
-        <button class="back-btn" @click="goBack">
-          <span>←</span>
+        <button class="back-btn" @click="goBack" aria-label="返回首页">
+          <IconArrowLeft :size="18" />
           <span>返回首页</span>
         </button>
       </header>
@@ -207,7 +209,9 @@ function goBack() {
 
           <template v-else>
             <div class="login-header-section">
-              <div class="login-icon">🔐</div>
+              <div class="login-icon">
+                <IconLock :size="48" />
+              </div>
               <h1 class="login-title">管理员登录</h1>
               <p class="login-subtitle">Administration Login</p>
             </div>

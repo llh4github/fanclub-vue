@@ -1,14 +1,13 @@
 <script setup lang="ts">
+import IconHeart from "@/components/icons/IconHeart.vue"
 const currentYear = new Date().getFullYear()
 </script>
 
 <template>
   <footer class="footer">
     <div class="footer-content">
-      <div class="footer-carrots">
-        <span v-for="n in 5" :key="n" class="carrot" :style="{ animationDelay: `${n * 0.15}s` }"
-          >🥕</span
-        >
+      <div class="footer-hearts">
+        <IconHeart v-for="n in 5" :key="n" :size="20" class="heart-icon" :style="{ animationDelay: `${n * 0.15}s` }" />
       </div>
       <p class="footer-text"><span class="footer-name">莉蔻 liko</span> · 侏儒兔见习杀手</p>
       <div class="footer-icp">
@@ -73,8 +72,9 @@ const currentYear = new Date().getFullYear()
     font-size: 0.8rem;
   }
 
-  .carrot {
-    font-size: 1rem;
+  .heart-icon {
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -89,35 +89,35 @@ const currentYear = new Date().getFullYear()
   background: rgba(255, 255, 255, 0.02);
 }
 
-.footer-carrots {
+.footer-hearts {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
-.carrot {
-  animation: carrotWave 2s ease-in-out infinite;
+.heart-icon {
+  color: rgba(223, 118, 35, 0.6);
+  animation: heartWave 2s ease-in-out infinite;
   display: inline-block;
-  font-size: 1.2rem;
 }
 
-@keyframes carrotWave {
+@keyframes heartWave {
   0%,
   100% {
-    transform: translateY(0) rotate(0deg);
+    transform: translateY(0) scale(1);
   }
   25% {
-    transform: translateY(-4px) rotate(-10deg);
+    transform: translateY(-4px) scale(1.05);
   }
   75% {
-    transform: translateY(-4px) rotate(10deg);
+    transform: translateY(-4px) scale(1.05);
   }
 }
 
 .footer-text {
   margin: 0;
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .footer-name {
@@ -132,19 +132,19 @@ const currentYear = new Date().getFullYear()
 .footer-contact {
   margin: 0;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .footer-copy {
   margin: 0;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .footer-fan {
   margin-top: 0.5rem;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .fan-badge {
@@ -166,7 +166,7 @@ const currentYear = new Date().getFullYear()
 .icp-text {
   margin: 0;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .icp-gov {
@@ -183,7 +183,7 @@ const currentYear = new Date().getFullYear()
 
 .icp-link {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.55);
   text-decoration: none;
   transition: color 0.2s ease;
 }

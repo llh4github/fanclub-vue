@@ -6,6 +6,10 @@ import SonglistSection from "@/components/SonglistSection.vue"
 import FooterSection from "@/components/FooterSection.vue"
 import ScBvChecker from "@/components/ScBvChecker.vue"
 import { VGlass } from "@daisigu/vue-liquid-glass"
+import IconHome from "@/components/icons/IconHome.vue"
+import IconCalendar from "@/components/icons/IconCalendar.vue"
+import IconMusic from "@/components/icons/IconMusic.vue"
+import IconSettings from "@/components/icons/IconSettings.vue"
 </script>
 
 <template>
@@ -13,23 +17,24 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
     <ParticleBackground />
 
     <VGlass class="side-nav" :blur="16" :scale="20" :base-frequency="0.015" :radius="16">
-      <a href="#home" class="nav-dot" title="首页">
-        <span class="dot">🏠</span>
+      <a href="#home" class="nav-dot" title="首页" aria-label="首页">
+        <span class="dot">
+          <IconHome :size="18" />
+        </span>
         <span class="nav-label">首页</span>
       </a>
-      <a href="#schedule" class="nav-dot" title="日程">
-        <span class="dot">📅</span>
+      <a href="#schedule" class="nav-dot" title="日程" aria-label="日程">
+        <span class="dot">
+          <IconCalendar :size="18" />
+        </span>
         <span class="nav-label">日程</span>
       </a>
-      <a href="#playlist" class="nav-dot" title="歌单">
-        <span class="dot">🎵</span>
+      <a href="#playlist" class="nav-dot" title="歌单" aria-label="歌单">
+        <span class="dot">
+          <IconMusic :size="18" />
+        </span>
         <span class="nav-label">歌单</span>
       </a>
-      <div class="nav-separator"></div>
-      <router-link to="/admin" class="nav-dot nav-admin" title="后台管理">
-        <span class="dot dot-admin">⚙</span>
-        <span class="nav-label">管理</span>
-      </router-link>
     </VGlass>
 
     <div class="content-wrapper">
@@ -40,24 +45,32 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
     </div>
 
     <!-- Mobile bottom nav -->
-    <nav class="mobile-nav">
-      <a href="#home" class="mobile-nav-item">
-        <span class="mobile-nav-icon">🏠</span>
+    <nav class="mobile-nav" aria-label="移动端导航">
+      <a href="#home" class="mobile-nav-item" aria-label="首页">
+        <span class="mobile-nav-icon">
+          <IconHome :size="22" />
+        </span>
         <span class="mobile-nav-label">首页</span>
       </a>
-      <a href="#schedule" class="mobile-nav-item">
-        <span class="mobile-nav-icon">📅</span>
+      <a href="#schedule" class="mobile-nav-item" aria-label="日程">
+        <span class="mobile-nav-icon">
+          <IconCalendar :size="22" />
+        </span>
         <span class="mobile-nav-label">日程</span>
       </a>
-      <a href="#playlist" class="mobile-nav-item">
-        <span class="mobile-nav-icon">🎵</span>
+      <a href="#playlist" class="mobile-nav-item" aria-label="歌单">
+        <span class="mobile-nav-icon">
+          <IconMusic :size="22" />
+        </span>
         <span class="mobile-nav-label">歌单</span>
       </a>
     </nav>
 
-    <!-- Admin entry - top right corner icon only -->
-    <router-link to="/admin" class="admin-link" title="后台管理">
-      <span class="admin-link-icon">⚙</span>
+    <!-- Admin entry - top right corner -->
+    <router-link to="/admin" class="admin-link" title="后台管理" aria-label="后台管理">
+      <span class="admin-link-icon">
+        <IconSettings :size="18" />
+      </span>
     </router-link>
 
     <!-- SC BV Checker -->
@@ -101,13 +114,12 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
 }
 
 .dot {
-  font-size: 0.9rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s ease;
   flex-shrink: 0;
-  filter: grayscale(0.6) opacity(0.4);
-  position: relative;
-  z-index: 1;
+  color: rgba(196, 181, 253, 0.4);
 }
 
 .dot::before {
@@ -118,12 +130,11 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
   border: 1px solid rgba(102, 126, 234, 0.3);
   opacity: 0;
   transition: all 0.3s ease;
-  z-index: -1;
 }
 
 .nav-dot:hover .dot {
-  filter: grayscale(0) opacity(1);
-  transform: scale(1.3);
+  color: rgba(196, 181, 253, 0.9);
+  transform: scale(1.15);
   filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
 }
 
@@ -156,33 +167,6 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
   transform: translateX(0);
 }
 
-/* Side nav separator & admin - Blue accent */
-.nav-separator {
-  width: 14px;
-  height: 1px;
-  background: rgba(139, 92, 246, 0.2);
-  margin: 0.3rem 0;
-}
-
-.dot-admin {
-  font-size: 0.55rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(6, 182, 212, 0.4);
-  background: none;
-  border: 1.5px solid rgba(6, 182, 212, 0.2);
-  transition: all 0.3s ease;
-}
-
-.nav-admin:hover .dot-admin {
-  color: rgba(6, 182, 212, 0.9);
-  border-color: rgba(6, 182, 212, 0.6);
-  box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
-  transform: scale(1.3) rotate(90deg);
-}
-
-/* Admin link - Glass style */
 .admin-link {
   position: fixed;
   top: 1.2rem;
@@ -192,9 +176,9 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -208,8 +192,9 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
 }
 
 .admin-link-icon {
-  font-size: 0.9rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: rgba(6, 182, 212, 0.5);
   transition: all 0.3s ease;
 }
@@ -252,12 +237,15 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
 }
 
 .mobile-nav-icon {
-  font-size: 1.1rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(196, 181, 253, 0.5);
   transition: all 0.2s ease;
 }
 
 .mobile-nav-item:hover .mobile-nav-icon {
+  color: rgba(196, 181, 253, 0.9);
   filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
 }
 
@@ -272,7 +260,7 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
   color: rgba(6, 182, 212, 0.8);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .side-nav {
     display: none;
   }
@@ -288,8 +276,8 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
   .admin-link {
     top: 0.8rem;
     right: 1rem;
-    width: 28px;
-    height: 28px;
+    width: 44px;
+    height: 44px;
   }
 
   .admin-link-icon {
@@ -301,12 +289,12 @@ import { VGlass } from "@daisigu/vue-liquid-glass"
   .admin-link {
     top: 0.6rem;
     right: 0.8rem;
-    width: 26px;
-    height: 26px;
+    width: 44px;
+    height: 44px;
   }
 
   .admin-link-icon {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
 }
 </style>

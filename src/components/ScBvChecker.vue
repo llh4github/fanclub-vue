@@ -4,6 +4,11 @@ import { checkScBv } from "@/api/viewer"
 import { isSuccess } from "@/api"
 import { useDebounceFn, onClickOutside } from "@vueuse/core"
 import type { ViewerScBvCheckResult } from "@/api/viewer"
+import IconSearch from "@/components/icons/IconSearch.vue"
+import IconClose from "@/components/icons/IconClose.vue"
+import IconCopy from "@/components/icons/IconCopy.vue"
+import IconCheck from "@/components/icons/IconCheck.vue"
+import IconQuestion from "@/components/icons/IconQuestion.vue"
 
 const isExpanded = ref(false)
 const bv = ref("")
@@ -110,8 +115,13 @@ onClickOutside(formRef, closeForm)
     <Transition name="fade-scale">
       <div v-if="isExpanded" ref="formRef" class="checker-form">
         <div class="form-header">
-          <span class="form-title">🔍 SC点播查询</span>
-          <button class="close-btn" @click="toggleExpanded">×</button>
+          <span class="form-title">
+            <IconSearch :size="16" />
+            SC点播查询
+          </span>
+          <button class="close-btn" @click="toggleExpanded" aria-label="关闭">
+            <IconClose :size="16" />
+          </button>
         </div>
 
         <div class="form-content">
@@ -131,21 +141,30 @@ onClickOutside(formRef, closeForm)
         <Transition name="slide-fade">
           <div v-if="showResult && result" class="result-area">
             <div v-if="result.exists" class="result-success">
-              <span class="result-icon">✅</span>
+              <span class="result-icon">
+                <IconCheck :size="18" />
+              </span>
               <span class="result-text">存在相关SC点播记录</span>
             </div>
             <div v-else class="result-empty">
-              <span class="result-icon">📭</span>
+              <span class="result-icon">
+                <IconQuestion :size="18" />
+              </span>
               <span class="result-text">未找到相关SC点播记录</span>
             </div>
-            <button class="copy-btn" @click="copyBv" v-if="bv">点播 {{ bv }}</button>
+            <button class="copy-btn" @click="copyBv" v-if="bv">
+              <IconCopy :size="14" />
+              点播 {{ bv }}
+            </button>
           </div>
         </Transition>
       </div>
     </Transition>
 
-    <button class="float-btn" @click="toggleExpanded" :title="isExpanded ? '收起' : 'SC点播查询'">
-      <span class="float-icon">🔍</span>
+    <button class="float-btn" @click="toggleExpanded" :title="isExpanded ? '收起' : 'SC点播查询'" aria-label="SC点播查询">
+      <span class="float-icon">
+        <IconSearch :size="20" />
+      </span>
     </button>
   </div>
 </template>
@@ -184,8 +203,10 @@ onClickOutside(formRef, closeForm)
 }
 
 .float-icon {
-  font-size: 1.2rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(223, 118, 35, 0.9);
 }
 
 .checker-form {
@@ -210,16 +231,18 @@ onClickOutside(formRef, closeForm)
   font-size: 0.9rem;
   color: rgba(196, 181, 253, 0.9);
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .close-btn {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border: none;
   background: rgba(255, 255, 255, 0.05);
   color: rgba(196, 181, 253, 0.5);
-  font-size: 1.2rem;
-  line-height: 1;
+  font-size: 1rem;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;

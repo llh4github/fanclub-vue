@@ -8,7 +8,7 @@
   --color-dark-bg: #0f172a;
   --color-dark-card: rgba(15, 23, 42, 0.7);
   --color-text-primary: rgba(255, 255, 255, 0.95);
-  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-secondary: rgba(255, 255, 255, 0.72);
   --color-glass-glow: rgba(223, 118, 35, 0.4);
   --color-glass-orange: rgba(245, 165, 92, 0.4);
 
@@ -90,6 +90,11 @@ body::before {
   background: rgba(223, 118, 35, 0.5);
 }
 
+/* High contrast text for accessibility */
+.text-high-contrast {
+  color: rgba(255, 255, 255, 0.75);
+}
+
 .theme-light ::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
 }
@@ -107,6 +112,20 @@ body::before {
   color: white;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 .theme-light ::selection {
   background: rgba(223, 118, 35, 0.5);
   color: white;
@@ -122,6 +141,13 @@ body::before {
 a,
 button {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a,
+  button {
+    transition: none;
+  }
 }
 
 img {

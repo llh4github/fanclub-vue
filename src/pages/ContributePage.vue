@@ -12,6 +12,12 @@ import { NModal, NConfigProvider, NAlert, darkTheme, NSelect, useMessage } from 
 import type { SelectOption } from "naive-ui"
 import { Click } from "go-captcha-vue"
 import MarkdownEditor from "@/components/MarkdownEditor.vue"
+import IconArrowLeft from "@/components/icons/IconArrowLeft.vue"
+import IconLock from "@/components/icons/IconLock.vue"
+import IconCheck from "@/components/icons/IconCheck.vue"
+import IconCopy from "@/components/icons/IconCopy.vue"
+import IconFile from "@/components/icons/IconFile.vue"
+import IconAlert from "@/components/icons/IconAlert.vue"
 
 const router = useRouter()
 const route = useRoute()
@@ -344,8 +350,8 @@ async function copySubmissionId() {
       <ParticleBackground />
 
       <header class="contribute-header">
-        <button class="back-btn" @click="goBack">
-          <span>←</span>
+        <button class="back-btn" @click="goBack" aria-label="返回首页">
+          <IconArrowLeft :size="18" />
           <span>返回首页</span>
         </button>
       </header>
@@ -361,16 +367,22 @@ async function copySubmissionId() {
 
             <template v-else>
               <div class="contribute-header-section">
-                <div class="contribute-icon">📝</div>
+                <div class="contribute-icon">
+                  <IconFile :size="48" />
+                </div>
                 <h1 class="contribute-title">投 稿</h1>
                 <p class="contribute-subtitle">Contribute Your Story</p>
               </div>
 
               <div v-if="successMsg" class="success-state">
-                <div class="success-icon">✅</div>
+                <div class="success-icon">
+                  <IconCheck :size="48" />
+                </div>
                 <p class="success-message">{{ successMsg }}</p>
                 <p v-if="submittedId" class="submission-id">稿件ID：{{ submittedId }}</p>
-                <button class="copy-btn" @click="copySubmissionId" title="复制稿件ID">📋</button>
+                <button class="copy-btn" @click="copySubmissionId" title="复制稿件ID" aria-label="复制稿件ID">
+                  <IconCopy :size="16" />
+                </button>
                 <div class="success-actions">
                   <button class="continue-btn" @click="continueEdit">继续投稿</button>
                   <button class="back-home-btn" @click="goBack">返回首页</button>
@@ -378,7 +390,9 @@ async function copySubmissionId() {
               </div>
 
               <div v-else-if="topics.length === 0 && !isLoading" class="empty-state">
-                <div class="empty-icon">📭</div>
+                <div class="empty-icon">
+                  <IconAlert :size="48" />
+                </div>
                 <h2 class="empty-title">暂无开放投稿</h2>
                 <p class="empty-desc">当前没有可用的投稿主题，请稍后再来</p>
                 <button class="back-home-btn" @click="goBack">返回首页</button>
@@ -428,9 +442,11 @@ async function copySubmissionId() {
                 <div class="captcha-wrapper">
                   <button type="button" class="captcha-btn" :disabled="!canVerifyCaptcha || isCaptchaVerified || !selectedTopic || !isTopicOpen
                     " @click="openCaptchaModal" :class="{ 'is-verified': isCaptchaVerified }">
-                    <span class="captcha-btn-icon">🔐</span>
+                    <span class="captcha-btn-icon">
+                      <IconLock :size="18" />
+                    </span>
                     <span class="captcha-btn-text">
-                      {{ isCaptchaVerified ? "已验证 ✓" : "点击进行安全验证" }}
+                      {{ isCaptchaVerified ? "已验证" : "点击进行安全验证" }}
                     </span>
                   </button>
                 </div>

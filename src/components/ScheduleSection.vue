@@ -9,6 +9,10 @@ import {
 } from "@/api"
 import { Liko } from "@/config"
 import { isSuccess } from "@/api/types"
+import IconLink from "@/components/icons/IconLink.vue"
+import IconCouch from "@/components/icons/IconCouch.vue"
+import IconBolt from "@/components/icons/IconBolt.vue"
+import IconCalendar from "@/components/icons/IconCalendar.vue"
 
 const sectionRef = ref<HTMLElement>()
 const isVisible = ref(false)
@@ -275,10 +279,12 @@ onBeforeUnmount(() => {
 <template>
   <section ref="sectionRef" id="schedule" class="schedule-section" :class="{ visible: isVisible }">
     <h2 class="section-title">
-      <a href="#schedule" class="anchor-link" title="链接到本周日程">
-        <span class="anchor-icon">🔗</span>
+      <a href="#schedule" class="anchor-link" title="链接到本周日程" aria-label="链接到本周日程">
+        <IconLink :size="16" class="anchor-icon" />
       </a>
-      <span class="title-icon">📅</span>
+      <span class="title-icon">
+        <IconCalendar :size="28" />
+      </span>
       本周日程
       <span v-if="scheduleLoading" class="loading-indicator">加载中...</span>
     </h2>
@@ -305,7 +311,9 @@ onBeforeUnmount(() => {
           </div>
 
           <div v-if="d.events.length === 0" class="rest-content">
-            <span class="rest-icon">🛋️</span>
+            <span class="rest-icon">
+              <IconCouch :size="28" />
+            </span>
             <span class="rest-text">休息日</span>
           </div>
 
@@ -317,7 +325,10 @@ onBeforeUnmount(() => {
               :class="[ev.tag, ev.status, { surprise: ev.isSurprise }]"
             >
               <div class="event-main">
-                <span class="event-icon">{{ ev.icon }}</span>
+                <span class="event-icon">
+                  <IconBolt v-if="ev.isSurprise" :size="20" />
+                  <span v-else class="event-emoji">{{ ev.icon }}</span>
+                </span>
                 <span class="event-name">{{ ev.name }}</span>
                 <span v-if="ev.isSurprise" class="surprise-tag">突</span>
               </div>
@@ -436,11 +447,24 @@ onBeforeUnmount(() => {
 }
 
 .anchor-icon {
-  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  color: rgba(102, 126, 234, 0.5);
+  transition: all 0.2s ease;
+}
+
+.section-title:hover .anchor-icon {
+  color: rgba(102, 126, 234, 0.9);
+}
+
+.anchor-link:hover {
+  opacity: 1 !important;
 }
 
 .title-icon {
-  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  color: rgba(102, 126, 234, 0.8);
   animation: bounce 2s ease-in-out infinite;
 }
 
@@ -457,7 +481,7 @@ onBeforeUnmount(() => {
 
 .schedule-grid {
   width: 100%;
-  max-width: 1100px;
+  max-width: 900px;
   display: flex;
   gap: 10px;
   overflow-x: auto;
@@ -553,19 +577,18 @@ onBeforeUnmount(() => {
 .day-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .day-name.today {
   background: linear-gradient(135deg, #667eea, #a78bfa);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .day-date {
   font-size: 0.65rem;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.45);
   font-family: "SF Mono", "Fira Code", monospace;
 }
 
@@ -708,9 +731,16 @@ onBeforeUnmount(() => {
 }
 
 .event-icon {
-  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   line-height: 1;
+  color: rgba(102, 126, 234, 0.7);
+}
+
+.event-emoji {
+  font-size: 1.4rem;
 }
 
 .event-name {
@@ -734,13 +764,13 @@ onBeforeUnmount(() => {
 }
 
 .time-label {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.55);
   min-width: 2.5em;
   font-size: 0.6rem;
 }
 
 .plan-time .time-value {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.72);
   font-family: "SF Mono", "Fira Code", monospace;
   font-size: 0.65rem;
 }

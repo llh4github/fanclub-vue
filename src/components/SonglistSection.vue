@@ -5,6 +5,12 @@ import { getSongPage, type AnchorSongSimple } from "@/api"
 import { Liko } from "@/config"
 import { isSuccess } from "@/api/types"
 import { useMessage } from "naive-ui"
+import IconMusic from "@/components/icons/IconMusic.vue"
+import IconSearch from "@/components/icons/IconSearch.vue"
+import IconClose from "@/components/icons/IconClose.vue"
+import IconCopy from "@/components/icons/IconCopy.vue"
+import IconChevronLeft from "@/components/icons/IconChevronLeft.vue"
+import IconChevronRight from "@/components/icons/IconChevronRight.vue"
 
 const message = useMessage()
 const sectionRef = ref<HTMLElement>()
@@ -127,10 +133,12 @@ onBeforeUnmount(() => {
 <template>
   <section ref="sectionRef" id="playlist" class="playlist-section" :class="{ visible: isVisible }">
     <h2 class="section-title">
-      <a href="#playlist" class="anchor-link" title="链接到歌单">
-        <span class="anchor-icon">🔗</span>
+      <a href="#playlist" class="anchor-link" title="链接到歌单" aria-label="链接到歌单">
+        <IconSearch :size="16" class="anchor-icon" />
       </a>
-      <span class="title-icon">🎵</span>
+      <span class="title-icon">
+        <IconMusic :size="28" />
+      </span>
       歌单
     </h2>
 
@@ -138,7 +146,9 @@ onBeforeUnmount(() => {
       <div v-if="selectedSong && videoUrl" class="video-wrapper">
         <div class="video-header">
           <span class="video-title">{{ selectedSong.name }}</span>
-          <button class="video-close" @click="closeVideo" title="关闭视频">✕</button>
+          <button class="video-close" @click="closeVideo" title="关闭视频" aria-label="关闭视频">
+            <IconClose :size="16" />
+          </button>
         </div>
         <div class="video-player">
           <iframe :src="videoUrl" frameborder="0" allowfullscreen scrolling="no"></iframe>
@@ -146,24 +156,29 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="search-bar">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon">
+          <IconSearch :size="16" />
+        </span>
         <input
           v-model="searchQuery"
           type="text"
           class="search-input"
           placeholder="搜索歌名..."
           @keyup.enter="onSearch"
+          aria-label="搜索歌名"
         />
-        <button v-if="searchQuery" class="search-clear" @click="clearSearch">✕</button>
+        <button v-if="searchQuery" class="search-clear" @click="clearSearch" aria-label="清除搜索">
+          <IconClose :size="14" />
+        </button>
       </div>
 
       <div class="track-list">
         <div v-if="loading" class="empty-state">
-          <span>🎵</span>
+          <IconMusic :size="32" class="empty-icon" />
           <span>加载中...</span>
         </div>
         <div v-else-if="pagedList.length === 0" class="empty-state">
-          <span>🔍</span>
+          <IconSearch :size="32" class="empty-icon" />
           <span>没有找到匹配的歌曲</span>
         </div>
         <div
@@ -184,8 +199,8 @@ onBeforeUnmount(() => {
               <span class="track-price">{{ track.price }}元</span>
             </div>
           </div>
-          <button class="copy-btn" @click.stop="copySongName(track.name)" title="复制歌名">
-            📋
+          <button class="copy-btn" @click.stop="copySongName(track.name)" title="复制歌名" aria-label="复制歌名">
+            <IconCopy :size="16" />
           </button>
         </div>
       </div>
@@ -196,8 +211,9 @@ onBeforeUnmount(() => {
           :disabled="currentPage === 1"
           @click="goToPage(currentPage - 1)"
           title="上一页"
+          aria-label="上一页"
         >
-          ‹
+          <IconChevronLeft :size="18" />
         </button>
         <template v-for="p in pageNumbers" :key="p">
           <span v-if="p === -1" class="page-ellipsis">…</span>
@@ -215,13 +231,14 @@ onBeforeUnmount(() => {
           :disabled="currentPage === totalPages"
           @click="goToPage(currentPage + 1)"
           title="下一页"
+          aria-label="下一页"
         >
-          ›
+          <IconChevronRight :size="18" />
         </button>
       </div>
 
       <div class="playlist-footer">
-        <span>🎶 莉蔻的私人收藏 · 共 {{ filteredList.length }} 首</span>
+        <span>歌单 · 共 {{ filteredList.length }} 首</span>
       </div>
     </VGlass>
   </section>
@@ -271,11 +288,24 @@ onBeforeUnmount(() => {
 }
 
 .anchor-icon {
-  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  color: rgba(102, 126, 234, 0.5);
+  transition: all 0.2s ease;
+}
+
+.section-title:hover .anchor-icon {
+  color: rgba(102, 126, 234, 0.9);
+}
+
+.anchor-link:hover {
+  opacity: 1 !important;
 }
 
 .title-icon {
-  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  color: rgba(102, 126, 234, 0.8);
   animation: musicNote 3s ease-in-out infinite;
 }
 
@@ -296,7 +326,7 @@ onBeforeUnmount(() => {
 
 .playlist-card {
   width: 100%;
-  max-width: 700px;
+  max-width: 900px;
   padding: 1.5rem;
 }
 
@@ -558,12 +588,12 @@ onBeforeUnmount(() => {
 
 .track-bv {
   font-size: 0.7rem;
-  color: rgba(223, 118, 35, 0.5);
+  color: rgba(223, 118, 35, 0.72);
 }
 
 .track-price {
   font-size: 0.75rem;
-  color: rgba(223, 118, 35, 0.7);
+  color: rgba(139, 92, 246, 0.72);
 }
 
 .copy-btn {

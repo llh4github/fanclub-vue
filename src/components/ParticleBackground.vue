@@ -300,6 +300,13 @@ function animate() {
 
   if (!scene || !camera || !renderer) return
 
+  // Respect reduced motion preference
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  if (prefersReducedMotion) {
+    renderer.render(scene, camera)
+    return
+  }
+
   const time = Date.now() * 0.001
 
   if (particles) {

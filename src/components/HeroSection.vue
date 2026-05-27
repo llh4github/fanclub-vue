@@ -10,6 +10,11 @@ import avatar_a from "@/assets/avatar/avatar_a.webp"
 import avatar_ku from "@/assets/avatar/avatar_ku.webp"
 import avatar_xiao from "@/assets/avatar/avatar_xiao.webp"
 import avatar_04 from "@/assets/avatar/avatar_04.jpg"
+import IconUsers from "@/components/icons/IconUsers.vue"
+import IconPlay from "@/components/icons/IconPlay.vue"
+import IconCake from "@/components/icons/IconCake.vue"
+import IconHeart from "@/components/icons/IconHeart.vue"
+import IconFile from "@/components/icons/IconFile.vue"
 
 const router = useRouter()
 
@@ -33,9 +38,9 @@ const randomAvatar = computed(() => {
 })
 
 const stats = [
-  { id: "fans", icon: "👥", label: "粉丝", value: computed(() => fansCount.value) },
-  { id: "streams", icon: "📺", label: "出道天数", value: computed(() => `${debutDays.value}天`) },
-  { id: "birthday", icon: "🎂", label: "生日", value: "8月3日" },
+  { id: "fans", icon: IconUsers, label: "粉丝", value: computed(() => fansCount.value) },
+  { id: "streams", icon: IconPlay, label: "出道天数", value: computed(() => `${debutDays.value}天`) },
+  { id: "birthday", icon: IconCake, label: "生日", value: "8月3日" },
 ]
 
 function openBiliSpace() {
@@ -284,7 +289,9 @@ onBeforeUnmount(() => {
           @click="enterLiveRoom"
           :disabled="!isLive"
         >
-          <span class="text-lg relative z-10">🎬</span>
+          <span class="btn-icon">
+            <IconPlay :size="18" />
+          </span>
           <div v-if="isLive" class="flex flex-col items-start leading-tight">
             <span class="text-sm">进入直播间</span>
           </div>
@@ -297,12 +304,16 @@ onBeforeUnmount(() => {
         </button>
 
         <button v-if="showContributeBtn" class="glass-btn-secondary" @click="goContribute">
-          <span class="text-lg relative z-10">📝</span>
+          <span class="btn-icon">
+            <IconFile :size="18" />
+          </span>
           <span class="relative z-10">投 稿</span>
         </button>
 
         <button class="glass-btn-secondary" @click="openBiliSpace">
-          <span class="text-lg relative z-10">💝</span>
+          <span class="btn-icon">
+            <IconHeart :size="18" />
+          </span>
           <span class="relative z-10">去关注</span>
         </button>
       </div>
@@ -316,7 +327,9 @@ onBeforeUnmount(() => {
       >
         <div v-for="stat in stats" :key="stat.id" class="glass-card-stat">
           <div class="stat-glow"></div>
-          <span class="stat-icon">{{ stat.icon }}</span>
+          <span class="stat-icon">
+            <component :is="stat.icon" :size="28" />
+          </span>
           <div class="stat-content">
             <div class="stat-label">{{ stat.label }}</div>
             <div class="stat-value">{{ stat.value }}</div>
@@ -662,6 +675,12 @@ onBeforeUnmount(() => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .glass-btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow:
@@ -749,13 +768,15 @@ onBeforeUnmount(() => {
 }
 
 .stat-icon {
-  font-size: 1.6rem;
-  filter: grayscale(0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(139, 92, 246, 0.6);
   transition: all 0.3s ease;
 }
 
 .glass-card-stat:hover .stat-icon {
-  filter: grayscale(0);
+  color: rgba(139, 92, 246, 0.9);
   transform: scale(1.1);
 }
 
