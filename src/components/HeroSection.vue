@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue"
 import { useRouter } from "vue-router"
-import { VGlass } from "@daisigu/vue-liquid-glass"
 import { getLatestFollowerNum, getTopicCount } from "@/api"
 import { getLatestLiveRecord, LiveRecordStatus, type LatestLiveRecord } from "@/api/schedule"
 import { Liko } from "@/config"
@@ -80,9 +79,7 @@ const quoteIndex = ref(0)
 const displayQuote = ref("")
 const isTyping = ref(false)
 const showSource = ref(false)
-const songIcon = ref("🎵")
 const songLabel = ref("歌势")
-const songIconType = ref("mic")
 let quoteTimer: ReturnType<typeof setTimeout> | null = null
 
 function typeQuote(text: string, onDone?: () => void) {
@@ -196,9 +193,7 @@ onMounted(async () => {
   setTimeout(cycleQuote, 1200)
 
   setTimeout(() => {
-    songIcon.value = "💬"
     songLabel.value = "杂谈势"
-    songIconType.value = "bubble"
   }, 3000)
 })
 
@@ -213,78 +208,53 @@ onBeforeUnmount(() => {
 <template>
   <section id="home" class="hero-section" :class="{ loaded: isLoaded }">
     <div class="hero-content">
-      <div class="avatar-container">
-        <div class="avatar-wrapper" :class="{ live: isLive }">
-          <div class="avatar-glow"></div>
-          <div v-if="isLive" class="live-ring"></div>
-          <div v-if="isLive" class="live-ring"></div>
-          <div v-if="isLive" class="live-ring"></div>
-          <img :src="randomAvatar" alt="莉蔻Liko" class="avatar" />
-          <div v-if="isLive" class="live-indicator">
-            <div class="live-indicator-inner">
+      <!-- Avatar section with cyberpunk frame -->
+      <div class="avatar-section">
+        <div class="avatar-frame">
+          <div class="frame-corner top-left"></div>
+          <div class="frame-corner top-right"></div>
+          <div class="frame-corner bottom-left"></div>
+          <div class="frame-corner bottom-right"></div>
+          <div class="avatar-wrapper" :class="{ live: isLive }">
+            <div class="avatar-glow"></div>
+            <img :src="randomAvatar" alt="莉蔻Liko" class="avatar" />
+            <div v-if="isLive" class="live-badge">
               <span class="live-dot"></span>
               <span class="live-text">直播中</span>
             </div>
           </div>
         </div>
+        <div class="avatar-decoration">
+          <span class="deco-line"></span>
+          <span class="deco-text">VR所属</span>
+          <span class="deco-line"></span>
+        </div>
       </div>
 
-      <h1
-        class="hero-title text-[2.5rem] font-bold text-primary mb-2 md:text-[2rem] sm:text-[1.6rem]"
-      >
-        莉蔻Liko
+      <!-- Name with glitch effect -->
+      <h1 class="hero-title">
+        <span class="title-text">莉蔻</span>
+        <span class="title-accent">Liko</span>
       </h1>
 
-      <div class="hero-subtitle flex gap-2 justify-center flex-wrap">
-        <span class="glass-badge">
-          <div class="badge-shine"></div>
-          <span class="relative z-10 flex items-center gap-1">
-            <img
-              src="@/assets/icons/circle-v.svg"
-              alt="V"
-              class="w-4 h-4"
-              style="filter: invert(73%) sepia(98%) saturate(200%) hue-rotate(220deg)"
-            />
-            VR所属
-          </span>
-        </span>
-        <span class="glass-badge">
-          <div class="badge-shine"></div>
-          <span class="relative z-10 flex items-center gap-1">
-            <img
-              src="@/assets/icons/woman-head.svg"
-              alt="虚拟主播"
-              class="w-4 h-4"
-              style="filter: invert(73%) sepia(98%) saturate(200%) hue-rotate(220deg)"
-            />
-            虚拟主播
-          </span>
-        </span>
-        <span class="glass-badge">
-          <div class="badge-shine"></div>
-          <span class="relative z-10 flex items-center gap-1">
-            <img
-              v-if="songIconType === 'mic'"
-              src="@/assets/icons/microphone-alt.svg"
-              alt="歌势"
-              class="w-4 h-4"
-              style="filter: invert(73%) sepia(98%) saturate(200%) hue-rotate(220deg)"
-            />
-            <img
-              v-else
-              src="@/assets/icons/bubble-discussion.svg"
-              alt="杂谈"
-              class="w-4 h-4"
-              style="filter: invert(73%) sepia(98%) saturate(200%) hue-rotate(220deg)"
-            />
-            {{ songLabel }}
-          </span>
-        </span>
+      <!-- Tags row -->
+      <div class="hero-tags">
+        <span class="tag tag-primary">虚拟主播</span>
+        <span class="tag">{{ songLabel }}</span>
       </div>
 
-      <div class="hero-actions flex gap-4 justify-center">
+      <!-- Quote with typewriter effect -->
+      <div class="hero-quote">
+        <span class="quote-bracket">[</span>
+        <span class="quote-text">{{ displayQuote }}</span>
+        <span v-if="showSource" class="quote-source">— {{ quotes[quoteIndex].source }}</span>
+        <span class="quote-bracket">]</span>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="hero-actions">
         <button
-          class="glass-btn-primary"
+          class="action-btn action-primary"
           :class="{ 'animate-pulse': isLive, 'opacity-50 cursor-not-allowed': !isLive }"
           @click="enterLiveRoom"
           :disabled="!isLive"
@@ -292,62 +262,54 @@ onBeforeUnmount(() => {
           <span class="btn-icon">
             <IconPlay :size="18" />
           </span>
-          <div v-if="isLive" class="flex flex-col items-start leading-tight">
-            <span class="text-sm">进入直播间</span>
-          </div>
-          <div v-else class="flex flex-col items-start leading-tight">
-            <span class="text-sm">上次直播</span>
-            <span v-if="latestLiveRecord?.live_time" class="text-xs opacity-80">
+          <span class="btn-text">
+            {{ isLive ? "进入直播间" : "上次直播" }}
+            <span v-if="!isLive && latestLiveRecord?.live_time" class="btn-sub">
               {{ formatLiveTime(latestLiveRecord.live_time) }}
             </span>
-          </div>
+          </span>
         </button>
 
-        <button v-if="showContributeBtn" class="glass-btn-secondary" @click="goContribute">
+        <button v-if="showContributeBtn" class="action-btn action-secondary" @click="goContribute">
           <span class="btn-icon">
             <IconFile :size="18" />
           </span>
-          <span class="relative z-10">投 稿</span>
+          <span class="btn-text">投稿</span>
         </button>
 
-        <button class="glass-btn-secondary" @click="openBiliSpace">
+        <button class="action-btn action-secondary" @click="openBiliSpace">
           <span class="btn-icon">
             <IconStar :size="18" />
           </span>
-          <span class="relative z-10">去关注</span>
+          <span class="btn-text">关注</span>
         </button>
       </div>
 
-      <VGlass
-        class="glass-card-container"
-        :blur="10"
-        :scale="30"
-        :base-frequency="0.015"
-        :radius="20"
-      >
-        <div v-for="stat in stats" :key="stat.id" class="glass-card-stat">
-          <div class="stat-glow"></div>
+      <!-- Stats cards - asymmetric layout -->
+      <div class="stats-section">
+        <div v-for="stat in stats" :key="stat.id" class="stat-card">
           <span class="stat-icon">
-            <component :is="stat.icon" :size="28" />
+            <component :is="stat.icon" :size="24" />
           </span>
           <div class="stat-content">
             <div class="stat-label">{{ stat.label }}</div>
             <div class="stat-value">{{ stat.value }}</div>
           </div>
         </div>
-      </VGlass>
+      </div>
     </div>
 
+    <!-- Floating particles -->
     <div class="hero-particles">
       <span
-        v-for="i in 20"
+        v-for="i in 12"
         :key="i"
         class="particle"
         :style="{
           left: `${Math.random() * 100}%`,
           top: `${Math.random() * 100}%`,
           animationDelay: `${Math.random() * 5}s`,
-          animationDuration: `${10 + Math.random() * 10}s`,
+          animationDuration: `${8 + Math.random() * 8}s`,
         }"
       ></span>
     </div>
@@ -362,13 +324,17 @@ onBeforeUnmount(() => {
   justify-content: center;
   position: relative;
   overflow: hidden;
+  padding: 4rem 1rem;
 }
 
 .hero-content {
   position: relative;
   z-index: 10;
   text-align: center;
-  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
   opacity: 0;
   transform: translateY(30px);
   transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -379,198 +345,120 @@ onBeforeUnmount(() => {
   transform: translateY(0);
 }
 
-@media (max-width: 768px) {
-  .hero-content {
-    padding: 3rem 1.5rem;
-  }
+/* Avatar Section */
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
 }
 
-.avatar-container {
-  margin-bottom: 2.5rem;
+.avatar-frame {
+  position: relative;
+  padding: 20px;
+}
+
+.frame-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: #00f5ff;
+  border-style: solid;
+}
+
+.frame-corner.top-left {
+  top: 0;
+  left: 0;
+  border-width: 3px 0 0 3px;
+}
+
+.frame-corner.top-right {
+  top: 0;
+  right: 0;
+  border-width: 3px 3px 0 0;
+}
+
+.frame-corner.bottom-left {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 3px 3px;
+}
+
+.frame-corner.bottom-right {
+  bottom: 0;
+  right: 0;
+  border-width: 0 3px 3px 0;
 }
 
 .avatar-wrapper {
   position: relative;
-  width: 180px;
-  height: 180px;
-  margin: 0 auto;
+  width: 160px;
+  height: 160px;
 }
 
 .avatar-glow {
   position: absolute;
-  inset: -20px;
-  background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+  inset: -30px;
+  background: radial-gradient(circle,
+    rgba(0, 245, 255, 0.3) 0%,
+    rgba(139, 92, 246, 0.15) 40%,
+    transparent 70%);
   border-radius: 50%;
-  animation: glowPulse 3s ease-in-out infinite;
+  animation: glow-pulse 3s ease-in-out infinite;
 }
 
-@keyframes glowPulse {
-  0%,
-  100% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
 }
 
 .avatar {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  box-shadow:
-    0 0 40px rgba(102, 126, 234, 0.3),
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 0 30px rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
+  border-radius: 0;
+  border: 2px solid rgba(0, 245, 255, 0.5);
   position: relative;
-  backdrop-filter: blur(10px);
-}
-
-.avatar::before {
-  content: "";
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  border: 2px solid rgba(102, 126, 234, 0.3);
-  animation: avatarRing 3s linear infinite;
-}
-
-.avatar::after {
-  content: "";
-  position: absolute;
-  inset: -10px;
-  border-radius: 50%;
-  border: 1px solid rgba(167, 139, 250, 0.2);
-  animation: avatarRing 5s linear infinite reverse;
-}
-
-@keyframes avatarRing {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+  filter: saturate(1.1);
+  transition: all 0.3s ease;
 }
 
 .avatar:hover {
-  transform: scale(1.05);
+  border-color: #00f5ff;
   box-shadow:
-    0 0 60px rgba(102, 126, 234, 0.4),
-    0 12px 40px rgba(0, 0, 0, 0.25),
-    inset 0 0 40px rgba(255, 255, 255, 0.15);
+    0 0 30px rgba(0, 245, 255, 0.4),
+    inset 0 0 20px rgba(0, 245, 255, 0.1);
 }
 
 .avatar-wrapper.live .avatar {
-  border-color: rgba(239, 68, 68, 0.5);
-  box-shadow:
-    0 0 20px rgba(239, 68, 68, 0.4),
-    0 0 40px rgba(239, 68, 68, 0.2),
-    0 0 60px rgba(239, 68, 68, 0.1),
-    inset 0 0 30px rgba(239, 68, 68, 0.1);
-  animation: avatarGlow 2s ease-in-out infinite;
+  border-color: #ff6b35;
+  animation: live-glow 1.5s ease-in-out infinite;
 }
 
-@keyframes avatarGlow {
-  0%,
-  100% {
-    box-shadow:
-      0 0 20px rgba(239, 68, 68, 0.4),
-      0 0 40px rgba(239, 68, 68, 0.2),
-      0 0 60px rgba(239, 68, 68, 0.1),
-      inset 0 0 30px rgba(239, 68, 68, 0.1);
+@keyframes live-glow {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
   }
-
   50% {
-    box-shadow:
-      0 0 30px rgba(239, 68, 68, 0.5),
-      0 0 60px rgba(239, 68, 68, 0.25),
-      0 0 90px rgba(239, 68, 68, 0.15),
-      inset 0 0 50px rgba(239, 68, 68, 0.15);
+    box-shadow: 0 0 50px rgba(255, 107, 53, 0.8);
   }
 }
 
-.live-ring {
+.live-badge {
   position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  border: 2px solid rgba(239, 68, 68, 0.5);
-  animation: ringPulse 1.5s ease-out infinite;
-}
-
-.live-ring:nth-child(2) {
-  animation-delay: 0.5s;
-}
-
-.live-ring:nth-child(3) {
-  animation-delay: 1s;
-}
-
-@keyframes ringPulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-
-  100% {
-    transform: scale(1.15);
-    opacity: 0;
-  }
-}
-
-.live-indicator {
-  position: absolute;
-  bottom: -20px;
+  bottom: -15px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 4px;
-  background: rgba(239, 68, 68, 0.9);
-  backdrop-filter: blur(10px);
-  padding: 4px 12px;
-  border-radius: 12px;
-  animation: indicatorPulse 1.5s ease-in-out infinite;
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-  white-space: nowrap;
-  z-index: 10;
+  gap: 6px;
+  background: #ff6b35;
+  padding: 6px 14px;
+  animation: badge-blink 1s ease-in-out infinite;
 }
 
-.live-indicator-inner {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  animation: indicatorScale 1.5s ease-in-out infinite;
-}
-
-@keyframes indicatorPulse {
-  0%,
-  100% {
-    opacity: 1;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-  }
-
-  50% {
-    opacity: 0.85;
-    box-shadow: 0 0 25px rgba(239, 68, 68, 0.7);
-  }
-}
-
-@keyframes indicatorScale {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.02);
-  }
+@keyframes badge-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 .live-dot {
@@ -578,233 +466,301 @@ onBeforeUnmount(() => {
   height: 8px;
   background: white;
   border-radius: 50%;
-  animation: dotBlink 0.8s ease-in-out infinite;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  animation: dot-pulse 0.8s ease-in-out infinite;
 }
 
-@keyframes dotBlink {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-  }
-
-  50% {
-    opacity: 0.4;
-    transform: scale(0.8);
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
-  }
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.8); opacity: 0.6; }
 }
 
 .live-text {
   font-size: 0.65rem;
   font-weight: 700;
   color: white;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
+.avatar-decoration {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.deco-line {
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #00f5ff, transparent);
+}
+
+.deco-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #00f5ff;
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
+}
+
+/* Title with glitch effect */
 .hero-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(167, 139, 250, 0.9) 100%);
+  font-size: 2.8rem;
+  font-weight: 900;
+  margin: 0;
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+.title-text {
+  color: #fff;
+  text-shadow:
+    0 0 20px rgba(0, 245, 255, 0.5),
+    2px 2px 0 #00f5ff,
+    -2px -2px 0 #ff6b35;
+  animation: glitch-text 4s ease-in-out infinite;
+}
+
+@keyframes glitch-text {
+  0%, 90%, 100% { transform: translate(0); }
+  92% { transform: translate(-2px, 1px); }
+  94% { transform: translate(2px, -1px); }
+  96% { transform: translate(-1px, -1px); }
+  98% { transform: translate(1px, 1px); }
+}
+
+.title-accent {
+  background: linear-gradient(135deg, #00f5ff, #8b5cf6, #ff6b35);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-size: 2.2rem;
 }
 
-.hero-subtitle {
+/* Tags */
+.hero-tags {
   display: flex;
-  gap: 0.5rem;
-  justify-content: center;
+  gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
+  justify-content: center;
 }
 
-.glass-badge {
+.tag {
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
   position: relative;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.tag::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #00f5ff;
+}
+
+.tag-primary {
+  border-color: rgba(0, 245, 255, 0.4);
+  color: #00f5ff;
+}
+
+.tag-primary::before {
+  background: linear-gradient(180deg, #00f5ff, #8b5cf6);
+}
+
+.tag:hover {
+  border-color: rgba(0, 245, 255, 0.5);
+  color: #fff;
+}
+
+/* Quote */
+.hero-quote {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 500px;
+  min-height: 2rem;
+}
+
+.quote-bracket {
+  color: #8b5cf6;
+  font-weight: 300;
+}
+
+.quote-text {
   color: rgba(255, 255, 255, 0.85);
 }
 
-.badge-shine {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-  animation: badgeShine 3s ease-in-out infinite;
+.quote-source {
+  display: block;
+  font-size: 0.75rem;
+  color: rgba(139, 92, 246, 0.6);
+  margin-top: 0.3rem;
 }
 
-@keyframes badgeShine {
-  0%,
-  100% {
-    left: -100%;
-  }
-
-  50% {
-    left: 100%;
-  }
-}
-
+/* Action buttons */
 .hero-actions {
-  margin-bottom: 2rem;
   display: flex;
   gap: 1rem;
-  justify-content: center;
   flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.5rem;
 }
 
-.glass-btn-primary {
+.action-btn {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 14px;
-  cursor: pointer;
-  font-weight: 600;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(167, 139, 250, 0.3) 100%);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
+  padding: 0.8rem 1.5rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  border: 2px solid;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.action-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.action-btn:hover::before {
+  transform: translateX(100%);
+}
+
+.action-primary {
+  background: transparent;
+  border-color: #ff6b35;
+  color: #ff6b35;
+}
+
+.action-primary:hover:not(:disabled) {
+  background: rgba(255, 107, 53, 0.15);
+  border-color: #ff9e5e;
+  color: #fff;
   box-shadow:
-    0 8px 32px rgba(102, 126, 234, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    0 0 25px rgba(255, 107, 53, 0.4),
+    inset 0 0 15px rgba(255, 107, 53, 0.1);
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.8);
+}
+
+.action-secondary {
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #8b5cf6;
+}
+
+.action-secondary:hover {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.15);
+  color: #fff;
+  box-shadow:
+    0 0 20px rgba(139, 92, 246, 0.3),
+    inset 0 0 15px rgba(139, 92, 246, 0.1);
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
 }
 
 .btn-icon {
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
-.glass-btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow:
-    0 12px 40px rgba(102, 126, 234, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.glass-btn-secondary {
+.btn-text {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border-radius: 14px;
-  cursor: pointer;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.85);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
 }
 
-.glass-btn-secondary:hover {
-  background: rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.3);
-  transform: translateY(-2px);
-  box-shadow:
-    0 8px 24px rgba(102, 126, 234, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+.btn-sub {
+  font-size: 0.65rem;
+  opacity: 0.7;
+  font-weight: 400;
 }
 
-.glass-card-container {
+/* Stats section */
+.stats-section {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
-  padding: 1rem;
-  min-width: 280px;
+  justify-content: center;
+  margin-top: 1rem;
+  width: 100%;
+  max-width: 600px;
 }
 
-.glass-card-stat {
-  position: relative;
+.stat-card {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem;
+  background: rgba(10, 8, 18, 0.8);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  position: relative;
+  flex: 1;
   min-width: 140px;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
-.glass-card-stat:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(102, 126, 234, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
-}
-
-.stat-glow {
+.stat-card::before {
+  content: "";
   position: absolute;
-  inset: -2px;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.2),
-    transparent,
-    rgba(167, 139, 250, 0.2)
-  );
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  filter: blur(8px);
-  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg, #00f5ff, #8b5cf6);
 }
 
-.glass-card-stat:hover .stat-glow {
-  opacity: 1;
+.stat-card:hover {
+  border-color: rgba(0, 245, 255, 0.5);
+  background: rgba(0, 245, 255, 0.05);
 }
 
 .stat-icon {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: rgba(139, 92, 246, 0.6);
+  color: rgba(0, 245, 255, 0.6);
   transition: all 0.3s ease;
 }
 
-.glass-card-stat:hover .stat-icon {
-  color: rgba(139, 92, 246, 0.9);
+.stat-card:hover .stat-icon {
+  color: #00f5ff;
   transform: scale(1.1);
 }
 
 .stat-content {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .stat-label {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .stat-value {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.95);
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.3);
 }
 
+/* Particles */
 .hero-particles {
   position: absolute;
   inset: 0;
@@ -815,121 +771,108 @@ onBeforeUnmount(() => {
   position: absolute;
   width: 4px;
   height: 4px;
-  background: rgba(167, 139, 250, 0.5);
+  background: #00f5ff;
   border-radius: 50%;
-  animation: float 15s ease-in-out infinite;
+  animation: particle-float 12s ease-in-out infinite;
+  box-shadow: 0 0 6px #00f5ff;
 }
 
-@keyframes float {
-  0%,
-  100% {
+.particle:nth-child(even) {
+  background: #ff6b35;
+  box-shadow: 0 0 6px #ff6b35;
+}
+
+.particle:nth-child(3n) {
+  background: #8b5cf6;
+  box-shadow: 0 0 6px #8b5cf6;
+}
+
+@keyframes particle-float {
+  0%, 100% {
     transform: translateY(0) translateX(0);
     opacity: 0;
   }
-
-  10% {
-    opacity: 1;
-  }
-
-  90% {
-    opacity: 1;
-  }
-
+  10% { opacity: 1; }
+  90% { opacity: 1; }
   100% {
-    transform: translateY(-200px) translateX(50px);
+    transform: translateY(-150px) translateX(30px);
     opacity: 0;
   }
 }
 
+/* Responsive */
 @media (max-width: 768px) {
-  .avatar-container {
-    margin-bottom: 2rem;
-  }
-
-  .avatar-wrapper {
-    width: 140px;
-    height: 140px;
-  }
-
-  .live-indicator {
-    bottom: -18px;
-    padding: 3.5px 11px;
+  .hero-section {
+    padding: 3rem 1rem;
   }
 
   .hero-title {
-    font-size: 2rem;
+    font-size: 2.2rem;
+    flex-direction: column;
+    gap: 0.2rem;
   }
 
-  .glass-card-container {
-    padding: 0.75rem;
-    gap: 0.75rem;
+  .title-accent {
+    font-size: 1.8rem;
   }
 
-  .glass-card-stat {
-    padding: 0.75rem 1rem;
+  .avatar-wrapper {
+    width: 130px;
+    height: 130px;
+  }
+
+  .stats-section {
+    gap: 1rem;
+  }
+
+  .stat-card {
     min-width: 120px;
+    padding: 0.8rem 1rem;
+  }
+
+  .action-btn {
+    padding: 0.7rem 1.2rem;
+    min-width: 100px;
   }
 }
 
 @media (max-width: 480px) {
-  .avatar-container {
-    margin-bottom: 1.8rem;
-  }
-
-  .hero-content {
-    padding: 1rem;
-  }
-
-  .avatar-wrapper {
-    width: 120px;
-    height: 120px;
-  }
-
-  .live-indicator {
-    bottom: -16px;
-    padding: 3px 10px;
-  }
-
-  .live-text {
-    font-size: 0.6rem;
-  }
-
-  .live-dot {
-    width: 6px;
-    height: 6px;
-  }
-
   .hero-title {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
   }
 
-  .glass-card-container {
-    min-width: auto;
+  .title-accent {
+    font-size: 1.5rem;
   }
 
-  .glass-card-stat {
-    min-width: 100px;
-    padding: 0.6rem 0.8rem;
-  }
-
-  .stat-icon {
-    font-size: 1.3rem;
-  }
-
-  .stat-value {
-    font-size: 0.9rem;
-  }
-}
-
-@media (min-width: 1400px) {
   .avatar-wrapper {
-    width: 200px;
-    height: 200px;
+    width: 110px;
+    height: 110px;
   }
 
-  .live-indicator {
-    bottom: -22px;
-    padding: 5px 14px;
+  .hero-tags {
+    gap: 0.6rem;
+  }
+
+  .tag {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.7rem;
+  }
+
+  .stats-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-card {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .action-btn {
+    min-width: 100px;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
   }
 }
 </style>

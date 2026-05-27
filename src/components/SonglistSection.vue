@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, computed } from "vue"
-import { VGlass } from "@daisigu/vue-liquid-glass"
-import { getSongPage, type AnchorSongSimple } from "@/api"
-import { Liko } from "@/config"
-import { isSuccess } from "@/api/types"
-import { useMessage } from "naive-ui"
 import IconMusic from "@/components/icons/IconMusic.vue"
 import IconSearch from "@/components/icons/IconSearch.vue"
 import IconClose from "@/components/icons/IconClose.vue"
 import IconCopy from "@/components/icons/IconCopy.vue"
 import IconChevronLeft from "@/components/icons/IconChevronLeft.vue"
 import IconChevronRight from "@/components/icons/IconChevronRight.vue"
+import { getSongPage, type AnchorSongSimple } from "@/api"
+import { Liko } from "@/config"
+import { isSuccess } from "@/api/types"
+import { useMessage } from "naive-ui"
 
 const message = useMessage()
 const sectionRef = ref<HTMLElement>()
@@ -132,17 +131,20 @@ onBeforeUnmount(() => {
 
 <template>
   <section ref="sectionRef" id="playlist" class="playlist-section" :class="{ visible: isVisible }">
-    <h2 class="section-title">
+    <div class="section-header">
       <a href="#playlist" class="anchor-link" title="链接到歌单" aria-label="链接到歌单">
-        <IconSearch :size="16" class="anchor-icon" />
+        <IconSearch :size="16" />
       </a>
-      <span class="title-icon">
-        <IconMusic :size="28" />
-      </span>
-      歌单
-    </h2>
+      <div class="section-title-wrapper">
+        <span class="title-icon">
+          <IconMusic :size="24" />
+        </span>
+        <h2 class="section-title">歌单</h2>
+      </div>
+    </div>
 
-    <VGlass class="playlist-card" :blur="10" :scale="30" :base-frequency="0.015" :radius="20">
+    <div class="playlist-container">
+      <!-- Video player -->
       <div v-if="selectedSong && videoUrl" class="video-wrapper">
         <div class="video-header">
           <span class="video-title">{{ selectedSong.name }}</span>
@@ -155,6 +157,7 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
+      <!-- Search bar -->
       <div class="search-bar">
         <span class="search-icon">
           <IconSearch :size="16" />
@@ -172,9 +175,10 @@ onBeforeUnmount(() => {
         </button>
       </div>
 
+      <!-- Track list -->
       <div class="track-list">
         <div v-if="loading" class="empty-state">
-          <IconMusic :size="32" class="empty-icon" />
+          <div class="loading-spinner"></div>
           <span>加载中...</span>
         </div>
         <div v-else-if="pagedList.length === 0" class="empty-state">
@@ -186,12 +190,10 @@ onBeforeUnmount(() => {
           :key="track.bv"
           class="track-item"
           :class="{ active: selectedSong?.bv === track.bv }"
-          :style="{ animationDelay: `${index * 0.06}s` }"
+          :style="{ animationDelay: `${index * 0.05}s` }"
           @click="selectSong(track)"
         >
-          <div class="track-num">
-            {{ String(index + 1 + (currentPage - 1) * pageSize).padStart(2, "0") }}
-          </div>
+          <div class="track-num">{{ String(index + 1 + (currentPage - 1) * pageSize).padStart(2, "0") }}</div>
           <div class="track-info">
             <div class="track-title">{{ track.name }}</div>
             <div class="track-meta">
@@ -200,11 +202,12 @@ onBeforeUnmount(() => {
             </div>
           </div>
           <button class="copy-btn" @click.stop="copySongName(track.name)" title="复制歌名" aria-label="复制歌名">
-            <IconCopy :size="16" />
+            <IconCopy :size="14" />
           </button>
         </div>
       </div>
 
+      <!-- Pagination -->
       <div v-if="totalPages > 1" class="pagination">
         <button
           class="page-btn"
@@ -237,16 +240,27 @@ onBeforeUnmount(() => {
         </button>
       </div>
 
+      <!-- Footer -->
       <div class="playlist-footer">
-        <span>歌单 · 共 {{ filteredList.length }} 首</span>
+        <span class="footer-text">
+          <span class="footer-line"></span>
+          <span>歌单 · 共 {{ filteredList.length }} 首</span>
+          <span class="footer-line"></span>
+        </span>
       </div>
-    </VGlass>
+    </div>
+
+    <!-- Corner decorations -->
+    <div class="corner-deco top-left"></div>
+    <div class="corner-deco top-right"></div>
+    <div class="corner-deco bottom-left"></div>
+    <div class="corner-deco bottom-right"></div>
   </section>
 </template>
 
 <style scoped>
 .playlist-section {
-  padding: 4rem 2rem;
+  padding: 5rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -255,6 +269,7 @@ onBeforeUnmount(() => {
   transform: translateY(40px);
   transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   scroll-margin-top: 2rem;
+  position: relative;
 }
 
 .playlist-section.visible {
@@ -262,74 +277,106 @@ onBeforeUnmount(() => {
   transform: translateY(0);
 }
 
-.section-title {
-  font-size: 1.8rem;
-  color: rgba(255, 255, 255, 0.85);
+.section-header {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin: 0;
-  text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+  gap: 0.8rem;
 }
 
 .anchor-link {
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
   text-decoration: none;
+  color: rgba(0, 245, 255, 0.3);
+  transition: all 0.3s ease;
   opacity: 0;
-  transition: opacity 0.2s;
-  font-size: 0.8rem;
 }
 
-.section-title:hover .anchor-link {
-  opacity: 0.6;
+.section-header:hover .anchor-link {
+  opacity: 1;
+  color: #00f5ff;
 }
 
-.anchor-link:hover {
-  opacity: 1 !important;
-}
-
-.anchor-icon {
+.section-title-wrapper {
   display: flex;
   align-items: center;
-  color: rgba(102, 126, 234, 0.5);
-  transition: all 0.2s ease;
-}
-
-.section-title:hover .anchor-icon {
-  color: rgba(102, 126, 234, 0.9);
-}
-
-.anchor-link:hover {
-  opacity: 1 !important;
+  gap: 0.8rem;
 }
 
 .title-icon {
   display: flex;
   align-items: center;
-  color: rgba(102, 126, 234, 0.8);
-  animation: musicNote 3s ease-in-out infinite;
+  color: #00f5ff;
+  animation: icon-bounce 2s ease-in-out infinite;
 }
 
-@keyframes musicNote {
-  0%,
-  100% {
-    transform: rotate(0deg) scale(1);
-  }
-
-  25% {
-    transform: rotate(-10deg) scale(1.1);
-  }
-
-  75% {
-    transform: rotate(10deg) scale(1.1);
-  }
+@keyframes icon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 
-.playlist-card {
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin: 0;
+  color: #fff;
+  text-shadow:
+    0 0 20px rgba(0, 245, 255, 0.5),
+    2px 2px 0 #ff6b35;
+  letter-spacing: 4px;
+}
+
+/* Playlist Container */
+.playlist-container {
   width: 100%;
   max-width: 900px;
+  background: rgba(10, 8, 18, 0.9);
+  border: 1px solid rgba(0, 245, 255, 0.2);
   padding: 1.5rem;
+  position: relative;
 }
 
+/* Corner decorations */
+.corner-deco {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: rgba(255, 107, 53, 0.5);
+  border-style: solid;
+  transition: all 0.3s ease;
+}
+
+.corner-deco.top-left {
+  top: -1px;
+  left: -1px;
+  border-width: 3px 0 0 3px;
+}
+
+.corner-deco.top-right {
+  top: -1px;
+  right: -1px;
+  border-width: 3px 3px 0 0;
+}
+
+.corner-deco.bottom-left {
+  bottom: -1px;
+  left: -1px;
+  border-width: 0 0 3px 3px;
+}
+
+.corner-deco.bottom-right {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 3px 3px 0;
+}
+
+.playlist-container:hover .corner-deco {
+  border-color: #ff6b35;
+}
+
+/* Video wrapper */
 .video-wrapper {
   margin-bottom: 1rem;
 }
@@ -337,52 +384,46 @@ onBeforeUnmount(() => {
 .video-header {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 1rem;
-  padding: 0.5rem 0.8rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.8rem 1rem;
+  background: rgba(255, 107, 53, 0.1);
+  border: 1px solid rgba(255, 107, 53, 0.3);
   border-bottom: none;
-  border-radius: 12px 12px 0 0;
 }
 
 .video-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.95);
-  white-space: nowrap;
+  color: #fff;
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .video-close {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.5);
-  border-radius: 6px;
+  background: transparent;
+  border: 1px solid rgba(255, 107, 53, 0.5);
+  color: rgba(255, 107, 53, 0.7);
+  padding: 0.3rem 0.6rem;
   cursor: pointer;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   flex-shrink: 0;
-  margin-left: auto;
 }
 
 .video-close:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.4);
-  color: #ef4444;
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+  background: rgba(255, 107, 53, 0.2);
+  border-color: #ff6b35;
+  color: #ff6b35;
 }
 
 .video-player {
   width: 100%;
   aspect-ratio: 16 / 9;
-  border-radius: 0 0 12px 12px;
-  overflow: hidden;
   background: #000;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 107, 53, 0.3);
   border-top: none;
+  overflow: hidden;
 }
 
 .video-player iframe {
@@ -390,120 +431,55 @@ onBeforeUnmount(() => {
   height: 100%;
 }
 
-.selected-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.8rem 1rem;
-  background: rgba(223, 118, 35, 0.1);
-  border: 1px solid rgba(223, 118, 35, 0.2);
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-
-.song-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.song-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex: 1;
-}
-
-.bv-tag {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.bv-tag a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.bv-tag a:hover {
-  text-decoration: underline;
-}
-
-.price-tag {
-  font-size: 0.85rem;
-  color: rgba(139, 92, 246, 0.6);
-}
-
+/* Search bar */
 .search-bar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 0.5rem 0.8rem;
-  margin-bottom: 0.8rem;
-  transition:
-    border-color 0.3s,
-    box-shadow 0.3s;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  background: rgba(0, 245, 255, 0.03);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
 }
 
 .search-bar:focus-within {
-  border-color: rgba(223, 118, 35, 0.5);
-  box-shadow:
-    0 0 0 3px rgba(223, 118, 35, 0.15),
-    0 0 20px rgba(223, 118, 35, 0.2);
+  border-color: #00f5ff;
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.15);
 }
 
 .search-icon {
-  font-size: 0.85rem;
-  opacity: 0.5;
-  flex-shrink: 0;
+  color: rgba(0, 245, 255, 0.4);
+  display: flex;
 }
 
 .search-input {
   flex: 1;
-  background: none;
+  background: transparent;
   border: none;
   outline: none;
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 0.85rem;
-  font-family: inherit;
+  color: #fff;
+  font-size: 0.9rem;
 }
 
 .search-input::placeholder {
-  color: rgba(102, 126, 234, 0.4);
+  color: rgba(0, 245, 255, 0.3);
 }
 
 .search-clear {
-  background: none;
+  background: transparent;
   border: none;
-  color: rgba(139, 92, 246, 0.5);
+  color: rgba(255, 107, 53, 0.5);
   cursor: pointer;
-  font-size: 0.75rem;
-  padding: 2px 4px;
-  border-radius: 4px;
-  transition: color 0.2s;
+  padding: 0.3rem;
+  transition: all 0.3s ease;
 }
 
 .search-clear:hover {
-  color: rgba(102, 126, 234, 0.9);
+  color: #ff6b35;
 }
 
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 2rem 0;
-  color: rgba(223, 118, 35, 0.4);
-  font-size: 0.85rem;
-}
-
-.empty-state span:first-child {
-  font-size: 1.5rem;
-}
-
+/* Track list */
 .track-list {
   display: flex;
   flex-direction: column;
@@ -511,53 +487,75 @@ onBeforeUnmount(() => {
   min-height: 200px;
 }
 
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 3rem;
+  color: rgba(0, 245, 255, 0.4);
+}
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 2px solid rgba(0, 245, 255, 0.2);
+  border-top-color: #00f5ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty-icon {
+  opacity: 0.5;
+}
+
 .track-item {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  padding: 0.6rem 0.8rem;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  animation: fadeInUp 0.4s ease both;
-  background: rgba(255, 255, 255, 0.02);
+  padding: 0.8rem 1rem;
+  background: rgba(0, 245, 255, 0.02);
   border: 1px solid transparent;
+  cursor: pointer;
+  animation: track-fade-in 0.4s ease both;
+  transition: all 0.3s ease;
+}
+
+@keyframes track-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .track-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.15);
+  background: rgba(0, 245, 255, 0.08);
+  border-color: rgba(0, 245, 255, 0.2);
 }
 
 .track-item.active {
-  background: rgba(102, 126, 234, 0.15);
-  border: 1px solid rgba(102, 126, 234, 0.3);
-  box-shadow: 0 0 25px rgba(102, 126, 234, 0.2);
+  background: rgba(255, 107, 53, 0.1);
+  border-color: rgba(255, 107, 53, 0.4);
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.track-item.active .track-num {
+  color: #ff6b35;
 }
 
 .track-num {
   min-width: 28px;
   text-align: center;
   font-size: 0.75rem;
-  color: rgba(139, 92, 246, 0.4);
   font-family: monospace;
-}
-
-.track-item.active .track-num {
-  color: #667eea;
+  color: rgba(139, 92, 246, 0.5);
 }
 
 .track-info {
@@ -567,91 +565,86 @@ onBeforeUnmount(() => {
 
 .track-title {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.95);
   font-weight: 500;
-  white-space: nowrap;
+  color: #fff;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .track-item.active .track-title {
-  color: rgba(255, 255, 255, 0.95);
-  text-shadow: 0 0 10px rgba(223, 118, 35, 0.5);
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
 }
 
 .track-meta {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.2rem;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
 }
 
 .track-bv {
   font-size: 0.7rem;
-  color: rgba(223, 118, 35, 0.72);
+  color: rgba(255, 107, 53, 0.6);
+  font-family: monospace;
 }
 
 .track-price {
   font-size: 0.75rem;
-  color: rgba(139, 92, 246, 0.72);
+  color: rgba(139, 92, 246, 0.7);
 }
 
 .copy-btn {
-  background: rgba(223, 118, 35, 0.1);
-  border: 1px solid rgba(223, 118, 35, 0.2);
-  color: rgba(223, 118, 35, 0.8);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.8rem;
+  background: transparent;
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  color: rgba(0, 245, 255, 0.5);
   padding: 0.4rem 0.6rem;
-  transition: all 0.2s ease;
-  opacity: 0.6;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.5;
 }
 
 .copy-btn:hover {
-  background: rgba(223, 118, 35, 0.2);
-  border-color: rgba(223, 118, 35, 0.4);
+  background: rgba(0, 245, 255, 0.1);
+  border-color: #00f5ff;
+  color: #00f5ff;
   opacity: 1;
-  box-shadow: 0 0 15px rgba(223, 118, 35, 0.3);
 }
 
+/* Pagination */
 .pagination {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 .page-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.6);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  width: 32px;
-  height: 28px;
+  background: transparent;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  width: 36px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.25s ease;
-  font-family: inherit;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
 }
 
 .page-btn:hover:not(:disabled) {
-  background: rgba(223, 118, 35, 0.15);
-  border-color: rgba(223, 118, 35, 0.35);
-  color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 0 15px rgba(223, 118, 35, 0.25);
+  border-color: #00f5ff;
+  color: #00f5ff;
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.2);
 }
 
 .page-btn.active {
-  background: rgba(223, 118, 35, 0.25);
-  border-color: rgba(223, 118, 35, 0.5);
-  color: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 107, 53, 0.15);
+  border-color: #ff6b35;
+  color: #ff6b35;
   font-weight: 700;
-  box-shadow: 0 0 20px rgba(223, 118, 35, 0.3);
 }
 
 .page-btn:disabled {
@@ -660,44 +653,45 @@ onBeforeUnmount(() => {
 }
 
 .page-ellipsis {
-  color: rgba(223, 118, 35, 0.3);
-  font-size: 0.85rem;
-  padding: 0.5rem;
-  user-select: none;
+  color: rgba(139, 92, 246, 0.4);
+  padding: 0 0.5rem;
 }
 
+/* Footer */
 .playlist-footer {
-  margin-top: 1rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(139, 92, 246, 0.2);
   text-align: center;
-  font-size: 0.75rem;
-  color: rgba(223, 118, 35, 0.4);
 }
 
+.footer-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: rgba(0, 245, 255, 0.4);
+  font-size: 0.75rem;
+}
+
+.footer-line {
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.3), transparent);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .playlist-section {
     padding: 3rem 1rem;
-    gap: 1.5rem;
+  }
+
+  .playlist-container {
+    padding: 1rem;
   }
 
   .section-title {
-    font-size: 1.4rem;
-  }
-
-  .playlist-card {
-    padding: 1rem;
-    border-radius: 16px;
-  }
-
-  .selected-info {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .track-title {
-    font-size: 0.85rem;
+    font-size: 1.5rem;
   }
 }
 </style>
