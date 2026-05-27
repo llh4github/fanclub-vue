@@ -521,10 +521,10 @@ onBeforeUnmount(() => {
 }
 
 .day-card.today {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(102, 126, 234, 0.4);
+  background: rgba(225, 29, 72, 0.08);
+  border-color: rgba(225, 29, 72, 0.4);
   box-shadow:
-    0 0 30px rgba(102, 126, 234, 0.2),
+    0 0 30px rgba(225, 29, 72, 0.2),
     0 0 60px rgba(139, 92, 246, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }

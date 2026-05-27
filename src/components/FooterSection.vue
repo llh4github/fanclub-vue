@@ -121,12 +121,12 @@ const currentYear = new Date().getFullYear()
 }
 
 .footer-name {
-  background: linear-gradient(135deg, #667eea, #8b5cf6, #06b6d4);
+  background: linear-gradient(135deg, #E11D48, #FB7185, #8B5CF6);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   font-weight: 600;
-  text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+  text-shadow: 0 0 20px rgba(225, 29, 72, 0.3);
 }
 
 .footer-contact {

@@ -380,7 +380,7 @@ onBeforeUnmount(() => {
 .avatar-glow {
   position: absolute;
   inset: -20px;
-  background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(225, 29, 72, 0.3) 0%, transparent 70%);
   border-radius: 50%;
   animation: glowPulse 3s ease-in-out infinite;
 }
@@ -443,7 +443,7 @@ onBeforeUnmount(() => {
 .avatar:hover {
   transform: scale(1.05);
   box-shadow:
-    0 0 60px rgba(102, 126, 234, 0.4),
+    0 0 60px rgba(225, 29, 72, 0.4),
     0 12px 40px rgba(0, 0, 0, 0.25),
     inset 0 0 40px rgba(255, 255, 255, 0.15);
 }
@@ -589,7 +589,16 @@ onBeforeUnmount(() => {
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0 0 0.5rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(167, 139, 250, 0.9) 100%);
+  font-family: var(--font-display);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, #FB7185 50%, #E11D48 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 1px;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #E11D48, #FB7185, #8B5CF6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -652,20 +661,20 @@ onBeforeUnmount(() => {
   border-radius: 14px;
   cursor: pointer;
   font-weight: 600;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(167, 139, 250, 0.3) 100%);
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.4) 0%, rgba(139, 92, 246, 0.3) 100%);
   backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   box-shadow:
-    0 8px 32px rgba(102, 126, 234, 0.3),
+    0 8px 32px rgba(225, 29, 72, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .glass-btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow:
-    0 12px 40px rgba(102, 126, 234, 0.4),
+    0 12px 40px rgba(225, 29, 72, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
@@ -684,15 +693,15 @@ onBeforeUnmount(() => {
   box-shadow:
     0 4px 16px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .glass-btn-secondary:hover {
-  background: rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.3);
+  background: rgba(225, 29, 72, 0.15);
+  border-color: rgba(225, 29, 72, 0.3);
   transform: translateY(-2px);
   box-shadow:
-    0 8px 24px rgba(102, 126, 234, 0.2),
+    0 8px 24px rgba(225, 29, 72, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 

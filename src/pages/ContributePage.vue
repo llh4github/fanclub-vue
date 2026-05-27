@@ -677,7 +677,7 @@ async function copySubmissionId() {
 
 .contribute-title {
   @apply text-xl sm:text-2xl md:text-[1.6rem] font-bold m-0 mb-1 md:mb-2;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(167, 139, 250, 0.9) 100%);
+  background: linear-gradient(135deg, #E11D48 0%, #FB7185 50%, #8B5CF6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1047,13 +1047,13 @@ async function copySubmissionId() {
 
 .back-home-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 24px rgba(225, 29, 72, 0.4);
 }
 
 .submit-btn {
   @apply w-full py-3 sm:py-3.5 md:py-[0.9rem] rounded-xl md:rounded-2xl text-base sm:text-lg font-semibold cursor-pointer transition-all duration-300;
   @apply flex items-center justify-center gap-2;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(167, 139, 250, 0.5) 100%);
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.6) 0%, rgba(139, 92, 246, 0.5) 100%);
   color: white;
   border: none;
   min-height: 52px;
@@ -1062,7 +1062,7 @@ async function copySubmissionId() {
 
 .submit-btn:hover:not(:disabled) {
   @apply -translate-y-0.5 md:-translate-y-1;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 24px rgba(225, 29, 72, 0.4);
 }
 
 .submit-btn:disabled {

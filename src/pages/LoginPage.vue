@@ -322,7 +322,7 @@ function goBack() {
 
 .login-page {
   @apply min-h-screen min-h-[100svh] relative overflow-hidden;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1a0a10 50%, #0f172a 100%);
 }
 
 .login-bg {
@@ -339,7 +339,7 @@ function goBack() {
 
 .orb-1 {
   @apply w-[400px] h-[400px];
-  background: #3b82f6;
+  background: #E11D48;
   top: -100px;
   right: -100px;
   animation: pulse-orb 4s ease-in-out infinite;
@@ -347,7 +347,7 @@ function goBack() {
 
 .orb-2 {
   @apply w-[300px] h-[300px];
-  background: #8b5cf6;
+  background: #8B5CF6;
   bottom: -50px;
   left: -50px;
   animation: pulse-orb 5s ease-in-out infinite reverse;
@@ -472,7 +472,7 @@ function goBack() {
 
 .login-title {
   @apply text-xl sm:text-2xl md:text-[1.6rem] font-bold m-0 mb-1 md:mb-2;
-  background: linear-gradient(135deg, #667eea 0%, #8b5cf6 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #E11D48 0%, #FB7185 50%, #8B5CF6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -654,11 +654,11 @@ function goBack() {
 .login-btn {
   @apply w-full py-2.5 sm:py-3 md:py-[0.9rem] mt-2 sm:mt-3 rounded-xl md:rounded-2xl text-base sm:text-lg font-semibold cursor-pointer transition-all duration-300;
   @apply flex items-center justify-center gap-2;
-  background: linear-gradient(135deg, #667eea 0%, #8b5cf6 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #E11D48 0%, #8B5CF6 50%, #2563EB 100%);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow:
-    0 4px 15px rgba(102, 126, 234, 0.3),
+    0 4px 15px rgba(225, 29, 72, 0.3),
     inset 0 1px 1px rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(12px);
 }
@@ -666,7 +666,7 @@ function goBack() {
 .login-btn:hover:not(:disabled) {
   @apply -translate-y-0.5 md:-translate-y-1;
   box-shadow:
-    0 8px 30px rgba(102, 126, 234, 0.4),
+    0 8px 30px rgba(225, 29, 72, 0.4),
     inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
