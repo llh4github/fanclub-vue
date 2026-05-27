@@ -632,7 +632,7 @@ async function copySubmissionId() {
 }
 
 .contribute-icon {
-  @apply text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3;
+  @apply flex items-center justify-center text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3;
   animation: pulse-icon 2s ease-in-out infinite;
 }
 
