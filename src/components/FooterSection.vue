@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import IconHeart from "@/components/icons/IconHeart.vue"
+import IconStar from "@/components/icons/IconStar.vue"
 const currentYear = new Date().getFullYear()
 </script>
 
 <template>
   <footer class="footer">
     <div class="footer-content">
-      <div class="footer-hearts">
-        <IconHeart v-for="n in 5" :key="n" :size="20" class="heart-icon" :style="{ animationDelay: `${n * 0.15}s` }" />
+      <div class="footer-stars">
+        <IconStar v-for="n in 5" :key="n" :size="20" class="star-icon" :fillColor="'rgba(223, 118, 35, 0.6)'" :style="{ animationDelay: `${n * 0.15}s` }" />
       </div>
       <p class="footer-text"><span class="footer-name">莉蔻 liko</span> · 侏儒兔见习杀手</p>
       <div class="footer-icp">
@@ -71,7 +71,7 @@ const currentYear = new Date().getFullYear()
     font-size: 0.8rem;
   }
 
-  .heart-icon {
+  .star-icon {
     width: 16px;
     height: 16px;
   }
@@ -90,19 +90,19 @@ const currentYear = new Date().getFullYear()
   margin: 0 auto;
 }
 
-.footer-hearts {
+.footer-stars {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
 
-.heart-icon {
+.star-icon {
   color: rgba(223, 118, 35, 0.6);
-  animation: heartWave 2s ease-in-out infinite;
+  animation: starWave 2s ease-in-out infinite;
   display: inline-block;
 }
 
-@keyframes heartWave {
+@keyframes starWave {
   0%,
   100% {
     transform: translateY(0) scale(1);
