@@ -13,7 +13,7 @@ import avatar_04 from "@/assets/avatar/avatar_04.jpg"
 import IconUsers from "@/components/icons/IconUsers.vue"
 import IconPlay from "@/components/icons/IconPlay.vue"
 import IconCake from "@/components/icons/IconCake.vue"
-import IconHeart from "@/components/icons/IconHeart.vue"
+import IconStar from "@/components/icons/IconStar.vue"
 import IconFile from "@/components/icons/IconFile.vue"
 
 const router = useRouter()
@@ -312,7 +312,7 @@ onBeforeUnmount(() => {
 
         <button class="glass-btn-secondary" @click="openBiliSpace">
           <span class="btn-icon">
-            <IconHeart :size="18" />
+            <IconStar :size="18" />
           </span>
           <span class="relative z-10">去关注</span>
         </button>
