@@ -185,37 +185,40 @@ onClickOutside(formRef, closeForm)
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: none;
-  background: rgba(223, 118, 35, 0.15);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  background: rgba(10, 8, 18, 0.9);
   backdrop-filter: blur(10px);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
 }
 
 .float-btn:hover {
-  background: rgba(223, 118, 35, 0.25);
+  background: rgba(0, 245, 255, 0.15);
+  border-color: rgba(0, 245, 255, 0.5);
   transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(223, 118, 35, 0.3);
+  box-shadow: 0 0 30px rgba(0, 245, 255, 0.3);
 }
 
 .float-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(223, 118, 35, 0.9);
+  color: #00f5ff;
 }
 
 .checker-form {
   width: 280px;
-  background: rgba(15, 10, 26, 0.95);
+  background: rgba(10, 8, 18, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 16px;
-  border: 1px solid rgba(223, 118, 35, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  box-shadow:
+    0 0 30px rgba(0, 245, 255, 0.1),
+    0 8px 32px rgba(0, 0, 0, 0.4);
   overflow: hidden;
 }
 
@@ -224,24 +227,27 @@ onClickOutside(formRef, closeForm)
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(223, 118, 35, 0.1);
+  border-bottom: 1px solid rgba(0, 245, 255, 0.15);
+  background: linear-gradient(135deg, rgba(0, 245, 255, 0.05), rgba(139, 92, 246, 0.05));
 }
 
 .form-title {
-  font-size: 0.9rem;
-  color: rgba(196, 181, 253, 0.9);
-  font-weight: 500;
+  font-size: 0.85rem;
+  color: #00f5ff;
+  font-weight: 600;
+  letter-spacing: 1px;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
 }
 
 .close-btn {
   width: 28px;
   height: 28px;
-  border: none;
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(196, 181, 253, 0.5);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  background: rgba(0, 245, 255, 0.05);
+  color: rgba(0, 245, 255, 0.6);
   font-size: 1rem;
   border-radius: 6px;
   cursor: pointer;
@@ -252,8 +258,9 @@ onClickOutside(formRef, closeForm)
 }
 
 .close-btn:hover {
-  background: rgba(223, 118, 35, 0.2);
-  color: rgba(196, 181, 253, 0.9);
+  background: rgba(255, 107, 53, 0.2);
+  border-color: rgba(255, 107, 53, 0.4);
+  color: #ff6b35;
 }
 
 .form-content {
@@ -267,30 +274,32 @@ onClickOutside(formRef, closeForm)
 .input-label {
   display: block;
   font-size: 0.75rem;
-  color: rgba(196, 181, 253, 0.6);
+  color: rgba(0, 245, 255, 0.7);
   margin-bottom: 6px;
+  letter-spacing: 1px;
 }
 
 .bv-input {
   width: 100%;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(223, 118, 35, 0.15);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 245, 255, 0.2);
   border-radius: 8px;
-  color: rgba(196, 181, 253, 0.9);
+  color: #00f5ff;
   font-size: 0.85rem;
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
 .bv-input::placeholder {
-  color: rgba(196, 181, 253, 0.3);
+  color: rgba(0, 245, 255, 0.3);
 }
 
 .bv-input:focus {
   outline: none;
-  border-color: rgba(223, 118, 35, 0.4);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(0, 245, 255, 0.5);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 15px rgba(0, 245, 255, 0.15);
 }
 
 .bv-input:disabled {
@@ -299,36 +308,38 @@ onClickOutside(formRef, closeForm)
 }
 
 .bv-input.input-error {
-  border-color: rgba(255, 100, 100, 0.5);
+  border-color: rgba(255, 71, 71, 0.5);
 }
 
 .error-text {
   display: block;
   font-size: 0.7rem;
-  color: rgba(255, 100, 100, 0.8);
+  color: #ff6b35;
   margin-top: 4px;
 }
 
 .query-btn {
   width: 100%;
   padding: 10px;
-  background: rgba(223, 118, 35, 0.2);
-  border: 1px solid rgba(223, 118, 35, 0.3);
+  background: linear-gradient(135deg, rgba(0, 245, 255, 0.2), rgba(139, 92, 246, 0.2));
+  border: 1px solid rgba(0, 245, 255, 0.3);
   border-radius: 8px;
-  color: rgba(196, 181, 253, 0.9);
+  color: #00f5ff;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+  letter-spacing: 1px;
 }
 
 .query-btn:hover:not(:disabled) {
-  background: rgba(223, 118, 35, 0.3);
-  border-color: rgba(223, 118, 35, 0.5);
+  background: linear-gradient(135deg, rgba(0, 245, 255, 0.3), rgba(139, 92, 246, 0.3));
+  border-color: rgba(0, 245, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
 }
 
 .query-btn:disabled {
@@ -339,8 +350,8 @@ onClickOutside(formRef, closeForm)
 .loading-spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(196, 181, 253, 0.3);
-  border-top-color: rgba(196, 181, 253, 0.9);
+  border: 2px solid rgba(0, 245, 255, 0.3);
+  border-top-color: #00f5ff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -353,7 +364,7 @@ onClickOutside(formRef, closeForm)
 
 .result-area {
   padding: 12px 16px;
-  border-top: 1px solid rgba(223, 118, 35, 0.1);
+  border-top: 1px solid rgba(0, 245, 255, 0.1);
 }
 
 .result-success,
@@ -365,11 +376,12 @@ onClickOutside(formRef, closeForm)
 }
 
 .result-success {
-  color: rgba(100, 255, 150, 0.9);
+  color: #4ade80;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
 }
 
 .result-empty {
-  color: rgba(196, 181, 253, 0.6);
+  color: rgba(139, 92, 246, 0.8);
 }
 
 .result-icon {
@@ -385,18 +397,23 @@ onClickOutside(formRef, closeForm)
   margin-top: 10px;
   width: 100%;
   padding: 8px 12px;
-  background: rgba(223, 118, 35, 0.2);
-  border: 1px solid rgba(223, 118, 35, 0.3);
+  background: rgba(255, 107, 53, 0.15);
+  border: 1px solid rgba(255, 107, 53, 0.3);
   border-radius: 6px;
-  color: rgba(196, 181, 253, 0.9);
+  color: #ff6b35;
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .copy-btn:hover {
-  background: rgba(223, 118, 35, 0.3);
-  border-color: rgba(223, 118, 35, 0.5);
+  background: rgba(255, 107, 53, 0.25);
+  border-color: rgba(255, 107, 53, 0.5);
+  box-shadow: 0 0 15px rgba(255, 107, 53, 0.2);
 }
 
 .copy-btn:active {

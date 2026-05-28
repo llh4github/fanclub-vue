@@ -22,6 +22,23 @@ import IconSettings from "@/components/icons/IconSettings.vue"
       <div class="hex hex-3"></div>
       <div class="triangle triangle-1"></div>
       <div class="circle circle-1"></div>
+      <!-- Rabbit and carrot decorations -->
+      <svg class="rabbit rabbit-1" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="22" cy="18" rx="6" ry="16" stroke="#ff6b35" stroke-width="2" fill="none" opacity="0.6"/>
+        <ellipse cx="42" cy="18" rx="6" ry="16" stroke="#ff6b35" stroke-width="2" fill="none" opacity="0.6"/>
+        <ellipse cx="32" cy="40" rx="16" ry="18" stroke="#ff6b35" stroke-width="2" fill="none" opacity="0.5"/>
+        <circle cx="26" cy="36" r="2" fill="#ff6b35" opacity="0.8"/>
+        <circle cx="38" cy="36" r="2" fill="#ff6b35" opacity="0.8"/>
+        <ellipse cx="32" cy="44" rx="4" ry="3" stroke="#ff6b35" stroke-width="1.5" fill="none" opacity="0.6"/>
+      </svg>
+      <svg class="carrot carrot-1" viewBox="0 0 32 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 8 L24 56 L16 60 L8 56 Z" stroke="#00f5ff" stroke-width="2" fill="none" opacity="0.5"/>
+        <path d="M12 8 Q16 4 20 8" stroke="#00f5ff" stroke-width="2" fill="none" opacity="0.6"/>
+        <path d="M10 12 Q16 6 22 12" stroke="#00f5ff" stroke-width="1.5" fill="none" opacity="0.4"/>
+        <line x1="14" y1="20" x2="18" y2="20" stroke="#00f5ff" stroke-width="1" opacity="0.5"/>
+        <line x1="13" y1="30" x2="19" y2="30" stroke="#00f5ff" stroke-width="1" opacity="0.5"/>
+        <line x1="14" y1="40" x2="18" y2="40" stroke="#00f5ff" stroke-width="1" opacity="0.5"/>
+      </svg>
     </div>
 
     <!-- Top right corner admin link -->
@@ -82,7 +99,14 @@ import IconSettings from "@/components/icons/IconSettings.vue"
   z-index: 10;
   max-width: 1000px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1rem 0 4rem;
+}
+
+/* Padding for left side nav */
+@media (min-width: 769px) {
+  .content-wrapper {
+    padding-left: 5rem;
+  }
 }
 
 /* Geometric decorations */
@@ -158,12 +182,41 @@ import IconSettings from "@/components/icons/IconSettings.vue"
   animation-duration: 40s;
 }
 
+/* Rabbit and carrot decorations */
+.rabbit {
+  position: absolute;
+  animation: float 6s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+.rabbit-1 {
+  width: 80px;
+  height: 80px;
+  bottom: 15%;
+  right: 8%;
+  animation-delay: 1s;
+}
+
+.carrot {
+  position: absolute;
+  animation: float 7s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.carrot-1 {
+  width: 40px;
+  height: 80px;
+  top: 25%;
+  left: 12%;
+  animation-delay: 3s;
+}
+
 @keyframes float {
   0%, 100% {
     transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-20px) rotate(5deg);
+    transform: translateY(-15px) rotate(3deg);
   }
 }
 
@@ -246,18 +299,29 @@ import IconSettings from "@/components/icons/IconSettings.vue"
   width: 100%;
 }
 
-/* Bottom navigation bar */
+/* Left side navigation bar - collapsed by default */
 .bottom-nav {
   position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 100;
   display: flex;
+  flex-direction: column;
   background: rgba(10, 8, 18, 0.95);
   border: 1px solid rgba(0, 245, 255, 0.3);
-  border-bottom: none;
-  padding: 0 1rem;
+  border-left: none;
+  padding: 0.75rem 0.35rem;
+  gap: 0.15rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  width: 3.5rem;
+}
+
+.bottom-nav:hover {
+  width: auto;
+  border-left: 1px solid rgba(0, 245, 255, 0.3);
+  padding-left: 0.5rem;
 }
 
 .bottom-nav::before {
@@ -268,7 +332,21 @@ import IconSettings from "@/components/icons/IconSettings.vue"
   right: 0;
   height: 2px;
   background: linear-gradient(90deg,
-    transparent,
+    rgba(0, 245, 255, 0.8),
+    rgba(255, 107, 53, 0.8),
+    rgba(139, 92, 246, 0.8),
+    transparent);
+  animation: border-glow 3s ease-in-out infinite;
+}
+
+.bottom-nav::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
     rgba(0, 245, 255, 0.8),
     rgba(255, 107, 53, 0.8),
     rgba(139, 92, 246, 0.8),
@@ -285,28 +363,42 @@ import IconSettings from "@/components/icons/IconSettings.vue"
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.8rem 1.5rem;
+  gap: 0.35rem;
+  padding: 0.8rem 0.6rem;
   text-decoration: none;
   position: relative;
   transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.nav-item .nav-text {
+  white-space: nowrap;
+  opacity: 0;
+  max-width: 0;
+  transition: all 0.3s ease;
+}
+
+.bottom-nav:hover .nav-item .nav-text {
+  opacity: 1;
+  max-width: 60px;
+  margin-left: 0.5rem;
 }
 
 .nav-item::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 0;
   background: #00f5ff;
   transition: all 0.3s ease;
 }
 
 .nav-item:hover::before,
 .nav-item:active::before {
-  width: 100%;
+  height: 100%;
 }
 
 .nav-icon {
@@ -334,26 +426,29 @@ import IconSettings from "@/components/icons/IconSettings.vue"
 .nav-item:hover .nav-text {
   color: #fff;
   text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
+  max-width: 60px;
+  opacity: 1;
+  margin-left: 0.5rem;
 }
 
 .nav-indicator {
   position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #ff6b35, transparent);
+  bottom: 50%;
+  left: 0;
+  transform: translateY(50%);
+  width: 2px;
+  height: 0;
+  background: linear-gradient(180deg, transparent, #ff6b35, transparent);
   transition: all 0.3s ease;
 }
 
 .nav-item:active .nav-indicator {
-  width: 60%;
+  height: 60%;
 }
 
-/* Padding for bottom nav */
+/* Padding for left nav */
 .content-wrapper {
-  padding-bottom: 5rem;
+  padding-bottom: 2rem;
 }
 
 @media (max-width: 768px) {
@@ -368,11 +463,40 @@ import IconSettings from "@/components/icons/IconSettings.vue"
   }
 
   .content-wrapper {
-    padding-bottom: 4.5rem;
+    padding-bottom: 2rem;
+    padding-left: 3.5rem;
   }
 
-  .hex {
+  .hex,
+  .rabbit,
+  .carrot {
     display: none;
+  }
+
+  .bottom-nav {
+    width: auto;
+    left: 0;
+    padding: 0.5rem 0.4rem;
+    border-left: 1px solid rgba(0, 245, 255, 0.3);
+  }
+
+  .bottom-nav:hover {
+    width: auto;
+    padding: 0.5rem 0.4rem;
+  }
+
+  .nav-item {
+    padding: 0.6rem 0.5rem;
+  }
+
+  .nav-item .nav-text {
+    opacity: 1;
+    max-width: 60px;
+    margin-left: 0.4rem;
+  }
+
+  .nav-item:active .nav-indicator {
+    height: 60%;
   }
 }
 
@@ -382,8 +506,12 @@ import IconSettings from "@/components/icons/IconSettings.vue"
     right: 0.8rem;
   }
 
+  .content-wrapper {
+    padding-left: 3rem;
+  }
+
   .nav-item {
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 0.4rem;
   }
 }
 </style>
