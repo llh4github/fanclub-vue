@@ -1,4 +1,4 @@
-import { get, post } from "./request"
+import { get, post, API_BASE_URL } from "./request"
 import type { JsonResp } from "./types"
 
 export interface TopicBrief {
@@ -27,4 +27,12 @@ export async function addSubmission(params: {
   captcha_token: string
 }): Promise<JsonResp<CreateSubmissionResp>> {
   return post("/treehole/submission/add", params)
+}
+
+export async function getSubmissionSummary(submissionId: string | number): Promise<JsonResp<string>> {
+  return get("/treehole/submission/summary", { submission_id: submissionId })
+}
+
+export function getSubmissionSummaryStreamUrl(submissionId: string | number): string {
+  return `${API_BASE_URL}/treehole/submission/summary/stream?submission_id=${submissionId}`
 }

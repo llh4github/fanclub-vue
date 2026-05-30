@@ -16,11 +16,9 @@ import {
   NConfigProvider,
   darkTheme,
   NInput,
-  NPopover,
 } from "naive-ui"
 import type { DataTableColumns } from "naive-ui"
 import { h } from "vue"
-import QRCode from "qrcode"
 
 const router = useRouter()
 const props = defineProps<{
@@ -43,8 +41,6 @@ const pagination = ref({
 
 const auditStatusFilter = ref<number | undefined>(undefined)
 const submissionIdFilter = ref("")
-const qrCodeDataUrl = ref("")
-const showQRPopover = ref(false)
 
 const statusMap: Record<
   number,
@@ -121,68 +117,6 @@ const columns: DataTableColumns<Submission> = [
         ),
       ]
 
-      if (props.topicId) {
-        buttons.push(
-          h(
-            NPopover,
-            {
-              trigger: "hover",
-              show: showQRPopover.value,
-              "onUpdate:show": (val: boolean) => {
-                showQRPopover.value = val
-                if (val) {
-                  generateQRCode()
-                }
-              },
-            },
-            {
-              trigger: () =>
-                h(
-                  NButton,
-                  {
-                    size: "small",
-                    type: "info",
-                    onClick: downloadQRCode,
-                  },
-                  () => "下载二维码",
-                ),
-              default: () => {
-                if (qrCodeDataUrl.value) {
-                  return h(
-                    "div",
-                    {
-                      style: "text-align: center; padding: 8px;",
-                    },
-                    [
-                      h("img", {
-                        src: qrCodeDataUrl.value,
-                        style: "width: 160px; height: 160px; border-radius: 8px;",
-                        alt: "QR Code",
-                      }),
-                      h(
-                        "p",
-                        {
-                          style:
-                            "margin: 8px 0 0; font-size: 12px; color: rgba(255, 228, 204, 0.6);",
-                        },
-                        "点击按钮下载",
-                      ),
-                    ],
-                  )
-                }
-                return h(
-                  "div",
-                  {
-                    style: "padding: 20px; color: rgba(255, 228, 204, 0.5);",
-                  },
-                  "加载中...",
-                )
-              },
-            },
-          ),
-        )
-      }
-
       return h("div", { class: "flex gap-2" }, buttons)
     },
   },
@@ -232,33 +166,6 @@ async function handleAudit(submission: Submission, status: number) {
   } catch {
     message.error("操作失败")
   }
-}
-
-async function generateQRCode() {
-  if (!props.topicId) return
-  try {
-    const baseUrl = window.location.origin
-    const url = `${baseUrl}/contribute?topic_id=${props.topicId}`
-    const dataUrl = await QRCode.toDataURL(url, {
-      width: 200,
-      margin: 2,
-      color: {
-        dark: "#1a1018",
-        light: "#ffe4cc",
-      },
-    })
-    qrCodeDataUrl.value = dataUrl
-  } catch {
-    message.error("二维码生成失败")
-  }
-}
-
-function downloadQRCode() {
-  if (!qrCodeDataUrl.value) return
-  const link = document.createElement("a")
-  link.download = `topic-${props.topicId}-qrcode.png`
-  link.href = qrCodeDataUrl.value
-  link.click()
 }
 
 function handlePageChange(page: number) {

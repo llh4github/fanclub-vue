@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from "vue"
 import { useRouter, useRoute } from "vue-router"
-import { VGlass } from "@daisigu/vue-liquid-glass"
 import ParticleBackground from "@/components/ParticleBackground.vue"
 import { getTopicList, addSubmission, type TopicBrief } from "@/api"
 import { getClickCaptcha, verifyClickCaptcha } from "@/api/captcha"
@@ -12,6 +11,12 @@ import { NModal, NConfigProvider, NAlert, darkTheme, NSelect, useMessage } from 
 import type { SelectOption } from "naive-ui"
 import { Click } from "go-captcha-vue"
 import MarkdownEditor from "@/components/MarkdownEditor.vue"
+import IconArrowLeft from "@/components/icons/IconArrowLeft.vue"
+import IconLock from "@/components/icons/IconLock.vue"
+import IconCheck from "@/components/icons/IconCheck.vue"
+import IconCopy from "@/components/icons/IconCopy.vue"
+import IconFile from "@/components/icons/IconFile.vue"
+import IconAlert from "@/components/icons/IconAlert.vue"
 
 const router = useRouter()
 const route = useRoute()
@@ -343,159 +348,137 @@ async function copySubmissionId() {
     <div class="contribute-page">
       <ParticleBackground />
 
+      <!-- Geometric decorations -->
+      <div class="geo-deco deco-hex"></div>
+      <div class="geo-deco deco-triangle"></div>
+
       <header class="contribute-header">
-        <button class="back-btn" @click="goBack">
-          <span>←</span>
-          <span>返回首页</span>
+        <button class="back-btn" @click="goBack" aria-label="返回首页">
+          <IconArrowLeft :size="18" />
+          <span>返回</span>
         </button>
       </header>
 
       <main class="contribute-main">
-        <div class="glass-container">
-          <VGlass
-            class="contribute-card"
-            :class="{ 'is-ready': !isLoading }"
-            :blur="15"
-            :scale="40"
-            :base-frequency="0.015"
-            :radius="24"
-          >
-            <div v-if="isLoading" class="init-state">
-              <div class="loading-spinner"></div>
-              <p class="init-text">加载主题中...</p>
+        <div class="contribute-container">
+          <!-- Header section -->
+          <div class="contribute-header-section">
+            <div class="header-icon">
+              <IconFile :size="48" />
+            </div>
+            <h1 class="contribute-title">
+              <span class="title-main">投</span>
+              <span class="title-main">稿</span>
+            </h1>
+            <p class="contribute-subtitle">CONTRIBUTE YOUR STORY</p>
+          </div>
+
+          <!-- Loading state -->
+          <div v-if="isLoading" class="init-state">
+            <div class="loading-spinner"></div>
+            <p class="init-text">加载主题中...</p>
+          </div>
+
+          <!-- Success state -->
+          <div v-else-if="successMsg" class="success-state">
+            <div class="success-icon">
+              <IconCheck :size="48" />
+            </div>
+            <p class="success-message">{{ successMsg }}</p>
+            <p v-if="submittedId" class="submission-id">稿件ID：{{ submittedId }}</p>
+            <button class="copy-btn" @click="copySubmissionId" title="复制稿件ID" aria-label="复制稿件ID">
+              <IconCopy :size="16" />
+            </button>
+            <div class="success-actions">
+              <button class="continue-btn" @click="continueEdit">继续投稿</button>
+              <button class="back-home-btn" @click="goBack">返回首页</button>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div v-else-if="topics.length === 0 && !isLoading" class="empty-state">
+            <div class="empty-icon">
+              <IconAlert :size="48" />
+            </div>
+            <h2 class="empty-title">暂无开放投稿</h2>
+            <p class="empty-desc">当前没有可用的投稿主题，请稍后再来</p>
+            <button class="back-home-btn" @click="goBack">返回首页</button>
+          </div>
+
+          <!-- Form -->
+          <template v-else>
+            <div class="form-section topic-section">
+              <label class="form-label">选择主题</label>
+              <NSelect v-model:value="selectedTopicId" :options="topicOptions" placeholder="请选择主题"
+                class="topic-select" />
+              <div v-if="selectedTopic" class="selected-topic-info">
+                <p class="topic-time" :class="`time-${timeUrgency}`">
+                  投稿时间：{{ formatDate(selectedTopic.open_at) }} ~ {{ formatDate(selectedTopic.close_at) }}
+                  <span v-if="isTopicOpen" class="time-remaining">({{ timeRemaining }})</span>
+                </p>
+                <NAlert v-if="selectedTopic.description" title="主播的话" type="info" class="topic-alert">
+                  {{ selectedTopic.description }}
+                </NAlert>
+              </div>
             </div>
 
-            <template v-else>
-              <div class="contribute-header-section">
-                <div class="contribute-icon">📝</div>
-                <h1 class="contribute-title">投 稿</h1>
-                <p class="contribute-subtitle">Contribute Your Story</p>
-              </div>
+            <div v-if="selectedTopic && !isTopicOpen" class="time-warning">
+              ⚠️ 当前不在投稿时间内，无法投稿
+            </div>
 
-              <div v-if="successMsg" class="success-state">
-                <div class="success-icon">✅</div>
-                <p class="success-message">{{ successMsg }}</p>
-                <p v-if="submittedId" class="submission-id">稿件ID：{{ submittedId }}</p>
-                <button class="copy-btn" @click="copySubmissionId" title="复制稿件ID">📋</button>
-                <div class="success-actions">
-                  <button class="continue-btn" @click="continueEdit">继续投稿</button>
-                  <button class="back-home-btn" @click="goBack">返回首页</button>
+            <div class="form-section content-section" :class="{ disabled: !selectedTopic || !isTopicOpen }">
+              <label class="form-label">投稿内容 (支持 Markdown)</label>
+              <MarkdownEditor ref="markdownEditorRef" v-model="content" :disabled="!selectedTopic || !isTopicOpen"
+                placeholder="请输入投稿内容..." height="600" :topic-id="selectedTopicId || ''" />
+              <div class="editor-footer">
+                <span class="draft-hint">内容会自动保存到本地</span>
+                <div class="char-counter" :class="{
+                  warning: markdownEditorRef?.isNearLimit,
+                  error: markdownEditorRef?.isOverLimit,
+                  'under-limit': markdownEditorRef?.isUnderLimit,
+                }">
+                  <span v-if="markdownEditorRef?.isOverLimit" class="over-limit-icon">⚠️</span>
+                  <span v-if="markdownEditorRef?.isUnderLimit" class="under-limit-icon">⚠️</span>
+                  <span>{{ charCount }} / {{ markdownEditorRef?.MAX_CHARS }} 字</span>
+                  <span v-if="markdownEditorRef?.isOverLimit" class="limit-hint">（已超出限制）</span>
+                  <span v-if="markdownEditorRef?.isUnderLimit && !markdownEditorRef?.isOverLimit"
+                    class="limit-hint">（至少需要 {{ markdownEditorRef?.MIN_CHARS }} 字）</span>
                 </div>
               </div>
+            </div>
 
-              <template v-else>
-                <div class="topic-section">
-                  <label class="form-label">选择主题</label>
-                  <NSelect
-                    v-model:value="selectedTopicId"
-                    :options="topicOptions"
-                    placeholder="请选择主题"
-                    class="topic-select"
-                  />
-                  <div v-if="selectedTopic" class="selected-topic-info">
-                    <p class="topic-time" :class="`time-${timeUrgency}`">
-                      投稿时间：{{ formatDate(selectedTopic.open_at) }} ~
-                      {{ formatDate(selectedTopic.close_at) }}
-                      <span v-if="isTopicOpen" class="time-remaining">({{ timeRemaining }})</span>
-                    </p>
-                    <NAlert
-                      v-if="selectedTopic.description"
-                      title="主播的话"
-                      type="info"
-                      class="topic-alert"
-                    >
-                      {{ selectedTopic.description }}
-                    </NAlert>
-                  </div>
-                </div>
+            <!-- Captcha section -->
+            <div class="captcha-wrapper">
+              <button type="button" class="captcha-btn"
+                :disabled="!canVerifyCaptcha || isCaptchaVerified || !selectedTopic || !isTopicOpen"
+                @click="openCaptchaModal" :class="{ 'is-verified': isCaptchaVerified }">
+                <span class="captcha-btn-icon">
+                  <IconLock :size="18" />
+                </span>
+                <span class="captcha-btn-text">
+                  {{ isCaptchaVerified ? "已验证" : "点击进行安全验证" }}
+                </span>
+              </button>
+            </div>
 
-                <div v-if="selectedTopic && !isTopicOpen" class="time-warning">
-                  ⚠️ 当前不在投稿时间内，无法投稿
-                </div>
+            <p v-if="errorMsg" class="error-message">{{ errorMsg }}</p>
 
-                <div class="content-section" :class="{ disabled: !selectedTopic || !isTopicOpen }">
-                  <label class="form-label">投稿内容 (支持 Markdown)</label>
-                  <MarkdownEditor
-                    ref="markdownEditorRef"
-                    v-model="content"
-                    :disabled="!selectedTopic || !isTopicOpen"
-                    placeholder="请输入投稿内容..."
-                    height="400"
-                  />
-                  <div class="editor-footer">
-                    <span class="draft-hint">内容会自动保存到本地</span>
-                    <div
-                      class="char-counter"
-                      :class="{
-                        warning: markdownEditorRef?.isNearLimit,
-                        error: markdownEditorRef?.isOverLimit,
-                        'under-limit': markdownEditorRef?.isUnderLimit,
-                      }"
-                    >
-                      <span v-if="markdownEditorRef?.isOverLimit" class="over-limit-icon">⚠️</span>
-                      <span v-if="markdownEditorRef?.isUnderLimit" class="under-limit-icon"
-                        >⚠️</span
-                      >
-                      <span>{{ charCount }} / {{ markdownEditorRef?.MAX_CHARS }} 字</span>
-                      <span v-if="markdownEditorRef?.isOverLimit" class="limit-hint"
-                        >（已超出限制）</span
-                      >
-                      <span
-                        v-if="markdownEditorRef?.isUnderLimit && !markdownEditorRef?.isOverLimit"
-                        class="limit-hint"
-                        >（至少需要 {{ markdownEditorRef?.MIN_CHARS }} 字）</span
-                      >
-                    </div>
-                  </div>
-                </div>
-                <div class="captcha-wrapper">
-                  <button
-                    type="button"
-                    class="captcha-btn"
-                    :disabled="
-                      !canVerifyCaptcha || isCaptchaVerified || !selectedTopic || !isTopicOpen
-                    "
-                    @click="openCaptchaModal"
-                    :class="{ 'is-verified': isCaptchaVerified }"
-                  >
-                    <span class="captcha-btn-icon">🔐</span>
-                    <span class="captcha-btn-text">
-                      {{ isCaptchaVerified ? "已验证 ✓" : "点击进行安全验证" }}
-                    </span>
-                  </button>
-                </div>
-
-                <p v-if="errorMsg" class="error-message">{{ errorMsg }}</p>
-
-                <button
-                  type="button"
-                  class="submit-btn"
-                  :disabled="isSubmitting || !selectedTopic || !isTopicOpen"
-                  @click="handleSubmit"
-                >
-                  <span v-if="isSubmitting" class="btn-spinner"></span>
-                  <span v-else>提 交</span>
-                </button>
-              </template>
-            </template>
-          </VGlass>
+            <button type="button" class="submit-btn" :disabled="isSubmitting || !selectedTopic || !isTopicOpen"
+              @click="handleSubmit">
+              <span v-if="isSubmitting" class="btn-spinner"></span>
+              <span v-else>提 交</span>
+            </button>
+          </template>
         </div>
       </main>
 
-      <NModal
-        v-model:show="showCaptchaModal"
-        preset="card"
-        :mask-closable="true"
-        class="captcha-modal"
-        title="验证码"
-        :style="{ maxWidth: 'min(420px, 95vw)' }"
-        :content-style="{
-          background: 'rgba(26, 16, 24, 0.95)',
-          border: '1px solid rgba(223, 118, 35, 0.3)',
-          borderRadius: '12px',
+      <NModal v-model:show="showCaptchaModal" preset="card" :mask-closable="true" class="captcha-modal" title="验证码"
+        :style="{ maxWidth: 'min(420px, 95vw)' }" :content-style="{
+          background: 'rgba(10, 8, 18, 0.95)',
+          border: '1px solid rgba(0, 245, 255, 0.3)',
+          borderRadius: '0',
           padding: '12px',
-        }"
-      >
+        }">
         <template #default>
           <div class="captcha-modal-content">
             <div v-if="isCaptchaLoading" class="captcha-loading">
@@ -503,20 +486,16 @@ async function copySubmissionId() {
               <span>加载验证码中...</span>
             </div>
             <div v-else-if="captchaData" class="captcha-component-wrapper">
-              <Click
-                :config="{
-                  width: Math.min(300, windowWidth - 60),
-                  height: Math.min(220, (Math.min(300, windowWidth - 60) / 300) * 220),
-                  thumbHeight: Math.min(60, (Math.min(300, windowWidth - 60) / 300) * 60),
-                  title: '请依次点击',
-                  buttonText: '验证',
-                }"
-                :data="{
-                  image: captchaData.image,
-                  thumb: captchaData.thumb,
-                }"
-                :events="captchaEvents"
-              />
+              <Click :config="{
+                width: Math.min(300, windowWidth - 60),
+                height: Math.min(220, (Math.min(300, windowWidth - 60) / 300) * 220),
+                thumbHeight: Math.min(60, (Math.min(300, windowWidth - 60) / 300) * 60),
+                title: '请依次点击',
+                buttonText: '验证',
+              }" :data="{
+                image: captchaData.image,
+                thumb: captchaData.thumb,
+              }" :events="captchaEvents" />
             </div>
             <div v-else class="captcha-error">
               <span>{{ captchaError || "验证码加载失败" }}</span>
@@ -530,141 +509,139 @@ async function copySubmissionId() {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
-
 .contribute-page {
-  @apply min-h-screen min-h-[100svh] bg-[#0d0a0e] relative overflow-hidden;
-  background: linear-gradient(135deg, #0d0a0e 0%, #1a1033 50%, #0d0a0e 100%);
+  min-height: 100vh;
+  min-height: 100svh;
+  background: linear-gradient(180deg, #050510 0%, #0a0812 50%, #1a0a2e 100%);
+  position: relative;
+  overflow: hidden;
 }
 
-.contribute-bg {
-  @apply fixed pointer-events-none;
-  inset: 0;
+/* Geometric decorations */
+.geo-deco {
+  position: fixed;
+  pointer-events: none;
   z-index: 0;
 }
 
-.glow-orb {
-  @apply absolute rounded-full;
-  filter: blur(80px);
-  opacity: 0.3;
+.deco-hex {
+  top: 10%;
+  right: 5%;
+  width: 120px;
+  height: 138px;
+  background: linear-gradient(135deg, rgba(0, 245, 255, 0.08), rgba(139, 92, 246, 0.05));
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  animation: float 10s ease-in-out infinite;
 }
 
-.orb-1 {
-  @apply w-[400px] h-[400px];
-  background: #df7623;
-  top: -100px;
-  left: -100px;
-  animation: pulse-orb 4s ease-in-out infinite;
+.deco-triangle {
+  bottom: 15%;
+  left: 5%;
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-bottom: 86px solid rgba(255, 107, 53, 0.06);
+  animation: float 12s ease-in-out infinite reverse;
 }
 
-.orb-2 {
-  @apply w-[300px] h-[300px];
-  background: #7c3aed;
-  bottom: -50px;
-  right: -50px;
-  animation: pulse-orb 5s ease-in-out infinite reverse;
-}
+@keyframes float {
 
-@keyframes pulse-orb {
   0%,
   100% {
-    transform: scale(1);
-    opacity: 0.3;
+    transform: translateY(0) rotate(0deg);
   }
 
   50% {
-    transform: scale(1.1);
-    opacity: 0.4;
+    transform: translateY(-15px) rotate(3deg);
   }
 }
 
 .contribute-header {
-  @apply relative px-4 sm:px-6 md:px-8 py-4 sm:py-6;
+  position: relative;
   z-index: 10;
+  padding: 1.5rem 2rem;
 }
 
 .back-btn {
-  @apply flex items-center gap-2 px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg cursor-pointer text-sm sm:text-base font-medium transition-all duration-300;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  color: rgba(0, 245, 255, 0.7);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
   min-height: 44px;
-  touch-action: manipulation;
 }
 
 .back-btn:hover {
-  @apply text-white;
-  background: rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.3);
+  border-color: #00f5ff;
+  color: #00f5ff;
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
 }
 
 .contribute-main {
-  @apply relative flex items-center justify-center p-4 sm:p-6 md:px-8;
+  position: relative;
   z-index: 1;
-  min-height: calc(100vh - 100px);
-  width: 100%;
-}
-
-.glass-container {
-  width: 100%;
   display: flex;
   justify-content: center;
+  padding: 1rem 2rem 4rem;
 }
 
-.contribute-card {
-  @apply w-full rounded-2xl md:rounded-3xl p-4 sm:p-6 md:p-10;
-  max-width: 100%;
-  @apply md:max-w-3xl lg:max-w-5xl;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+.contribute-container {
+  width: 100%;
+  max-width: 700px;
+  padding: 2rem;
+  background: rgba(10, 8, 18, 0.9);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  position: relative;
 }
 
-@media (max-width: 640px) {
-  .contribute-card {
-    @apply rounded-xl;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  }
+/* Corner decorations */
+.contribute-container::before,
+.contribute-container::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: #ff6b35;
+  border-style: solid;
 }
 
-.contribute-card.is-ready {
-  @apply opacity-100;
-  transform: translateY(0);
+.contribute-container::before {
+  top: -1px;
+  left: -1px;
+  border-width: 3px 0 0 3px;
 }
 
-.init-state {
-  @apply flex flex-col items-center gap-3 sm:gap-4 py-4 sm:py-6;
+.contribute-container::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 3px 3px 0;
 }
 
-.loading-spinner {
-  @apply w-10 h-10 sm:w-12 sm:h-12 border-[3px] rounded-full;
-  border-color: rgba(102, 126, 234, 0.2);
-  border-top-color: rgba(167, 139, 250, 0.8);
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.init-text {
-  @apply text-sm sm:text-base m-0;
-  color: rgba(255, 255, 255, 0.5);
-}
-
+/* Header section */
 .contribute-header-section {
-  @apply text-center mb-4 sm:mb-6 md:mb-8;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-.contribute-icon {
-  @apply text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3;
+.header-icon {
+  color: #00f5ff;
   animation: pulse-icon 2s ease-in-out infinite;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @keyframes pulse-icon {
+
   0%,
   100% {
     transform: scale(1);
@@ -676,93 +653,142 @@ async function copySubmissionId() {
 }
 
 .contribute-title {
-  @apply text-xl sm:text-2xl md:text-[1.6rem] font-bold m-0 mb-1 md:mb-2;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(167, 139, 250, 0.9) 100%);
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 0 0 0.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.title-main {
+  background: linear-gradient(135deg, #00f5ff, #8b5cf6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: 4px;
+  animation: title-glitch 5s ease-in-out infinite;
 }
 
-.contribute-subtitle {
-  @apply text-xs sm:text-sm m-0 uppercase;
-  color: rgba(167, 139, 250, 0.4);
-  letter-spacing: 4px;
-}
+@keyframes title-glitch {
 
-.topic-section {
-  @apply flex flex-col gap-2 mb-4;
-}
+  0%,
+  90%,
+  100% {
+    transform: translate(0);
+  }
 
-.topic-select {
-  @apply w-full;
-}
+  92% {
+    transform: translate(-2px, 1px);
+  }
 
-:deep(.n-base-selection) {
-  --n-border: 1px solid rgba(102, 126, 234, 0.25) !important;
-  --n-border-hover: 1px solid rgba(102, 126, 234, 0.4) !important;
-  --n-border-focus: 1px solid rgba(167, 139, 250, 0.8) !important;
-  --n-color: rgba(255, 255, 255, 0.05) !important;
-  --n-text-color: rgba(255, 255, 255, 0.85) !important;
-  --n-placeholder-color: rgba(167, 139, 250, 0.4) !important;
-  --n-caret-color: rgba(167, 139, 250, 0.8) !important;
-  --n-border-radius: 8px;
-  --n-height: 48px;
-  min-height: 48px;
-}
-
-@media (max-width: 640px) {
-  :deep(.n-base-selection) {
-    --n-height: 52px;
-    min-height: 52px;
+  94% {
+    transform: translate(2px, -1px);
   }
 }
 
-:deep(.n-base-selection .n-base-selection-label) {
-  background: rgba(26, 16, 24, 0.5) !important;
+.contribute-subtitle {
+  font-size: 0.7rem;
+  color: rgba(139, 92, 246, 0.5);
+  letter-spacing: 4px;
+  margin: 0;
 }
 
-:deep(.n-base-selection .n-base-selection-placeholder) {
-  color: rgba(167, 139, 250, 0.4) !important;
+/* Loading state */
+.init-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 245, 255, 0.2);
+  border-top-color: #00f5ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.init-text {
+  color: rgba(0, 245, 255, 0.5);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Form sections */
+.form-section {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #00f5ff;
+  margin-bottom: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.topic-select {
+  width: 100%;
+}
+
+/* Override naive-ui styles */
+:deep(.n-base-selection) {
+  --n-border: 1px solid rgba(0, 245, 255, 0.3) !important;
+  --n-border-hover: 1px solid rgba(0, 245, 255, 0.5) !important;
+  --n-border-focus: 1px solid #00f5ff !important;
+  --n-color: rgba(10, 8, 18, 0.9) !important;
+  --n-text-color: rgba(255, 255, 255, 0.9) !important;
+  --n-placeholder-color: rgba(0, 245, 255, 0.4) !important;
+  --n-caret-color: #00f5ff !important;
+  --n-border-radius: 0;
+  --n-height: 48px;
+}
+
+:deep(.n-base-selection .n-base-selection-label) {
+  background: rgba(10, 8, 18, 0.8) !important;
 }
 
 .selected-topic-info {
-  @apply mt-2;
+  margin-top: 1rem;
 }
 
 .topic-time {
-  @apply text-sm font-medium m-0 mb-2;
-  color: rgba(255, 228, 204, 0.85);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 0.8rem;
 }
 
 .time-warning {
-  @apply text-sm font-medium m-0 mb-2;
-  color: #fbbf24;
+  text-align: center;
+  font-size: 0.85rem;
+  padding: 0.8rem;
+  background: rgba(255, 107, 53, 0.1);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  color: #ff6b35;
+  margin-bottom: 1.5rem;
 }
 
 .time-urgent {
-  @apply text-sm font-medium m-0 mb-2;
-  color: #f97316;
+  color: #ff6b35;
 }
 
 .time-critical {
-  @apply text-sm font-bold m-0 mb-2;
-  color: #ef4444;
+  color: #ff4444;
   animation: pulse-critical 1s infinite;
 }
 
-.time-expired {
-  @apply text-sm font-medium m-0 mb-2;
-  color: rgba(255, 228, 204, 0.4);
-  text-decoration: line-through;
-}
-
-.time-remaining {
-  @apply font-normal ml-1;
-  opacity: 0.8;
-}
-
 @keyframes pulse-critical {
+
   0%,
   100% {
     opacity: 1;
@@ -773,122 +799,93 @@ async function copySubmissionId() {
   }
 }
 
+.time-expired {
+  color: rgba(255, 255, 255, 0.3);
+  text-decoration: line-through;
+}
+
+.time-remaining {
+  color: #00f5ff;
+  margin-left: 0.5rem;
+}
+
 .topic-alert {
-  @apply text-sm m-0;
-  max-height: 80px;
-  overflow: hidden;
-  word-break: break-word;
+  --n-color: rgba(0, 245, 255, 0.05) !important;
+  --n-border: 1px solid rgba(0, 245, 255, 0.2) !important;
 }
 
-@media (max-width: 640px) {
-  .topic-alert {
-    @apply text-xs;
-    max-height: 60px;
-  }
-}
-
-.time-warning {
-  @apply text-center text-sm p-3 mb-4 rounded-lg;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #f87171;
-}
-
+/* Content section */
 .content-section {
-  @apply flex flex-col gap-2 mb-4 relative;
+  position: relative;
 }
 
 .content-section.disabled {
-  @apply opacity-50;
+  opacity: 0.5;
   pointer-events: none;
 }
 
-.form-label {
-  @apply text-sm md:text-base font-medium;
-  color: rgba(167, 139, 250, 0.9);
+.editor-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.8rem;
 }
 
 .draft-hint {
-  @apply text-xs m-0;
-  color: rgba(255, 228, 204, 0.3);
-}
-
-.editor-footer {
-  @apply flex justify-between items-center mt-1;
+  font-size: 0.75rem;
+  color: rgba(139, 92, 246, 0.4);
 }
 
 .char-counter {
-  @apply flex items-center gap-1 text-sm;
-  color: rgba(255, 228, 204, 1);
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .char-counter.warning {
-  color: #fbbf24;
+  color: #ff9e5e;
 }
 
 .char-counter.error {
-  color: #f87171;
+  color: #ff6b35;
 }
 
 .char-counter.under-limit {
-  color: #fbbf24;
+  color: #ff9e5e;
 }
 
 .limit-hint {
-  @apply text-xs;
-  color: #f87171;
+  font-size: 0.7rem;
+  color: #ff6b35;
+  margin-left: 0.3rem;
 }
 
-.content-input {
-  @apply w-full;
-}
-
-:deep(.n-input) {
-  --n-border: 1px solid rgba(102, 126, 234, 0.25) !important;
-  --n-border-hover: 1px solid rgba(102, 126, 234, 0.4) !important;
-  --n-border-focus: 1px solid rgba(167, 139, 250, 0.8) !important;
-  --n-color: rgba(255, 255, 255, 0.05) !important;
-  --n-color-focus: rgba(255, 255, 255, 0.05) !important;
-  --n-color-focus-error: rgba(255, 255, 255, 0.05) !important;
-  --n-color-error: rgba(255, 255, 255, 0.05) !important;
-  --n-text-color: rgba(255, 255, 255, 0.85) !important;
-  --n-placeholder-color: rgba(167, 139, 250, 0.4) !important;
-  --n-caret-color: rgba(167, 139, 250, 0.8) !important;
-  --n-border-radius: 8px;
-}
-
-:deep(.n-input .n-input__input-el) {
-  color: rgba(255, 255, 255, 0.85) !important;
-  caret-color: rgba(167, 139, 250, 0.8) !important;
-}
-
+/* Captcha */
 .captcha-wrapper {
-  @apply flex items-center justify-center p-4 sm:p-5 md:p-6 rounded-xl md:rounded-2xl mb-4;
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 0;
 }
 
 .captcha-btn {
-  @apply flex items-center justify-center gap-2 px-4 py-3 sm:py-3.5 rounded-lg cursor-pointer transition-all duration-300;
-  background: rgba(102, 126, 234, 0.15);
-  border: 1px solid rgba(102, 126, 234, 0.3);
-  color: rgba(167, 139, 250, 0.8);
-  font-size: 0.95rem;
-  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 2rem;
+  background: transparent;
+  border: 2px solid rgba(255, 107, 53, 0.5);
+  color: #ff6b35;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
   min-height: 52px;
-  touch-action: manipulation;
-}
-
-@media (max-width: 640px) {
-  .captcha-btn {
-    @apply w-full;
-    min-width: unset;
-  }
 }
 
 .captcha-btn:hover:not(:disabled) {
-  background: rgba(102, 126, 234, 0.2);
-  border-color: rgba(102, 126, 234, 0.4);
-  color: rgba(167, 139, 250, 0.9);
-  transform: translateY(-2px);
+  border-color: #ff6b35;
+  background: rgba(255, 107, 53, 0.1);
+  box-shadow: 0 0 25px rgba(255, 107, 53, 0.3);
 }
 
 .captcha-btn:disabled {
@@ -897,182 +894,245 @@ async function copySubmissionId() {
 }
 
 .captcha-btn.is-verified {
-  background: rgba(102, 126, 234, 0.15);
-  border-color: rgba(102, 126, 234, 0.4);
-  color: rgba(167, 139, 250, 0.9);
-}
-
-.captcha-btn.is-verified:hover {
-  background: rgba(102, 126, 234, 0.2);
-  border-color: rgba(102, 126, 234, 0.5);
-  transform: translateY(-2px);
+  border-color: #00f5ff;
+  color: #00f5ff;
 }
 
 .captcha-btn-icon {
-  @apply text-lg;
+  display: flex;
 }
 
 .captcha-btn-text {
-  @apply font-medium;
+  letter-spacing: 2px;
 }
 
-.captcha-modal-content {
-  @apply flex items-center justify-center p-3 sm:p-4;
-}
-
-.captcha-component-wrapper {
-  @apply relative w-full;
-  display: flex;
-  justify-content: center;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-@media (max-width: 640px) {
-  .captcha-modal-content {
-    @apply p-2;
-  }
-
-  .captcha-component-wrapper {
-    @apply justify-center;
-  }
-}
-
-.captcha-loading {
-  @apply flex flex-col items-center justify-center gap-3 py-8 sm:py-12 px-3 sm:px-4;
-  color: rgba(255, 228, 204, 0.6);
-}
-
-.modal-spinner {
-  @apply w-10 h-10 border-[3px] rounded-full;
-  border-color: rgba(223, 118, 35, 0.2);
-  border-top-color: #df7623;
-  animation: spin 1s linear infinite;
-}
-
-.captcha-error {
-  @apply flex flex-col items-center justify-center gap-3 py-8 sm:py-12 px-3 sm:px-4;
-  color: #f87171;
-  text-align: center;
-}
-
-.retry-load-btn {
-  @apply px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200;
-  background: rgba(223, 118, 35, 0.15);
-  border: 1px solid rgba(223, 118, 35, 0.3);
-  color: #ff9e5e;
-}
-
-.retry-load-btn:hover {
-  background: rgba(223, 118, 35, 0.25);
-  border-color: rgba(223, 118, 35, 0.5);
-}
-
+/* Error message */
 .error-message {
-  @apply text-sm sm:text-base text-center m-0 p-2 sm:p-3 rounded-lg mb-4;
-  color: #f87171;
-  background: rgba(239, 68, 68, 0.1);
+  text-align: center;
+  font-size: 0.85rem;
+  padding: 0.8rem;
+  background: rgba(255, 107, 53, 0.1);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  color: #ff6b35;
+  margin-bottom: 1.5rem;
 }
 
+/* Success state */
 .success-state {
-  @apply flex flex-col items-center gap-4 py-8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
 }
 
 .success-icon {
-  @apply text-5xl;
+  color: #00f5ff;
+  animation: pulse-icon 1.5s ease-in-out infinite;
 }
 
 .success-message {
-  @apply text-xl font-semibold m-0;
-  color: #4ade80;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #00f5ff;
+  margin: 0;
+  text-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
 }
 
 .submission-id {
-  @apply text-base m-0;
-  color: rgba(255, 228, 204, 0.7);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
 }
 
 .copy-btn {
-  @apply ml-2 px-2 py-1 rounded-lg cursor-pointer text-sm transition-all duration-200;
-  background: rgba(223, 118, 35, 0.15);
-  border: 1px solid rgba(223, 118, 35, 0.3);
-  color: rgba(255, 228, 204, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  color: rgba(0, 245, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .copy-btn:hover {
-  background: rgba(223, 118, 35, 0.25);
-  border-color: rgba(223, 118, 35, 0.5);
-  color: #ff9e5e;
+  border-color: #00f5ff;
+  color: #00f5ff;
 }
 
 .success-actions {
-  @apply flex gap-4 mt-4;
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .continue-btn,
 .back-home-btn {
-  @apply px-4 sm:px-6 py-3 sm:py-3.5 rounded-xl text-base font-medium cursor-pointer transition-all duration-300;
+  padding: 0.8rem 1.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
   min-height: 52px;
-  touch-action: manipulation;
-}
-
-@media (max-width: 640px) {
-  .continue-btn,
-  .back-home-btn {
-    @apply flex-1;
-    min-width: calc(50% - 8px);
-  }
-
-  .success-actions {
-    @apply flex-col gap-3;
-  }
 }
 
 .continue-btn {
-  background: rgba(102, 126, 234, 0.15);
-  border: 1px solid rgba(102, 126, 234, 0.3);
-  color: rgba(167, 139, 250, 0.9);
+  background: transparent;
+  border: 2px solid rgba(255, 107, 53, 0.5);
+  color: #ff6b35;
 }
 
 .continue-btn:hover {
-  background: rgba(102, 126, 234, 0.25);
-  border-color: rgba(102, 126, 234, 0.5);
+  border-color: #ff6b35;
+  background: rgba(255, 107, 53, 0.1);
 }
 
 .back-home-btn {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(167, 139, 250, 0.5) 100%);
+  background: linear-gradient(135deg, #ff6b35, #ff9e5e);
   border: none;
-  color: white;
+  color: #fff;
 }
 
 .back-home-btn:hover {
+  box-shadow: 0 0 25px rgba(255, 107, 53, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
 }
 
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
+}
+
+.empty-icon {
+  color: rgba(139, 92, 246, 0.5);
+}
+
+.empty-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.empty-desc {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+/* Submit button */
 .submit-btn {
-  @apply w-full py-3 sm:py-3.5 md:py-[0.9rem] rounded-xl md:rounded-2xl text-base sm:text-lg font-semibold cursor-pointer transition-all duration-300;
-  @apply flex items-center justify-center gap-2;
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.6) 0%, rgba(167, 139, 250, 0.5) 100%);
-  color: white;
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #ff6b35, #ff9e5e);
   border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
   min-height: 52px;
-  touch-action: manipulation;
 }
 
 .submit-btn:hover:not(:disabled) {
-  @apply -translate-y-0.5 md:-translate-y-1;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 0 30px rgba(255, 107, 53, 0.5);
+  transform: translateY(-2px);
 }
 
 .submit-btn:disabled {
-  @apply opacity-70 cursor-not-allowed;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-spinner {
-  @apply w-4 h-4 sm:w-5 sm:h-5 border-[2px] rounded-full;
-  border-color: rgba(255, 255, 255, 0.3);
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
+  border-radius: 50%;
   animation: spin 0.8s linear infinite;
+}
+
+/* Captcha modal */
+.captcha-modal-content {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.captcha-component-wrapper {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.captcha-loading,
+.captcha-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.modal-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(255, 107, 53, 0.2);
+  border-top-color: #ff6b35;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.retry-load-btn {
+  padding: 0.6rem 1.2rem;
+  background: transparent;
+  border: 1px solid rgba(255, 107, 53, 0.5);
+  color: #ff6b35;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.retry-load-btn:hover {
+  background: rgba(255, 107, 53, 0.1);
+  border-color: #ff6b35;
+}
+
+@media (max-width: 768px) {
+  .contribute-header {
+    padding: 1rem;
+  }
+
+  .contribute-main {
+    padding: 1rem;
+  }
+
+  .contribute-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .contribute-title {
+    font-size: 1.6rem;
+  }
+
+  .success-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .continue-btn,
+  .back-home-btn {
+    width: 100%;
+  }
 }
 </style>

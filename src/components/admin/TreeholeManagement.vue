@@ -21,7 +21,9 @@ import {
   NPopconfirm,
   NDatePicker,
   NAutoComplete,
+  NPopover,
 } from "naive-ui"
+import QRCode from "qrcode"
 import {
   generateHolidayOptions,
   sortHolidaysByRelevance,
@@ -48,6 +50,8 @@ const formIsActive = ref(true)
 
 const holidayOptions = ref<HolidayOption[]>([])
 const searchValue = ref("")
+const qrCodeMap = ref<Record<string, string>>({})
+const activeQRPopover = ref<string | null>(null)
 
 const filteredHolidayOptions = computed(() => {
   const allOptions = sortHolidaysByRelevance(holidayOptions.value)
@@ -143,7 +147,7 @@ const columns = [
   {
     title: "操作",
     key: "actions",
-    width: 280,
+    width: 360,
     render: (row: TopicPageItem) => {
       return h("div", { class: "flex gap-2" }, [
         h(
@@ -158,6 +162,44 @@ const columns = [
         ),
         h(NButton, { size: "small", onClick: () => viewSubmissions(row) }, () => "投稿列表"),
         h(NButton, { size: "small", onClick: () => openEdit(row) }, () => "编辑"),
+        h(
+          NPopover,
+          {
+            trigger: "hover",
+            show: activeQRPopover.value === String(row.id),
+            "onUpdate:show": (val: boolean) => {
+              activeQRPopover.value = val ? String(row.id) : null
+              if (val && !qrCodeMap.value[String(row.id)]) {
+                generateQRCode(row.id)
+              }
+            },
+          },
+          {
+            trigger: () =>
+              h(
+                NButton,
+                { size: "small", type: "warning", onClick: () => downloadQRCode(row.id, row.title) },
+                () => "下载二维码",
+              ),
+            default: () => {
+              const dataUrl = qrCodeMap.value[String(row.id)]
+              if (dataUrl) {
+                return h(
+                  "div",
+                  { style: "text-align: center; padding: 8px;" },
+                  [
+                    h("img", {
+                      src: dataUrl,
+                      style: "width: 160px; height: 160px; border-radius: 8px;",
+                      alt: "QR Code",
+                    }),
+                  ],
+                )
+              }
+              return h("div", { style: "padding: 20px; color: rgba(255, 228, 204, 0.5);" }, "加载中...")
+            },
+          },
+        ),
       ])
     },
   },
@@ -200,6 +242,41 @@ async function loadTopics() {
   } finally {
     loading.value = false
   }
+}
+
+async function generateQRCode(topicId: string | number) {
+  try {
+    const key = String(topicId)
+    const url = `https://www.likofan.club/contribute?topic_id=${topicId}`
+    const dataUrl = await QRCode.toDataURL(url, {
+      width: 200,
+      margin: 2,
+      color: {
+        dark: "#1a1018",
+        light: "#ffe4cc",
+      },
+    })
+    qrCodeMap.value[key] = dataUrl
+  } catch {
+    message.error("二维码生成失败")
+  }
+}
+
+function downloadQRCode(topicId: string | number, title: string) {
+  const key = String(topicId)
+  if (!qrCodeMap.value[key]) {
+    generateQRCode(topicId)
+  }
+  setTimeout(() => {
+    const dataUrl = qrCodeMap.value[key]
+    if (!dataUrl) return
+    const link = document.createElement("a")
+    const timestamp = Date.now()
+    const safeTitle = title.replace(/[^\w一-龥-]/g, "_")
+    link.download = `${safeTitle}-${timestamp}.png`
+    link.href = dataUrl
+    link.click()
+  }, 100)
 }
 
 async function handleStatusChange(row: TopicPageItem, newValue: boolean) {
@@ -263,7 +340,7 @@ async function handleSubmit() {
       }
     } else {
       const resp = await createTopic({
-        bid: Liko.BID,
+        bid: String(Liko.BID),
         title: formTitle.value,
         description: formDescription.value,
         open_at: new Date(openAt).toISOString(),
@@ -334,6 +411,10 @@ onMounted(() => {
               :options="titleOptions"
               placeholder="请输入话题标题或选择节假日"
               clearable
+              placement="bottom-start"
+              :style="{ zIndex: 1000 }"
+              :maxlength="100"
+              show-count
               @update:value="handleTitleInput"
               @select="handleTitleSelect"
             />
@@ -345,6 +426,8 @@ onMounted(() => {
               type="textarea"
               placeholder="请输入话题描述"
               :rows="3"
+              :maxlength="300"
+              show-count
             />
           </div>
           <div class="form-item">

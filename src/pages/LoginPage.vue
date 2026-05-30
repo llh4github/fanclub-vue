@@ -8,6 +8,8 @@ import { isSuccess } from "@/api/types"
 import { setAuthData } from "@/utils/auth"
 import { NInput, NModal, NConfigProvider, darkTheme } from "naive-ui"
 import { Click } from "go-captcha-vue"
+import IconArrowLeft from "@/components/icons/IconArrowLeft.vue"
+import IconLock from "@/components/icons/IconLock.vue"
 
 const router = useRouter()
 
@@ -190,8 +192,8 @@ function goBack() {
       </div>
 
       <header class="login-header">
-        <button class="back-btn" @click="goBack">
-          <span>←</span>
+        <button class="back-btn" @click="goBack" aria-label="返回首页">
+          <IconArrowLeft :size="18" />
           <span>返回首页</span>
         </button>
       </header>
@@ -200,14 +202,16 @@ function goBack() {
         <div class="login-card" :class="{ 'is-ready': !isInitializing }">
           <div v-if="isInitializing" class="init-state">
             <div class="loading-spinner"></div>
-            <p class="init-text">🔐 初始化加密通道...</p>
+            <p class="init-text">初始化加密通道...</p>
             <p v-if="initError" class="init-error">{{ initError }}</p>
             <button v-if="initError" class="retry-btn" @click="initializeCrypto">重新初始化</button>
           </div>
 
           <template v-else>
             <div class="login-header-section">
-              <div class="login-icon">🔐</div>
+              <div class="login-icon">
+                <IconLock :size="48" />
+              </div>
               <h1 class="login-title">管理员登录</h1>
               <p class="login-subtitle">Administration Login</p>
             </div>
@@ -237,9 +241,8 @@ function goBack() {
                   @click="openCaptchaModal"
                   :class="{ 'is-verified': isCaptchaVerified }"
                 >
-                  <span class="captcha-btn-icon">🔐</span>
                   <span class="captcha-btn-text">
-                    {{ isCaptchaVerified ? "已验证 ✓" : "点击进行安全验证" }}
+                    {{ isCaptchaVerified ? "已验证" : "点击进行安全验证" }}
                   </span>
                 </button>
               </div>
@@ -263,9 +266,13 @@ function goBack() {
         title="验证码"
         :style="{ maxWidth: '420px' }"
         :content-style="{
-          background: 'rgba(10, 15, 30, 0.95)',
-          border: '1px solid rgba(139, 92, 246, 0.3)',
+          background: 'rgba(10, 8, 18, 0.95)',
+          border: '1px solid rgba(0, 245, 255, 0.3)',
           borderRadius: '12px',
+        }"
+        :header-style="{
+          color: '#00f5ff',
+          borderBottom: '1px solid rgba(0, 245, 255, 0.2)',
         }"
       >
         <template #default>
@@ -305,24 +312,35 @@ function goBack() {
 @reference "tailwindcss";
 
 :root {
-  --login-card-bg: rgba(255, 255, 255, 0.08);
-  --login-dark-bg: rgba(15, 20, 40, 0.3);
+  --login-card-bg: rgba(10, 8, 18, 0.9);
+  --login-dark-bg: rgba(10, 8, 18, 0.6);
   --login-dark-input: rgba(0, 0, 0, 0.4);
-  --login-accent-15: rgba(139, 92, 246, 0.15);
-  --login-accent-30: rgba(139, 92, 246, 0.3);
-  --login-accent-50: rgba(139, 92, 246, 0.5);
-  --login-text-secondary: rgba(200, 220, 255, 0.6);
-  --login-text-muted: rgba(200, 220, 255, 0.3);
-  --login-text-40: rgba(200, 220, 255, 0.4);
-  --login-form-bg: rgba(255, 255, 255, 0.04);
+  --login-accent-15: rgba(0, 245, 255, 0.15);
+  --login-accent-30: rgba(0, 245, 255, 0.3);
+  --login-accent-50: rgba(0, 245, 255, 0.5);
+  --login-text-secondary: rgba(0, 245, 255, 0.6);
+  --login-text-muted: rgba(0, 245, 255, 0.3);
+  --login-text-40: rgba(0, 245, 255, 0.4);
+  --login-form-bg: rgba(0, 245, 255, 0.04);
   --login-danger-bg: rgba(239, 68, 68, 0.15);
   --login-danger-border: rgba(239, 68, 68, 0.3);
-  --back-btn-bg: rgba(255, 255, 255, 0.05);
+  --back-btn-bg: rgba(10, 8, 18, 0.8);
+  --login-purple-15: rgba(139, 92, 246, 0.15);
+  --login-purple-30: rgba(139, 92, 246, 0.3);
+  --login-success-bg: rgba(34, 197, 94, 0.15);
+  --login-success-border: rgba(34, 197, 94, 0.3);
 }
 
 .login-page {
   @apply min-h-screen min-h-[100svh] relative overflow-hidden;
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  background: linear-gradient(
+    135deg,
+    #0a0812 0%,
+    #0f172a 25%,
+    #1a0a2e 50%,
+    #0a0812 75%,
+    #0f172a 100%
+  );
 }
 
 .login-bg {
@@ -334,12 +352,12 @@ function goBack() {
 .glow-orb {
   @apply absolute rounded-full;
   filter: blur(80px);
-  opacity: 0.35;
+  opacity: 0.4;
 }
 
 .orb-1 {
   @apply w-[400px] h-[400px];
-  background: #3b82f6;
+  background: #00f5ff;
   top: -100px;
   right: -100px;
   animation: pulse-orb 4s ease-in-out infinite;
@@ -357,12 +375,12 @@ function goBack() {
   0%,
   100% {
     transform: scale(1);
-    opacity: 0.35;
+    opacity: 0.4;
   }
 
   50% {
     transform: scale(1.1);
-    opacity: 0.5;
+    opacity: 0.6;
   }
 }
 
@@ -375,13 +393,13 @@ function goBack() {
   @apply flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg cursor-pointer text-sm sm:text-base font-medium transition-all duration-300;
   background: var(--back-btn-bg);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.2);
   color: var(--login-text-secondary);
 }
 
 .back-btn:hover {
-  @apply text-[#c8dcff];
-  background: rgba(139, 92, 246, 0.15);
+  @apply text-[#00f5ff];
+  background: var(--login-accent-15);
   border-color: var(--login-accent-30);
 }
 
@@ -398,10 +416,11 @@ function goBack() {
   max-width: 480px;
   background: var(--login-card-bg);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(0, 245, 255, 0.2);
   box-shadow:
+    0 0 40px rgba(0, 245, 255, 0.1),
     0 20px 60px rgba(0, 0, 0, 0.4),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    inset 0 1px 1px rgba(0, 245, 255, 0.1);
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -418,8 +437,8 @@ function goBack() {
 
 .loading-spinner {
   @apply w-10 h-10 sm:w-12 sm:h-12 border-[3px] rounded-full;
-  border-color: rgba(139, 92, 246, 0.2);
-  border-top-color: #8b5cf6;
+  border-color: rgba(0, 245, 255, 0.2);
+  border-top-color: #00f5ff;
   animation: spin 1s linear infinite;
 }
 
@@ -443,11 +462,12 @@ function goBack() {
   @apply px-4 sm:px-6 py-2 rounded-lg cursor-pointer text-sm transition-all duration-300;
   background: var(--login-accent-15);
   border: 1px solid var(--login-accent-30);
-  color: #a78bfa;
+  color: #00f5ff;
 }
 
 .retry-btn:hover {
-  background: rgba(139, 92, 246, 0.25);
+  background: var(--login-accent-15);
+  border-color: var(--login-accent-50);
 }
 
 .login-header-section {
@@ -455,24 +475,27 @@ function goBack() {
 }
 
 .login-icon {
-  @apply text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3;
+  @apply flex items-center justify-center mb-2 sm:mb-3;
   animation: pulse-icon 2s ease-in-out infinite;
+  color: #00f5ff;
 }
 
 @keyframes pulse-icon {
   0%,
   100% {
     transform: scale(1);
+    filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.5));
   }
 
   50% {
     transform: scale(1.1);
+    filter: drop-shadow(0 0 16px rgba(0, 245, 255, 0.8));
   }
 }
 
 .login-title {
   @apply text-xl sm:text-2xl md:text-[1.6rem] font-bold m-0 mb-1 md:mb-2;
-  background: linear-gradient(135deg, #667eea 0%, #8b5cf6 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #00f5ff 0%, #8b5cf6 50%, #ff6b35 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -488,7 +511,6 @@ function goBack() {
 .login-form {
   @apply flex flex-col gap-3 sm:gap-4 md:gap-5 p-4 sm:p-5 md:p-8 rounded-xl md:rounded-2xl;
   background: var(--login-form-bg);
-  /* border: 1px solid rgba(255, 255, 255, 0.1); */
   backdrop-filter: blur(16px);
 }
 
@@ -498,14 +520,14 @@ function goBack() {
 
 .form-label {
   @apply text-sm md:text-base font-medium;
-  color: #a78bfa;
+  color: #00f5ff;
 }
 
 .form-input {
   @apply w-full px-4 py-3 rounded-lg text-base transition-all duration-300;
   background: var(--login-dark-input) !important;
-  border-color: #a78bfa !important;
-  color: #c8dcff !important;
+  border-color: #8b5cf6 !important;
+  color: #00f5ff !important;
 }
 
 .form-input::placeholder {
@@ -513,56 +535,56 @@ function goBack() {
 }
 
 :deep(.n-input) {
-  --n-border: 1px solid rgba(139, 92, 246, 0.25) !important;
-  --n-border-hover: 1px solid rgba(139, 92, 246, 0.4) !important;
-  --n-border-focus: 1px solid #8b5cf6 !important;
-  --n-color: rgba(15, 20, 40, 0.6) !important;
-  --n-color-focus: rgba(15, 20, 40, 0.8) !important;
-  --n-color-focus-error: rgba(15, 20, 40, 0.8) !important;
-  --n-color-error: rgba(15, 20, 40, 0.6) !important;
-  --n-text-color: #c8dcff !important;
-  --n-placeholder-color: rgba(200, 220, 255, 0.3) !important;
-  --n-caret-color: #8b5cf6 !important;
+  --n-border: 1px solid rgba(0, 245, 255, 0.25) !important;
+  --n-border-hover: 1px solid rgba(0, 245, 255, 0.4) !important;
+  --n-border-focus: 1px solid #00f5ff !important;
+  --n-color: rgba(10, 8, 18, 0.6) !important;
+  --n-color-focus: rgba(10, 8, 18, 0.8) !important;
+  --n-color-focus-error: rgba(10, 8, 18, 0.8) !important;
+  --n-color-error: rgba(10, 8, 18, 0.6) !important;
+  --n-text-color: #00f5ff !important;
+  --n-placeholder-color: rgba(0, 245, 255, 0.3) !important;
+  --n-caret-color: #00f5ff !important;
   --n-border-radius: 8px;
   --n-height: 48px;
-  --n-box-shadow-focus: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+  --n-box-shadow-focus: 0 0 0 3px rgba(0, 245, 255, 0.15) !important;
 }
 
 :deep(.n-input .n-input__input-el) {
-  color: #c8dcff !important;
-  caret-color: #8b5cf6 !important;
+  color: #00f5ff !important;
+  caret-color: #00f5ff !important;
 }
 
 :deep(.n-input .n-input__placeholder) {
-  color: rgba(200, 220, 255, 0.3) !important;
+  color: rgba(0, 245, 255, 0.3) !important;
 }
 
 :deep(.n-input .n-input__suffix) {
-  color: rgba(200, 220, 255, 0.6);
+  color: rgba(0, 245, 255, 0.6);
 }
 
 .toggle-password {
   @apply text-xl cursor-pointer transition-transform duration-200;
-  color: rgba(200, 220, 255, 0.6);
+  color: rgba(0, 245, 255, 0.6);
   padding: 4px;
 }
 
 .toggle-password:hover {
   transform: scale(1.1);
-  color: #a78bfa;
+  color: #00f5ff;
 }
 
 .captcha-wrapper {
   @apply flex items-center justify-center p-4 sm:p-5 md:p-6 rounded-xl md:rounded-2xl;
   background: var(--login-dark-bg);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 245, 255, 0.1);
   backdrop-filter: blur(12px);
 }
 
 .captcha-btn {
   @apply flex items-center justify-center gap-2 px-4 py-3 rounded-lg cursor-pointer transition-all duration-300;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  background: rgba(0, 245, 255, 0.08);
+  border: 1px solid rgba(0, 245, 255, 0.2);
   backdrop-filter: blur(12px);
   color: var(--login-text-secondary);
   font-size: 0.95rem;
@@ -570,10 +592,11 @@ function goBack() {
 }
 
 .captcha-btn:hover:not(:disabled) {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.4);
-  color: #c8dcff;
+  background: rgba(0, 245, 255, 0.15);
+  border-color: rgba(0, 245, 255, 0.4);
+  color: #00f5ff;
   transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
 }
 
 .captcha-btn:disabled {
@@ -582,13 +605,13 @@ function goBack() {
 }
 
 .captcha-btn.is-verified {
-  background: rgba(34, 197, 94, 0.1);
-  border-color: rgba(34, 197, 94, 0.3);
+  background: var(--login-success-bg);
+  border-color: var(--login-success-border);
   color: #4ade80;
 }
 
 .captcha-btn.is-verified:hover {
-  background: rgba(34, 197, 94, 0.15);
+  background: var(--login-success-bg);
   border-color: rgba(34, 197, 94, 0.5);
   transform: translateY(-2px);
 }
@@ -602,7 +625,7 @@ function goBack() {
 }
 
 .captcha-modal-header {
-  @apply text-base font-medium text-[#c8dcff];
+  @apply text-base font-medium text-[#00f5ff];
 }
 
 .captcha-modal-content {
@@ -618,13 +641,13 @@ function goBack() {
 
 .captcha-loading {
   @apply flex flex-col items-center justify-center gap-3 py-12 px-4;
-  color: rgba(200, 220, 255, 0.6);
+  color: rgba(0, 245, 255, 0.6);
 }
 
 .modal-spinner {
   @apply w-10 h-10 border-[3px] rounded-full;
-  border-color: rgba(139, 92, 246, 0.2);
-  border-top-color: #8b5cf6;
+  border-color: rgba(0, 245, 255, 0.2);
+  border-top-color: #00f5ff;
   animation: spin 1s linear infinite;
 }
 
@@ -635,30 +658,30 @@ function goBack() {
 
 .retry-load-btn {
   @apply px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200;
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  color: #a78bfa;
+  background: var(--login-accent-15);
+  border: 1px solid var(--login-accent-30);
+  color: #00f5ff;
 }
 
 .retry-load-btn:hover {
-  background: rgba(139, 92, 246, 0.25);
-  border-color: rgba(139, 92, 246, 0.5);
+  background: var(--login-accent-15);
+  border-color: var(--login-accent-50);
 }
 
 .error-message {
   @apply text-sm sm:text-base text-center m-0 p-2 sm:p-3 rounded-lg;
   color: #f87171;
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--login-danger-bg);
 }
 
 .login-btn {
   @apply w-full py-2.5 sm:py-3 md:py-[0.9rem] mt-2 sm:mt-3 rounded-xl md:rounded-2xl text-base sm:text-lg font-semibold cursor-pointer transition-all duration-300;
   @apply flex items-center justify-center gap-2;
-  background: linear-gradient(135deg, #667eea 0%, #8b5cf6 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #00f5ff 0%, #8b5cf6 50%, #ff6b35 100%);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow:
-    0 4px 15px rgba(102, 126, 234, 0.3),
+    0 0 20px rgba(0, 245, 255, 0.3),
     inset 0 1px 1px rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(12px);
 }
@@ -666,7 +689,8 @@ function goBack() {
 .login-btn:hover:not(:disabled) {
   @apply -translate-y-0.5 md:-translate-y-1;
   box-shadow:
-    0 8px 30px rgba(102, 126, 234, 0.4),
+    0 0 30px rgba(0, 245, 255, 0.4),
+    0 8px 30px rgba(139, 92, 246, 0.3),
     inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
