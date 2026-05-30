@@ -378,6 +378,8 @@ onBeforeUnmount(() => {
         <span class="footer-line"></span>
       </span>
     </div>
+
+    <p class="schedule-disclaimer">数据仅供参考，以主播实际安排为准</p>
   </section>
 </template>
 
@@ -821,6 +823,15 @@ onBeforeUnmount(() => {
 .footer-info {
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+}
+
+/* Disclaimer */
+.schedule-disclaimer {
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.25);
+  font-style: italic;
   text-align: center;
 }
 

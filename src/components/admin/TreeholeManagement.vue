@@ -178,7 +178,7 @@ const columns = [
             trigger: () =>
               h(
                 NButton,
-                { size: "small", type: "warning", onClick: () => downloadQRCode(row.id) },
+                { size: "small", type: "warning", onClick: () => downloadQRCode(row.id, row.title) },
                 () => "下载二维码",
               ),
             default: () => {
@@ -262,7 +262,7 @@ async function generateQRCode(topicId: string | number) {
   }
 }
 
-function downloadQRCode(topicId: string | number) {
+function downloadQRCode(topicId: string | number, title: string) {
   const key = String(topicId)
   if (!qrCodeMap.value[key]) {
     generateQRCode(topicId)
@@ -271,7 +271,9 @@ function downloadQRCode(topicId: string | number) {
     const dataUrl = qrCodeMap.value[key]
     if (!dataUrl) return
     const link = document.createElement("a")
-    link.download = `topic-${topicId}-qrcode.png`
+    const timestamp = Date.now()
+    const safeTitle = title.replace(/[^\w一-龥-]/g, "_")
+    link.download = `${safeTitle}-${timestamp}.png`
     link.href = dataUrl
     link.click()
   }, 100)
