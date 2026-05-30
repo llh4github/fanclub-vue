@@ -169,14 +169,17 @@ function handleChange(value: string) {
 
       const trimmed = result.trimEnd()
       if (trimmed !== value) {
+        syncImageCount(trimmed)
         vditorInstance?.setValue(trimmed)
         emit("update:modelValue", trimmed)
       } else {
         const filtered = filterExternalLinks(value)
+        syncImageCount(filtered)
         emit("update:modelValue", filtered)
       }
     } else {
       const filtered = filterExternalLinks(value)
+      syncImageCount(filtered)
       if (filtered !== value) {
         vditorInstance?.setValue(filtered)
       }
@@ -189,6 +192,20 @@ function handleChange(value: string) {
 
 function filterExternalLinks(text: string): string {
   return text.replace(/\[([^\]]*)\]\((https?:\/\/(?![\w-]+\.likofan\.club)[^)]+)\)/g, "$1")
+}
+
+function countImagesInMarkdown(text: string): number {
+  const matches = text.match(/!\[([^\]]*)\]\(([^)]+)\)/g)
+  return matches ? matches.length : 0
+}
+
+function syncImageCount(markdown: string): void {
+  const currentImageCount = countImagesInMarkdown(markdown)
+  const diff = uploadedImageCount.value - currentImageCount
+  if (diff > 0) {
+    uploadedImageCount.value = currentImageCount
+    // Don't decrement topicImageUploadCount - total uploads persist per requirements
+  }
 }
 
 function checkTopicImageCount(): boolean {
