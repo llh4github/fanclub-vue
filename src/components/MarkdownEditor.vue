@@ -201,11 +201,7 @@ function countImagesInMarkdown(text: string): number {
 
 function syncImageCount(markdown: string): void {
   const currentImageCount = countImagesInMarkdown(markdown)
-  const diff = uploadedImageCount.value - currentImageCount
-  if (diff > 0) {
-    uploadedImageCount.value = currentImageCount
-    // Don't decrement topicImageUploadCount - total uploads persist per requirements
-  }
+  uploadedImageCount.value = currentImageCount
 }
 
 function checkTopicImageCount(): boolean {
@@ -222,6 +218,11 @@ function checkTopicImageCount(): boolean {
 }
 
 async function uploadImage(files: File[], vditor: Vditor): Promise<void> {
+  // Sync count before checking limits (in case md has existing images from draft)
+  if (props.modelValue) {
+    syncImageCount(props.modelValue)
+  }
+
   const canUpload = checkTopicImageCount()
   if (!canUpload) {
     const remainingMins = Math.ceil((topicCountResetAt.value - Date.now()) / 60000)

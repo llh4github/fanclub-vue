@@ -18,6 +18,7 @@ import {
   updateSubmissionStatus,
   type SubmissionNavItem,
 } from "@/api/treeholeAdmin"
+import { getSubmissionSummary, getSubmissionSummaryStreamUrl } from "@/api/treehole"
 import { isSuccess } from "@/api/types"
 
 const router = useRouter()
@@ -186,9 +187,7 @@ async function loadSummary() {
   summaryDone.value = false
 
   try {
-    const hasSummary = selectedSubmission.value.has_summary ?? false
-    const apiPath = hasSummary ? "summary" : "summary/stream"
-    const url = `/api/treehole/submission/${apiPath}?submission_id=${selectedSubmission.value.id}`
+    const url = getSubmissionSummaryStreamUrl(selectedSubmission.value.id)
 
     const response = await fetch(url, {
       headers: {
@@ -255,10 +254,9 @@ async function loadSummary() {
         }
       }
     } else {
-      const text = await response.text()
-      const result = JSON.parse(text)
-      if (result.data?.content) {
-        summaryContent.value = result.data.content
+      const resp = await getSubmissionSummary(selectedSubmission.value.id)
+      if (isSuccess(resp.code) && resp.data) {
+        summaryContent.value = resp.data
         summaryDone.value = true
       }
     }
