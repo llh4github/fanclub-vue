@@ -1,4 +1,4 @@
-import { get, post } from "./request"
+import { get, post, API_BASE_URL } from "./request"
 import type { JsonResp } from "./types"
 
 export interface TopicBrief {
@@ -34,5 +34,5 @@ export async function getSubmissionSummary(submissionId: string | number): Promi
 }
 
 export function getSubmissionSummaryStreamUrl(submissionId: string | number): string {
-  return `/api/treehole/submission/summary/stream?submission_id=${submissionId}`
+  return `${API_BASE_URL}/treehole/submission/summary/stream?submission_id=${submissionId}`
 }

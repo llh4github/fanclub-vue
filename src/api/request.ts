@@ -7,6 +7,7 @@ import type { LoginResponse } from "@/api/auth"
 import type { Router } from "vue-router"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api"
+export { API_BASE_URL }
 
 const pendingRequests = new Map<string, AbortController>()
 
