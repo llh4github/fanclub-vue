@@ -429,7 +429,7 @@ async function copySubmissionId() {
             <div class="form-section content-section" :class="{ disabled: !selectedTopic || !isTopicOpen }">
               <label class="form-label">投稿内容 (支持 Markdown)</label>
               <MarkdownEditor ref="markdownEditorRef" v-model="content" :disabled="!selectedTopic || !isTopicOpen"
-                placeholder="请输入投稿内容..." height="600" />
+                placeholder="请输入投稿内容..." height="600" :topic-id="selectedTopicId || ''" />
               <div class="editor-footer">
                 <span class="draft-hint">内容会自动保存到本地</span>
                 <div class="char-counter" :class="{

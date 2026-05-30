@@ -13,8 +13,36 @@ const md = markdownit()
 
 const MAX_CHARS = 800
 const MIN_CHARS = 10
-const MAX_IMAGES = 5
+const MAX_IMAGES_PER_DRAFT = 5
+const MAX_IMAGES_PER_TOPIC_3H = 12
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024
+const TOPIC_UPLOAD_WINDOW_MS = 3 * 60 * 60 * 1000 // 3 hours
+
+function getTopicUploadCache(topicId: string): { count: number; resetAt: number } | null {
+  try {
+    const key = `topic_upload_${topicId}`
+    const cached = localStorage.getItem(key)
+    if (!cached) return null
+    const data = JSON.parse(cached)
+    const now = Date.now()
+    if (now - data.lastUploadTime > TOPIC_UPLOAD_WINDOW_MS) {
+      localStorage.removeItem(key)
+      return null
+    }
+    return { count: data.count, resetAt: data.lastUploadTime + TOPIC_UPLOAD_WINDOW_MS }
+  } catch {
+    return null
+  }
+}
+
+function updateTopicUploadCache(topicId: string, count: number): void {
+  try {
+    const key = `topic_upload_${topicId}`
+    localStorage.setItem(key, JSON.stringify({ count, lastUploadTime: Date.now() }))
+  } catch {
+    // ignore
+  }
+}
 
 const props = withDefaults(
   defineProps<{
@@ -22,12 +50,14 @@ const props = withDefaults(
     disabled?: boolean
     placeholder?: string
     height?: string | number
+    topicId?: string
   }>(),
   {
     modelValue: "",
     disabled: false,
     placeholder: "请输入内容...",
     height: 400,
+    topicId: "",
   },
 )
 
@@ -57,8 +87,11 @@ const isNearLimitRef = ref(false)
 const isUnderLimitRef = ref(false)
 const isValidRef = ref(false)
 const uploadedImageCount = ref(0)
+const topicImageUploadCount = ref(0)
+const topicCountResetAt = ref(0)
 
-const isImageLimitReached = computed(() => uploadedImageCount.value >= MAX_IMAGES)
+const isImageLimitReached = computed(() => uploadedImageCount.value >= MAX_IMAGES_PER_DRAFT)
+const isTopicUploadBlocked = computed(() => topicImageUploadCount.value >= MAX_IMAGES_PER_TOPIC_3H)
 
 const charCount = computed(() => {
   if (!props.modelValue) return 0
@@ -90,6 +123,8 @@ defineExpose({
   isValid: isValidRef,
   uploadedImageCount,
   isImageLimitReached,
+  isTopicUploadBlocked,
+  topicImageUploadCount,
   MIN_CHARS,
   MAX_CHARS,
 })
@@ -156,11 +191,34 @@ function filterExternalLinks(text: string): string {
   return text.replace(/\[([^\]]*)\]\((https?:\/\/(?![\w-]+\.likofan\.club)[^)]+)\)/g, "$1")
 }
 
-async function uploadImage(files: File[], vditor: Vditor): Promise<void> {
-  const validFiles = files.slice(0, MAX_IMAGES)
+function checkTopicImageCount(): boolean {
+  if (!props.topicId) return true
+  const cached = getTopicUploadCache(props.topicId)
+  if (cached) {
+    topicImageUploadCount.value = cached.count
+    topicCountResetAt.value = cached.resetAt
+    return cached.count < MAX_IMAGES_PER_TOPIC_3H
+  }
+  topicImageUploadCount.value = 0
+  topicCountResetAt.value = Date.now() + TOPIC_UPLOAD_WINDOW_MS
+  return true
+}
 
-  if (files.length > MAX_IMAGES) {
-    message.warning(`最多只能上传 ${MAX_IMAGES} 张图片，已自动截取前 ${MAX_IMAGES} 张`)
+async function uploadImage(files: File[], vditor: Vditor): Promise<void> {
+  const canUpload = checkTopicImageCount()
+  if (!canUpload) {
+    const remainingMins = Math.ceil((topicCountResetAt.value - Date.now()) / 60000)
+    message.warning(`上传太频繁，请在 ${remainingMins} 分钟后重试`)
+    return
+  }
+
+  const remainingTopicSlots = MAX_IMAGES_PER_TOPIC_3H - topicImageUploadCount.value
+  const remainingDraftSlots = MAX_IMAGES_PER_DRAFT - uploadedImageCount.value
+  const maxUpload = Math.min(remainingTopicSlots, remainingDraftSlots, files.length)
+  const validFiles = files.slice(0, maxUpload)
+
+  if (files.length > maxUpload) {
+    message.warning(`本话题 3 小时内已上传 ${topicImageUploadCount.value} 张图片，当前稿件最多还能上传 ${maxUpload} 张`)
   }
 
   for (const file of validFiles) {
@@ -215,6 +273,8 @@ async function uploadImage(files: File[], vditor: Vditor): Promise<void> {
         const imageUrl = `${cdnDomain}/${result.key}-thumbnail`
         vditor.insertValue(`![${file.name}](${imageUrl})`)
         uploadedImageCount.value++
+        topicImageUploadCount.value++
+        updateTopicUploadCache(props.topicId, topicImageUploadCount.value)
       }
     } catch (error) {
       console.error("Upload failed:", error)
@@ -268,9 +328,14 @@ function initVditor() {
     },
     upload: {
       accept: "image/*",
-      handler: (files) => {
-        if (uploadedImageCount.value >= MAX_IMAGES) {
-          message.warning(`最多只能上传 ${MAX_IMAGES} 张图片`)
+      handler: async (files) => {
+        if (isTopicUploadBlocked.value) {
+          const remainingMins = Math.ceil((topicCountResetAt.value * 1000 - Date.now()) / 60000)
+          message.warning(`上传太频繁，请在 ${remainingMins} 分钟后重试`)
+          return null
+        }
+        if (uploadedImageCount.value >= MAX_IMAGES_PER_DRAFT) {
+          message.warning(`每篇稿件最多只能上传 ${MAX_IMAGES_PER_DRAFT} 张图片`)
           return null
         }
         if (vditorInstance) {
