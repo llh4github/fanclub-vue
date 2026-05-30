@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
+import { useMessage } from "naive-ui"
 import { getLatestFollowerNum, getTopicCount } from "@/api"
 import { getLatestLiveRecord, LiveRecordStatus, type LatestLiveRecord } from "@/api/schedule"
 import { Liko } from "@/config"
@@ -15,6 +16,7 @@ import IconCake from "@/components/icons/IconCake.vue"
 import IconStar from "@/components/icons/IconStar.vue"
 import IconFile from "@/components/icons/IconFile.vue"
 
+const message = useMessage()
 const router = useRouter()
 
 const debutDays = computed(() => {
@@ -61,9 +63,9 @@ function enterLiveRoom() {
   } else if (latestLiveRecord.value?.live_time) {
     const liveTime = new Date(latestLiveRecord.value.live_time)
     const formattedTime = `${liveTime.getMonth() + 1}月${liveTime.getDate()}日 ${liveTime.getHours()}:${String(liveTime.getMinutes()).padStart(2, "0")}`
-    alert(`上次直播时间：${formattedTime}`)
+    message.info(`上次直播时间：${formattedTime}`)
   } else {
-    alert("暂无直播记录")
+    message.info("暂无直播记录")
   }
 }
 
@@ -366,9 +368,12 @@ onMounted(async () => {
   align-items: center;
   gap: 6px;
   background: #ff6b35;
-  padding: 6px 14px;
+  padding: 10px 20px;
   animation: badge-blink 1s ease-in-out infinite;
   white-space: nowrap;
+  min-height: 44px;
+  min-width: 100px;
+  justify-content: center;
 }
 
 @keyframes badge-blink {
@@ -465,7 +470,7 @@ onMounted(async () => {
   font-weight: 600;
   letter-spacing: 1px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.9);
   position: relative;
   transition: all 0.3s ease;
 }
@@ -516,6 +521,12 @@ onMounted(async () => {
   overflow: hidden;
   transition: all 0.3s ease;
   min-width: 120px;
+  touch-action: manipulation;
+}
+
+.action-btn:focus-visible {
+  outline: 2px solid #00f5ff;
+  outline-offset: 3px;
 }
 
 .action-btn::before {
@@ -641,7 +652,7 @@ onMounted(async () => {
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .stat-value {
@@ -764,6 +775,18 @@ onMounted(async () => {
     min-width: 100px;
     padding: 0.6rem 1rem;
     font-size: 0.8rem;
+  }
+}
+
+/* Reduced motion - disable decorative animations */
+@media (prefers-reduced-motion: reduce) {
+  .avatar-glow,
+  .live-badge,
+  .live-dot,
+  .title-text,
+  .particle,
+  .avatar-wrapper.live .avatar {
+    animation: none;
   }
 }
 </style>
