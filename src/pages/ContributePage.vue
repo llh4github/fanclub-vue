@@ -409,12 +409,8 @@ async function copySubmissionId() {
           <template v-else>
             <div class="form-section topic-section">
               <label class="form-label">选择主题</label>
-              <NSelect
-                v-model:value="selectedTopicId"
-                :options="topicOptions"
-                placeholder="请选择主题"
-                class="topic-select"
-              />
+              <NSelect v-model:value="selectedTopicId" :options="topicOptions" placeholder="请选择主题"
+                class="topic-select" />
               <div v-if="selectedTopic" class="selected-topic-info">
                 <p class="topic-time" :class="`time-${timeUrgency}`">
                   投稿时间：{{ formatDate(selectedTopic.open_at) }} ~ {{ formatDate(selectedTopic.close_at) }}
@@ -432,41 +428,30 @@ async function copySubmissionId() {
 
             <div class="form-section content-section" :class="{ disabled: !selectedTopic || !isTopicOpen }">
               <label class="form-label">投稿内容 (支持 Markdown)</label>
-              <MarkdownEditor
-                ref="markdownEditorRef"
-                v-model="content"
-                :disabled="!selectedTopic || !isTopicOpen"
-                placeholder="请输入投稿内容..."
-                height="600"
-              />
+              <MarkdownEditor ref="markdownEditorRef" v-model="content" :disabled="!selectedTopic || !isTopicOpen"
+                placeholder="请输入投稿内容..." height="600" />
               <div class="editor-footer">
                 <span class="draft-hint">内容会自动保存到本地</span>
-                <div
-                  class="char-counter"
-                  :class="{
-                    warning: markdownEditorRef?.isNearLimit,
-                    error: markdownEditorRef?.isOverLimit,
-                    'under-limit': markdownEditorRef?.isUnderLimit,
-                  }"
-                >
+                <div class="char-counter" :class="{
+                  warning: markdownEditorRef?.isNearLimit,
+                  error: markdownEditorRef?.isOverLimit,
+                  'under-limit': markdownEditorRef?.isUnderLimit,
+                }">
                   <span v-if="markdownEditorRef?.isOverLimit" class="over-limit-icon">⚠️</span>
                   <span v-if="markdownEditorRef?.isUnderLimit" class="under-limit-icon">⚠️</span>
                   <span>{{ charCount }} / {{ markdownEditorRef?.MAX_CHARS }} 字</span>
                   <span v-if="markdownEditorRef?.isOverLimit" class="limit-hint">（已超出限制）</span>
-                  <span v-if="markdownEditorRef?.isUnderLimit && !markdownEditorRef?.isOverLimit" class="limit-hint">（至少需要 {{ markdownEditorRef?.MIN_CHARS }} 字）</span>
+                  <span v-if="markdownEditorRef?.isUnderLimit && !markdownEditorRef?.isOverLimit"
+                    class="limit-hint">（至少需要 {{ markdownEditorRef?.MIN_CHARS }} 字）</span>
                 </div>
               </div>
             </div>
 
             <!-- Captcha section -->
             <div class="captcha-wrapper">
-              <button
-                type="button"
-                class="captcha-btn"
+              <button type="button" class="captcha-btn"
                 :disabled="!canVerifyCaptcha || isCaptchaVerified || !selectedTopic || !isTopicOpen"
-                @click="openCaptchaModal"
-                :class="{ 'is-verified': isCaptchaVerified }"
-              >
+                @click="openCaptchaModal" :class="{ 'is-verified': isCaptchaVerified }">
                 <span class="captcha-btn-icon">
                   <IconLock :size="18" />
                 </span>
@@ -478,12 +463,8 @@ async function copySubmissionId() {
 
             <p v-if="errorMsg" class="error-message">{{ errorMsg }}</p>
 
-            <button
-              type="button"
-              class="submit-btn"
-              :disabled="isSubmitting || !selectedTopic || !isTopicOpen"
-              @click="handleSubmit"
-            >
+            <button type="button" class="submit-btn" :disabled="isSubmitting || !selectedTopic || !isTopicOpen"
+              @click="handleSubmit">
               <span v-if="isSubmitting" class="btn-spinner"></span>
               <span v-else>提 交</span>
             </button>
@@ -491,20 +472,13 @@ async function copySubmissionId() {
         </div>
       </main>
 
-      <NModal
-        v-model:show="showCaptchaModal"
-        preset="card"
-        :mask-closable="true"
-        class="captcha-modal"
-        title="验证码"
-        :style="{ maxWidth: 'min(420px, 95vw)' }"
-        :content-style="{
+      <NModal v-model:show="showCaptchaModal" preset="card" :mask-closable="true" class="captcha-modal" title="验证码"
+        :style="{ maxWidth: 'min(420px, 95vw)' }" :content-style="{
           background: 'rgba(10, 8, 18, 0.95)',
           border: '1px solid rgba(0, 245, 255, 0.3)',
           borderRadius: '0',
           padding: '12px',
-        }"
-      >
+        }">
         <template #default>
           <div class="captcha-modal-content">
             <div v-if="isCaptchaLoading" class="captcha-loading">
@@ -512,20 +486,16 @@ async function copySubmissionId() {
               <span>加载验证码中...</span>
             </div>
             <div v-else-if="captchaData" class="captcha-component-wrapper">
-              <Click
-                :config="{
-                  width: Math.min(300, windowWidth - 60),
-                  height: Math.min(220, (Math.min(300, windowWidth - 60) / 300) * 220),
-                  thumbHeight: Math.min(60, (Math.min(300, windowWidth - 60) / 300) * 60),
-                  title: '请依次点击',
-                  buttonText: '验证',
-                }"
-                :data="{
-                  image: captchaData.image,
-                  thumb: captchaData.thumb,
-                }"
-                :events="captchaEvents"
-              />
+              <Click :config="{
+                width: Math.min(300, windowWidth - 60),
+                height: Math.min(220, (Math.min(300, windowWidth - 60) / 300) * 220),
+                thumbHeight: Math.min(60, (Math.min(300, windowWidth - 60) / 300) * 60),
+                title: '请依次点击',
+                buttonText: '验证',
+              }" :data="{
+                image: captchaData.image,
+                thumb: captchaData.thumb,
+              }" :events="captchaEvents" />
             </div>
             <div v-else class="captcha-error">
               <span>{{ captchaError || "验证码加载失败" }}</span>
@@ -576,8 +546,15 @@ async function copySubmissionId() {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(3deg); }
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-15px) rotate(3deg);
+  }
 }
 
 .contribute-header {
@@ -658,11 +635,21 @@ async function copySubmissionId() {
   color: #00f5ff;
   animation: pulse-icon 2s ease-in-out infinite;
   margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @keyframes pulse-icon {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .contribute-title {
@@ -683,9 +670,20 @@ async function copySubmissionId() {
 }
 
 @keyframes title-glitch {
-  0%, 90%, 100% { transform: translate(0); }
-  92% { transform: translate(-2px, 1px); }
-  94% { transform: translate(2px, -1px); }
+
+  0%,
+  90%,
+  100% {
+    transform: translate(0);
+  }
+
+  92% {
+    transform: translate(-2px, 1px);
+  }
+
+  94% {
+    transform: translate(2px, -1px);
+  }
 }
 
 .contribute-subtitle {
@@ -714,7 +712,9 @@ async function copySubmissionId() {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .init-text {
@@ -778,15 +778,25 @@ async function copySubmissionId() {
   margin-bottom: 1.5rem;
 }
 
-.time-urgent { color: #ff6b35; }
+.time-urgent {
+  color: #ff6b35;
+}
+
 .time-critical {
   color: #ff4444;
   animation: pulse-critical 1s infinite;
 }
 
 @keyframes pulse-critical {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .time-expired {
@@ -831,9 +841,17 @@ async function copySubmissionId() {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.char-counter.warning { color: #ff9e5e; }
-.char-counter.error { color: #ff6b35; }
-.char-counter.under-limit { color: #ff9e5e; }
+.char-counter.warning {
+  color: #ff9e5e;
+}
+
+.char-counter.error {
+  color: #ff6b35;
+}
+
+.char-counter.under-limit {
+  color: #ff9e5e;
+}
 
 .limit-hint {
   font-size: 0.7rem;

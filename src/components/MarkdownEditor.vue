@@ -56,6 +56,9 @@ const isOverLimitRef = ref(false)
 const isNearLimitRef = ref(false)
 const isUnderLimitRef = ref(false)
 const isValidRef = ref(false)
+const uploadedImageCount = ref(0)
+
+const isImageLimitReached = computed(() => uploadedImageCount.value >= MAX_IMAGES)
 
 const charCount = computed(() => {
   if (!props.modelValue) return 0
@@ -85,6 +88,8 @@ defineExpose({
   isNearLimit: isNearLimitRef,
   isUnderLimit: isUnderLimitRef,
   isValid: isValidRef,
+  uploadedImageCount,
+  isImageLimitReached,
   MIN_CHARS,
   MAX_CHARS,
 })
@@ -209,6 +214,7 @@ async function uploadImage(files: File[], vditor: Vditor): Promise<void> {
       if (cdnDomain) {
         const imageUrl = `${cdnDomain}/${result.key}-thumbnail`
         vditor.insertValue(`![${file.name}](${imageUrl})`)
+        uploadedImageCount.value++
       }
     } catch (error) {
       console.error("Upload failed:", error)
@@ -263,6 +269,10 @@ function initVditor() {
     upload: {
       accept: "image/*",
       handler: (files) => {
+        if (uploadedImageCount.value >= MAX_IMAGES) {
+          message.warning(`最多只能上传 ${MAX_IMAGES} 张图片`)
+          return null
+        }
         if (vditorInstance) {
           uploadImage(files as File[], vditorInstance)
         }

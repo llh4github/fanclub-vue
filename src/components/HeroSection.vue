@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from "vue"
+import { ref, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { getLatestFollowerNum, getTopicCount } from "@/api"
 import { getLatestLiveRecord, LiveRecordStatus, type LatestLiveRecord } from "@/api/schedule"
@@ -67,77 +67,8 @@ function enterLiveRoom() {
   }
 }
 
-const quotes = [
-  { text: "在胡萝卜星云，我们用胡萝卜暗器打架，地球人太弱了！", source: "母星回忆录" },
-  { text: "杀手不需要同情……但外星兔子可以有粉丝群！", source: "地球观察日记" },
-  { text: "今天的任务进度：收集了3个地球粉丝，距离征服地球还差999997个！", source: "每日任务报告" },
-  { text: "警告：地球空气含氧量过高，可能导致兔子心情变好。", source: "环境适应记录" },
-  { text: "胡萝卜飞镖技能冷却中……顺便唱首歌等一下。", source: "直播间隙" },
-  { text: "地球的娱乐系统很发达，或许可以加入直播业完成母星任务。", source: "战略规划书" },
-]
-const quoteIndex = ref(0)
-const displayQuote = ref("")
-const isTyping = ref(false)
-const showSource = ref(false)
-const songLabel = ref("歌势")
-let quoteTimer: ReturnType<typeof setTimeout> | null = null
-
-function typeQuote(text: string, onDone?: () => void) {
-  isTyping.value = true
-  displayQuote.value = ""
-  let i = 0
-  function next() {
-    if (i < text.length) {
-      displayQuote.value += text[i]
-      i++
-      const ch = text[i - 1]
-      let delay = 65
-      if ("，。！？、；：".includes(ch)) delay = 200
-      else if ("…—".includes(ch)) delay = 120
-      quoteTimer = setTimeout(next, delay)
-    } else {
-      isTyping.value = false
-      onDone?.()
-    }
-  }
-  next()
-}
-
-function eraseQuote(onDone?: () => void) {
-  const text = displayQuote.value
-  let i = text.length
-  function next() {
-    if (i > 0) {
-      i--
-      displayQuote.value = text.slice(0, i)
-      quoteTimer = setTimeout(next, 25)
-    } else {
-      onDone?.()
-    }
-  }
-  next()
-}
-
-function cycleQuote() {
-  showSource.value = false
-  const q = quotes[quoteIndex.value]
-  typeQuote(q.text, () => {
-    setTimeout(() => {
-      showSource.value = true
-    }, 300)
-    quoteTimer = setTimeout(() => {
-      showSource.value = false
-      setTimeout(() => {
-        eraseQuote(() => {
-          quoteIndex.value = (quoteIndex.value + 1) % quotes.length
-          setTimeout(cycleQuote, 400)
-        })
-      }, 400)
-    }, 10000)
-  })
-}
-
 const latestFansNum = ref(0)
+const songLabel = ref("歌势")
 
 async function fetchFollowerData() {
   try {
@@ -190,18 +121,9 @@ onMounted(async () => {
   await fetchFollowerData()
   setTimeout(animateFansCount, 800)
 
-  setTimeout(cycleQuote, 1200)
-
   setTimeout(() => {
     songLabel.value = "杂谈势"
   }, 3000)
-})
-
-onBeforeUnmount(() => {
-  if (quoteTimer) {
-    clearTimeout(quoteTimer)
-    quoteTimer = null
-  }
 })
 </script>
 
@@ -241,14 +163,6 @@ onBeforeUnmount(() => {
       <div class="hero-tags">
         <span class="tag tag-primary">虚拟主播</span>
         <span class="tag">{{ songLabel }}</span>
-      </div>
-
-      <!-- Quote with typewriter effect -->
-      <div class="hero-quote">
-        <span class="quote-bracket">[</span>
-        <span class="quote-text">{{ displayQuote }}</span>
-        <span v-if="showSource" class="quote-source">— {{ quotes[quoteIndex].source }}</span>
-        <span class="quote-bracket">]</span>
       </div>
 
       <!-- Action buttons -->
@@ -454,6 +368,7 @@ onBeforeUnmount(() => {
   background: #ff6b35;
   padding: 6px 14px;
   animation: badge-blink 1s ease-in-out infinite;
+  white-space: nowrap;
 }
 
 @keyframes badge-blink {
@@ -577,30 +492,6 @@ onBeforeUnmount(() => {
 .tag:hover {
   border-color: rgba(0, 245, 255, 0.5);
   color: #fff;
-}
-
-/* Quote */
-.hero-quote {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
-  max-width: 500px;
-  min-height: 2rem;
-}
-
-.quote-bracket {
-  color: #8b5cf6;
-  font-weight: 300;
-}
-
-.quote-text {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.quote-source {
-  display: block;
-  font-size: 0.75rem;
-  color: rgba(139, 92, 246, 0.6);
-  margin-top: 0.3rem;
 }
 
 /* Action buttons */

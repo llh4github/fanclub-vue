@@ -32,7 +32,6 @@
   /* Animations */
   --animate-glitch: glitch 3s ease-in-out infinite;
   --animate-pulse-neon: pulse-neon 2s ease-in-out infinite;
-  --animate-scan-line: scan-line 4s linear infinite;
   --animate-float: float 4s ease-in-out infinite;
   --animate-rotate-slow: rotate-slow 20s linear infinite;
 
@@ -53,11 +52,6 @@
       opacity: 0.8;
       filter: brightness(1.2) drop-shadow(0 0 15px var(--color-neon-cyan));
     }
-  }
-
-  @keyframes scan-line {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100vh); }
   }
 
   @keyframes float {
@@ -121,23 +115,7 @@ body::before {
   100% { transform: translate(60px, 60px); }
 }
 
-/* Scan line effect */
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(180deg,
-    transparent,
-    rgba(0, 245, 255, 0.1),
-    transparent);
-  pointer-events: none;
-  z-index: 9999;
-  animation: scan-line 4s linear infinite;
-}
-
+/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
 }
